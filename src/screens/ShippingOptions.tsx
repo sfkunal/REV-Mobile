@@ -90,7 +90,7 @@ const ShippingOptions = ({route, navigation}: Props) => {
                     { color: selectedRateHandle == shippingRate.handle ? theme.colors.text : theme.colors.infoText }
                   ]}
                 >
-                  {shippingRate.price.amount} RON
+                  {shippingRate.price.amount} USD
                 </Text>
               </View>
             </TouchableOpacity>

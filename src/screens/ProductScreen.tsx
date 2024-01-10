@@ -232,7 +232,7 @@ const ProductScreen = ({route, navigation}: Props) => {
         >
           <View style={{marginRight: 14}}>
             <Text style={styles.title}>{data.title.toUpperCase()}</Text>
-            <Text style={styles.price}>{data.priceRange.minVariantPrice.amount} RON</Text>
+            <Text style={styles.price}>{data.priceRange.minVariantPrice.amount} USD</Text>
             { data.availableForSale ?
               <>
                 { isLoading ? 

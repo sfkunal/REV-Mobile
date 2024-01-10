@@ -145,7 +145,7 @@ const Cart = ({navigation}: Props) => {
             }
             <View style={{flexDirection: 'row'}}>
               <Text style={styles.text}>TOTAL</Text>
-              <Text style={[styles.text, {marginHorizontal: 12}]}>{totalPrice} RON</Text>
+              <Text style={[styles.text, {marginHorizontal: 12}]}>{totalPrice} USD</Text>
             </View>
           </View>
         </View>

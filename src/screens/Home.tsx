@@ -76,7 +76,7 @@ const Home = ({navigation}: Props) => {
           </>
         )}
       />
-      <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} />
+      {/* <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} /> */}
     </View>
   )
 }
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width:'100%', 
-    height:windowHeight 
+    height:windowHeight
   },
   text: {
     color: theme.colors.text
