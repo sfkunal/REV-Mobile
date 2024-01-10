@@ -1,6 +1,6 @@
 export const config = {
-  primaryColor: '',
-  primaryColorDark: '',
+  primaryColor: '#884EF3',
+  primaryColorDark: '#884EF3',
   logoWidth: 160,
   logoSizeRatio: 1, // height/width
   shopifyUrl: 'https://rev.delivery/',
