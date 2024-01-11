@@ -63,8 +63,8 @@ const Home = ({navigation}: Props) => {
             </View>
           </TouchableWithoutFeedback>
         )}
-        snapToInterval={windowHeight}
-        decelerationRate='fast'
+        // snapToInterval={windowHeight}
+        // decelerationRate='fast'
         showsVerticalScrollIndicator={false}
         keyboardDismissMode='on-drag'
         ListFooterComponent={() => (
@@ -76,7 +76,7 @@ const Home = ({navigation}: Props) => {
           </>
         )}
       />
-      {/* <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} /> */}
+      <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} />
     </View>
   )
 }
@@ -85,11 +85,14 @@ const styles = StyleSheet.create({
   container: {
     flex:1,
     position:'relative',
-    height: windowHeight
+    height: windowHeight,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   image: {
     width:'100%', 
-    height:windowHeight
+    height:'100%',
+    resizeMode:'contain'
   },
   text: {
     color: theme.colors.text

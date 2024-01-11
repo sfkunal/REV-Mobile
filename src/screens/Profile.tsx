@@ -109,7 +109,7 @@ const Profile = ({ navigation }: Props) => {
               style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
               onPress={() => navigation.push('PersonalInformations')}
             >
-              <Text style={styles.settingTitle}>Personal Informations</Text>
+              <Text style={styles.settingTitle}>Personal Information</Text>
               <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
             </TouchableOpacity>
             <TouchableOpacity 
