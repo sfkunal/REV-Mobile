@@ -9,6 +9,10 @@ import { HomeStackParamList } from '../types/navigation'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useAuthContext } from '../context/AuthContext'
 import { config } from '../../config'
+import { useNavigation } from '@react-navigation/native';
+import { useNavigationContext } from '../context/NavigationContext'
+// import { useNavigationContext } from '../context/NavigationContext'
+
 
 const windowHeight = Dimensions.get('window').height-50-(hasHomeIndicator ? 30 : 0)
 
@@ -17,6 +21,18 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Collection'>
 const Home = ({navigation}: Props) => {
   const { userToken } = useAuthContext()
   const [collections, setCollections] = useState<any[]>([])
+  const { rootNavigation } = useNavigationContext()
+
+  
+  useEffect(() => {
+    if (!userToken && rootNavigation) {
+      rootNavigation.navigate('LoginStackNavigator', {
+        screen: 'Login',
+      });
+    }
+  }, [userToken, rootNavigation]);
+
+  // console.log(userToken)
 
   const fetchCollections = async () => {
     try {

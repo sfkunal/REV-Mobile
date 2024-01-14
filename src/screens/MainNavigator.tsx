@@ -56,15 +56,16 @@ const MainNavigator = () => {
             title: '', 
             presentation: 'fullScreenModal',
             headerLeft: () => (
-              <TouchableOpacity 
-                onPress={() => rootNavigation.goBack() } 
-              >
-                <AntDesign
-                  name='close' 
-                  size={22} 
-                  color={theme.colors.text} 
-                />
-              </TouchableOpacity>
+              // <TouchableOpacity 
+              //   onPress={() => rootNavigation.goBack() } 
+              // >
+              //   <AntDesign
+              //     name='close' 
+              //     size={22} 
+              //     color={theme.colors.text} 
+              //   />
+              // </TouchableOpacity>
+              null
             ),
           }} 
         />
