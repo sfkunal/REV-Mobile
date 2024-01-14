@@ -47,6 +47,7 @@ const Menu = ({navigation}: Props) => {
 
       const collections = response.data.collections.nodes
       setCollections(collections)
+      console.log(collections)
 
     } catch (e) {
       console.log(e)

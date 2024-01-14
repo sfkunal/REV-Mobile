@@ -6,6 +6,9 @@ import { SearchStackParamList } from '../types/navigation';
 import { storefrontApiClient } from '../utils/storefrontApiClient';
 import { Product } from '../types/dataTypes';
 import ProductCard from '../components/shared/ProductCard';
+import { TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useNavigationContext } from '../context/NavigationContext';
 
 type Props = NativeStackScreenProps<SearchStackParamList, 'Search'>
 
@@ -15,6 +18,10 @@ const Search = ({navigation}: Props) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [initialProducts, setInitialProducts] = useState<Product[]>([])
   const [products, setProducts] = useState<Product[]>([])
+  const [collections, setCollections] = useState<any[]>([]);
+  const { rootNavigation } = useNavigationContext()
+  
+
 
   const fetchInitialProducts = async () => {
     setIsLoading(true)
@@ -77,6 +84,39 @@ const Search = ({navigation}: Props) => {
     setIsLoading(false)
   }
 
+  const fetchCollections = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
+   
+    const query = `query {
+      collections(first: 20) {
+        edges {
+          node {
+            id
+            title
+            description
+            image {
+              url
+              height
+              width
+            }
+          }
+        }
+      }
+    }`;
+   
+    const response: any = await storefrontApiClient(query);
+   
+    if (response.errors && response.errors.length != 0) {
+      setIsLoading(false);
+      throw response.errors[0].message;
+    }
+   
+    setCollections(response.data.collections.edges.map((edge: any) => edge.node));
+   
+    setIsLoading(false);
+   };
+
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
@@ -90,16 +130,22 @@ const Search = ({navigation}: Props) => {
       )
     })
 
-    try {
-      fetchInitialProducts()
-    } catch (e) {
-      if (typeof e == 'string') {
-        setErrorMessage(e)
-      } else {
-        setErrorMessage('Something went wrong. Try again.')
-      }
-    }  
+    if (searchInput.length > 0) {
+      try {
+        fetchInitialProducts()
+      } catch (e) {
+        if (typeof e == 'string') {
+          setErrorMessage(e)
+        } else {
+          setErrorMessage('Something went wrong. Try again.')
+        }
+      } 
+    }
   }, [])
+
+  useEffect(() => {
+    fetchCollections();
+   }, []);
 
   const search = async () => {
     setIsLoading(true)
@@ -162,55 +208,73 @@ const Search = ({navigation}: Props) => {
   }
 
   useEffect(() => {
-    if ( searchInput.length >= 1 ) {
-      try {
-        search()
-      } catch (e) {
-        if (typeof e == 'string') {
-          setErrorMessage(e)
-        } else {
-          setErrorMessage('Something went wrong. Try again.')
-        }
-      }     
-    } else {
-      fetchInitialProducts()
-    }
-  }, [searchInput])
+   if (searchInput.length > 0) {
+     try {
+       search();
+     } catch (e) {
+       if (typeof e === 'string') {
+         setErrorMessage(e);
+       } else {
+         setErrorMessage('Something went wrong. Try again.');
+       }
+     }
+   } else {
+     setProducts([]);
+   }
+  }, [searchInput]);
   
   return (
-    <View style={{marginTop:8, flex:1}}>
-      <View style={{height:0.5, backgroundColor: theme.colors.text, marginHorizontal:14}}></View>
-      { isLoading ?
+    <View style={{ marginTop: 8, flex: 1 }}>
+      <View style={{ height: 0.5, backgroundColor: theme.colors.text, marginHorizontal: 14 }}></View>
+      {isLoading ? (
         <View style={styles.activityContainer}>
-          <ActivityIndicator size={'small'}/>
-        </View> :
+          <ActivityIndicator size={"small"} />
+        </View>
+      ) : (
         <>
-          { errorMessage != '' ?
-            <Text style={styles.error}>{errorMessage}</Text> :
+          {errorMessage !== "" ? (
+            <Text style={styles.error}>{errorMessage}</Text>
+          ) : (
             <>
-              { products.length != 0 ?
-                <FlatList 
-                  data={products}
-                  renderItem={({item}) => <ProductCard data={item} /> }
-                  keyboardDismissMode='on-drag'
-                  showsVerticalScrollIndicator={false}
-                  numColumns={2}
-                  contentContainerStyle={styles.container}
-                /> :
-                <ScrollView 
-                  contentContainerStyle={{flex:1, justifyContent: 'center', alignItems: 'center'}}
-                  scrollEnabled={false}
-                  keyboardDismissMode='on-drag'
-                >
-                  <Text style={styles.text}>No results matching your search.</Text>
-                </ScrollView>
-              }
+              {searchInput.length > 0 ? (
+                products.length !== 0 ? (
+                  <FlatList
+                   data={products}
+                   renderItem={({ item }) => <ProductCard data={item} />}
+                   keyboardDismissMode="on-drag"
+                   showsVerticalScrollIndicator={false}
+                   numColumns={2}
+                   contentContainerStyle={styles.container}
+                  />
+                ) : (
+                  <ScrollView
+                   contentContainerStyle={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+                   scrollEnabled={false}
+                   keyboardDismissMode="on-drag"
+                  >
+                   <Text style={styles.text}>No results matching your search.</Text>
+                  </ScrollView>
+                )
+              ) : (
+                collections.map((collection: any) => (
+                  <TouchableOpacity key={collection.id} style={styles.collectionContainer} onPress={() => navigation.navigate('Collection', { collectionId: collection.id })}>
+                  <Text style={styles.title}>{collection.title}</Text>
+                  {/* {collection.description && <Text style={styles.text}>{collection.description}</Text>}
+                  {collection.image &&
+                  <Image 
+                    source={{uri: collection.image.url}} 
+                    style={{width: screenWidth, height: screenWidth*collection.image.height/collection.image.width, marginBottom: 16}}
+                  />
+                  } */}
+                  </TouchableOpacity>
+                 ))
+              )}
             </>
-          }
+          )}
         </>
-      }
+      )}
     </View>
-  )
+   );
 }
 
 const windowWidth = Dimensions.get('window').width
@@ -222,8 +286,13 @@ const styles = StyleSheet.create({
   },
   text: {
     color: theme.colors.text,
-    letterSpacing: 1.8
-  },
+    alignSelf: 'center',
+    fontSize: 16,
+    letterSpacing: 1.5,
+    fontWeight: '300',
+    marginBottom: 16,
+    textAlign: 'center'
+   },
   input: {
     marginTop:16,
     width: windowWidth-28,
@@ -242,7 +311,21 @@ const styles = StyleSheet.create({
     color: 'red', 
     alignSelf: 'center', 
     marginTop:12
-  }
+  },
+  collectionContainer: {
+    marginHorizontal: -14,
+    // marginTop: 44+sbHeight,
+    backgroundColor: '#000000',
+    // paddingVertical: 8,
+    alignItems:'center',
+    marginBottom: 16,
+   },
+   title: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    letterSpacing: 1.8,
+    fontWeight: '500'
+   },
 })
 
 export default Search

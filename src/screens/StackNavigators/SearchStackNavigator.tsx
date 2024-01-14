@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { theme } from '../../constants/theme'
 import { SearchStackParamList } from '../../types/navigation'
 import { NavigationContainer } from '@react-navigation/native'
+import Collection from '../Collection';
+
 
 import Search from '../Search'
 
@@ -19,6 +21,14 @@ const SearchStackNavigator = () => {
             headerShadowVisible: false,
           }} 
         />
+        <SearchStack.Screen 
+   name='Collection' 
+   component={Collection}
+   options={{
+     headerStyle:{backgroundColor: theme.colors.background}, 
+     headerShadowVisible: false,
+   }} 
+ />
       </SearchStack.Navigator>
     </NavigationContainer>
   )

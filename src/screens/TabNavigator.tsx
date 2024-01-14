@@ -43,9 +43,9 @@ const TabNavigator = ({navigation}: Props) => {
               return <HomeIcon size={22} color={color} />
 
             } 
-            if ( route.name =='Menu' ) {
-              return <StoreIcon size={22.5} color={color} />
-            } 
+            // if ( route.name =='Menu' ) {
+            //   return <StoreIcon size={22.5} color={color} />
+            // } 
             if ( route.name =='Search' ) {
               return <SearchIcon size={18} color={color} />
             } 
@@ -59,7 +59,7 @@ const TabNavigator = ({navigation}: Props) => {
         })}
       >
         <Tab.Screen name="Home" component={HomeStackNavigator} />
-        <Tab.Screen name="Menu" component={MenuStackNavigator} />
+        {/* <Tab.Screen name="Menu" component={MenuStackNavigator} /> */}
         <Tab.Screen name="Search" component={SearchStackNavigator} />
         <Tab.Screen name="Cart" component={CartStackNavigator} />
         <Tab.Screen name="Profile" component={ProfileStackNavigator} />

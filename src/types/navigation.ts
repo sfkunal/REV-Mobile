@@ -33,6 +33,7 @@ export type MenuStackParamList = {
 export type SearchStackParamList = {
   Search: undefined;
   ProductScreen: { data: Product }
+  Collection: { collectionId: string };
 }
 
 export type CartStackParamList = {
