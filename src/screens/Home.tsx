@@ -79,10 +79,15 @@ const Home = ({navigation}: Props) => {
             </View>
           </TouchableWithoutFeedback>
         )}
-        // snapToInterval={windowHeight}
-        // decelerationRate='fast'
+        snapToInterval={windowHeight}
+        decelerationRate='fast'
         showsVerticalScrollIndicator={false}
         keyboardDismissMode='on-drag'
+        ListHeaderComponent={() => (
+          <>
+            <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} />
+          </>
+        )}
         ListFooterComponent={() => (
           <>
             { userToken && userToken.customer.acceptsMarketing ?
@@ -92,9 +97,8 @@ const Home = ({navigation}: Props) => {
           </>
         )}
       />
-      <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} />
     </View>
-  )
+   )
 }
 
 const styles = StyleSheet.create({

@@ -235,7 +235,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           <TouchableOpacity onPress={() => setisCountyPickerOpen(!isCountyPickerOpen) } >
             <View style={styles.countyPickerView}>
               <Text style={[styles.county, {color: province ? theme.colors.text : theme.colors.disabledText}]}>
-                { province ? province.province : 'County (Județ)' }
+                { province ? province.province : 'State' }
               </Text>
               <Entypo name={`chevron-small-${isCountyPickerOpen ? 'up' : 'down'}`} size={24} color={theme.colors.disabledText} />
             </View>

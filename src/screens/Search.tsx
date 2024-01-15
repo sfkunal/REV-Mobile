@@ -258,7 +258,7 @@ const Search = ({navigation}: Props) => {
               ) : (
                 collections.map((collection: any) => (
                   <TouchableOpacity key={collection.id} style={styles.collectionContainer} onPress={() => navigation.navigate('Collection', { collectionId: collection.id })}>
-                  <Text style={styles.title}>{collection.title}</Text>
+                  <Text style={styles.text}>{collection.title}</Text>
                   {/* {collection.description && <Text style={styles.text}>{collection.description}</Text>}
                   {collection.image &&
                   <Image 
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     paddingLeft:14,
   },
   text: {
-    color: theme.colors.text,
+    color: '#000000',
     alignSelf: 'center',
     fontSize: 16,
     letterSpacing: 1.5,
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   collectionContainer: {
     marginHorizontal: -14,
     // marginTop: 44+sbHeight,
-    backgroundColor: '#000000',
+    backgroundColor: theme.colors.background,
     // paddingVertical: 8,
     alignItems:'center',
     marginBottom: 16,

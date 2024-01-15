@@ -20,14 +20,14 @@ const Profile = ({ navigation }: Props) => {
     navigation.setOptions({
       headerRight: () => (
         <>
-          {/* { userToken ?
+          { userToken ?
             <TouchableOpacity onPress={() => signOut() }>
               <Text style={styles.textButton}>LOG OUT</Text>
             </TouchableOpacity> :
             <TouchableOpacity onPress={() => rootNavigation.push('LoginStackNavigator', { screen: 'Login' })}>
               <Text style={styles.textButton}>LOG IN</Text>
             </TouchableOpacity>
-          } */}
+          }
         </>
       )
     })
