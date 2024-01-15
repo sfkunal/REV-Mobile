@@ -71,7 +71,8 @@ const Orders = ({navigation}: Props) => {
         throw response.errors[0].message
       }
 
-      setOrders(response.data.customer.orders.nodes as Order[])
+      const reversedOrders = response.data.customer.orders.nodes.reverse() as Order[]
+      setOrders(reversedOrders)
 
     } catch (e) {
 
