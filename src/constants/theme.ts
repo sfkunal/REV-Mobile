@@ -3,7 +3,9 @@ import { modelName } from "expo-device"
 import { Appearance, Platform } from "react-native"
 import { config } from "../../config"
 
-export const colorScheme = Appearance.getColorScheme()
+// export const colorScheme = Appearance.getColorScheme()
+export const colorScheme = 'light'
+
 
 export const theme = colorScheme == 'light' ? {
   ...DefaultTheme,
