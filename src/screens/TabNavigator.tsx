@@ -28,47 +28,45 @@ const TabNavigator = ({ navigation }: Props) => {
   }, [])
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <NavigationContainer theme={theme} independent={true} >
-        <Tab.Navigator
-          id='TabNavigator'
-          screenOptions={({ route }) => ({
-            tabBarStyle: { height: 50 },
-            headerShown: false,
-            tabBarActiveTintColor: '#FFFFFF',
-            tabBarInactiveTintColor: '#FFFFFF',
-            tabBarShowLabel: false,
-            tabBarActiveBackgroundColor: '#4B2D83',
-            tabBarInactiveBackgroundColor: '#4B2D83',
-            tabBarIcon: ({ focused, color, size }) => {
-              var size = 20
-              if (route.name == 'Home') {
-                return <HomeIcon size={22} color={color} />
+    <NavigationContainer theme={theme} independent={true} >
+      <Tab.Navigator
+        id='TabNavigator'
+        screenOptions={({ route }) => ({
+          tabBarStyle: { },
+          headerShown: false,
+          tabBarActiveTintColor: '#4B2D83',
+          tabBarInactiveTintColor: '#4B2D83',
+          tabBarShowLabel: false,
+          tabBarActiveBackgroundColor: '#F5F7F5',
+          tabBarInactiveBackgroundColor: '#F5F7F5',
+          tabBarIcon: ({ focused, color, size }) => {
+            var size = 20
+            if (route.name == 'Home') {
+              return <HomeIcon size={22} color={color} />
 
-              }
-              // if ( route.name =='Menu' ) {
-              //   return <StoreIcon size={22.5} color={color} />
-              // } 
-              if (route.name == 'Search') {
-                return <SearchIcon size={18} color={color} />
-              }
-              if (route.name == 'Cart') {
-                return <BagIcon size={21} color={color} />
-              }
-              if (route.name == 'Profile') {
-                return <ProfileIcon size={22} color={color} />
-              }
             }
-          })}
-        >
-          <Tab.Screen name="Home" component={HomeStackNavigator} />
-          {/* <Tab.Screen name="Menu" component={MenuStackNavigator} /> */}
-          <Tab.Screen name="Search" component={SearchStackNavigator} />
-          <Tab.Screen name="Cart" component={CartStackNavigator} />
-          <Tab.Screen name="Profile" component={ProfileStackNavigator} />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
+            // if ( route.name =='Menu' ) {
+            //   return <StoreIcon size={22.5} color={color} />
+            // } 
+            if (route.name == 'Search') {
+              return <SearchIcon size={18} color={color} />
+            }
+            if (route.name == 'Cart') {
+              return <BagIcon size={21} color={color} />
+            }
+            if (route.name == 'Profile') {
+              return <ProfileIcon size={22} color={color} />
+            }
+          }
+        })}
+      >
+        <Tab.Screen name="Home" component={HomeStackNavigator} />
+        {/* <Tab.Screen name="Menu" component={MenuStackNavigator} /> */}
+        <Tab.Screen name="Search" component={SearchStackNavigator} />
+        <Tab.Screen name="Cart" component={CartStackNavigator} />
+        <Tab.Screen name="Profile" component={ProfileStackNavigator} />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
