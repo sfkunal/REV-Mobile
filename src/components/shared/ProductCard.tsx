@@ -20,7 +20,7 @@ const ProductCard = memo(({data}: {data: Product}) => {
             { data.compareAtPriceRange.minVariantPrice.amount > data.priceRange.minVariantPrice.amount &&
               <Text style={styles.compareAtPrice}>{data.compareAtPriceRange.minVariantPrice.amount}</Text>
             }
-            <Text style={styles.price}>{data.priceRange.minVariantPrice.amount} USD</Text>
+            <Text style={styles.price}>${data.priceRange.minVariantPrice.amount}</Text>
           </View>
         </View>
       </View>
@@ -41,19 +41,25 @@ const styles = StyleSheet.create({
   },
   price: {
     marginTop: 2,
-    fontSize: 11,
-    fontWeight: '400',
-    color: theme.colors.text,
+    fontSize: 16.2,
+    fontWeight: '800',
+    color: '#4B2D83',
   },
   image: {
-    width: (screenWidth-28-14)/2,
-    height: ((screenWidth-28-14)/2)*1.5
+    alignSelf: 'center',
+    width: (screenWidth-28-14)/2 * 0.8,
+    height: ((screenWidth-28-14)/2)*1.5 * 0.5
   },
   container: {
     flex:1,
     paddingBottom: 16,
     justifyContent: 'space-between',
-    maxHeight: ((screenWidth-28-14)/2)*1.5+130
+    maxHeight: (((screenWidth-28-14)/2)*1.5+130) * 0.8,
+    borderColor: '#D9D9D9',
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 15,
+    margin: 5
   },
   priceContainer: {
     flexDirection: 'row'

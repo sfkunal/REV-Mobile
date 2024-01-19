@@ -296,11 +296,15 @@ const Home = ({ navigation }: Props) => {
     fetchPopularProducts()
   }, [userToken])
 
+  const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
+
   const HomeList = ({ data }) => (
     <View style={{ paddingTop: 10, paddingBottom: sbHeight + 200}}>
       <FlatList
         data={data}
         renderItem={({ item }) => <ProductCard data={item} />}
+        keyExtractor={item => item.id} // Make sure to have a keyExtractor for unique keys
+        ItemSeparatorComponent={ItemSeparator} // Add this line
         keyboardDismissMode='on-drag'
         showsVerticalScrollIndicator={false}
         numColumns={2}
