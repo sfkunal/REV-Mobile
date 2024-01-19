@@ -291,13 +291,13 @@ const Home = ({ navigation }: Props) => {
 
   useEffect(() => {
     fetchForYou()
-    fetchAllProducts()
+    // fetchAllProducts()
     fetchUserOrders()
     fetchPopularProducts()
   }, [userToken])
 
   const HomeList = ({ data }) => (
-    <View style={{ paddingTop: 10, paddingBottom: 500 }}>
+    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 200}}>
       <FlatList
         data={data}
         renderItem={({ item }) => <ProductCard data={item} />}
@@ -305,48 +305,34 @@ const Home = ({ navigation }: Props) => {
         showsVerticalScrollIndicator={false}
         numColumns={2}
         contentContainerStyle={{ paddingHorizontal: 14 }}
-        ListHeaderComponent={() => (
-          <View style={{ marginHorizontal: -14 }}>
-            <View style={{
-              alignItems: 'center',
-            }}>
-              {/* <Text style={{
-                color: theme.colors.text,
-                fontSize: 18,
-                letterSpacing: 1.8,
-                fontWeight: '500'
-              }}>FOR YOU</Text> */}
-            </View>
-            {/* <Text style={styles.text}>Check out our curated selection of products.</Text> */}
-          </View>
-        )}
       />
     </View>
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 0 }}>
+      {/* <Image source={theme.dark == true ? logoDark : logo} style={{ ...styles.logo, marginBottom: 10}} /> */}
+
       {isLoading ? (
         <ActivityIndicator style={{ alignSelf: 'center' }} />
       ) : (
         <View>
           <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-            <Image source={theme.dark == true ? logoDark : logo} style={{ ...styles.logo, marginBottom: 30, top: sbHeight + 5}} />
             <TextInput
-              style={{...styles.searchBox, top: '20%'}}
+              style={{ ...styles.searchBox }}
               placeholder="  Where Are We Delivering?"
               placeholderTextColor='grey'
             />
             <Text style={{
-                color: theme.colors.text,
-                fontSize: 18,
-                letterSpacing: 1.8,
-                fontWeight: '500',
-                alignSelf: 'center',
-                marginTop: '15%'
-              }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
+              color: theme.colors.text,
+              fontSize: 18,
+              letterSpacing: 1.8,
+              fontWeight: '500',
+              alignSelf: 'center',
+              marginTop: '5%'
+            }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
           </View>
-          <HomeList data={userOrders < 10 ? popularProducts : forYou} />
+          <HomeList data={userOrders < 5 ? popularProducts : forYou} />
         </View>
       )}
     </View>
@@ -384,13 +370,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   searchBox: {
-   height: 40,
-   borderColor: 'black',
-   borderWidth: 1,
-   borderRadius: 7,
-   marginTop: '5%',
-   alignSelf: 'center',
-   width: '90%',
+    height: 40,
+    borderColor: 'black',
+    borderWidth: 1,
+    borderRadius: 7,
+    marginTop: '2%',
+    alignSelf: 'center',
+    width: '90%',
   }
 })
 

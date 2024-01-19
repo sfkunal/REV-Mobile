@@ -22,6 +22,7 @@ export type BottomTabParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   Collection: { collectionId: string }
+  Cart: undefined
 }
 
 export type MenuStackParamList = {

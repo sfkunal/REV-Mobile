@@ -1,14 +1,19 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { NativeStackNavigationProp, createNativeStackNavigator } from '@react-navigation/native-stack'
 import { theme } from '../../constants/theme'
 import { HomeStackParamList } from '../../types/navigation'
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, useNavigation } from '@react-navigation/native'
+import logo from '../../../assets/logo.png'
 
 import Home from '../Home'
 import Collection from '../Collection'
+import { TouchableOpacity, Image } from 'react-native'
+import { CartIcon } from '../../components/shared/Icons'
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>()
 
 const HomeStackNavigator = () => {
+const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+
   return (
     <NavigationContainer theme={theme} independent={true}>
       <HomeStack.Navigator>
@@ -17,9 +22,17 @@ const HomeStackNavigator = () => {
           component={Home}
           options={{
             headerLargeTitle: false,
-            headerShown: false, 
+            headerShown: true, 
             headerStyle:{backgroundColor: theme.colors.background}, 
             headerShadowVisible: false,
+            headerTitle: () => (
+              <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
+            ),
+            headerRight: () => (
+              <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={{paddingRight: 20, paddingTop: 10}}>
+                <CartIcon color="#4a307e" size={28} />
+              </TouchableOpacity>
+            ),
           }} 
         />
         <HomeStack.Screen 
