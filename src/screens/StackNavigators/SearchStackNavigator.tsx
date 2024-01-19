@@ -13,22 +13,23 @@ const SearchStackNavigator = () => {
   return (
     <NavigationContainer theme={theme} independent={true}>
       <SearchStack.Navigator>
-        <SearchStack.Screen 
-          name='Search' 
+        <SearchStack.Screen
+          name='Search'
           component={Search}
           options={{
-            headerStyle:{backgroundColor: theme.colors.background}, 
+            headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
-          }} 
+          }}
         />
-        <SearchStack.Screen 
-   name='Collection' 
-   component={Collection}
-   options={{
-     headerStyle:{backgroundColor: theme.colors.background}, 
-     headerShadowVisible: false,
-   }} 
- />
+        <SearchStack.Screen
+          name='Collection'
+          component={Collection}
+          options={{
+            headerStyle: { backgroundColor: theme.colors.background },
+            headerShadowVisible: false,
+            headerTitle: ''
+          }}
+        />
       </SearchStack.Navigator>
     </NavigationContainer>
   )

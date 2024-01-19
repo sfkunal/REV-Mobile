@@ -137,7 +137,7 @@ const Collection = ({route, navigation}: Props) => {
           contentContainerStyle={styles.container}
           ListHeaderComponent={() => (
             <View style={{marginHorizontal: -14}}>
-              <View style={[styles.titleContainer, {marginTop: 44+sbHeight}]}>
+              <View style={[styles.titleContainer]}>
                 <Text style={styles.title}>{collection.title}</Text>
               </View>
               { collection.description && <Text style={styles.text}>{collection.description}</Text>}             

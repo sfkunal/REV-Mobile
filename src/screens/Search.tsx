@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     // paddingVertical: 8,
     alignItems:'center',
-    marginBottom: 16,
+    // marginBottom: 16,
    },
    title: {
     color: '#FFFFFF',
