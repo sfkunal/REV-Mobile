@@ -344,7 +344,7 @@ const Home = ({ navigation }: Props) => {
                 fontWeight: '500',
                 alignSelf: 'center',
                 marginTop: '15%'
-              }}>FOR YOU</Text>
+              }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
           </View>
           <HomeList data={userOrders < 10 ? popularProducts : forYou} />
         </View>
