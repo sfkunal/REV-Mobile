@@ -297,6 +297,7 @@ const Home = ({ navigation }: Props) => {
   }, [userToken])
 
   const HomeList = ({ data }) => (
+    <View style={{ paddingTop: config.logoWidth * config.logoSizeRatio + 25 }}>
     <FlatList
       data={data}
       renderItem={({ item }) => <ProductCard data={item} />}
@@ -305,7 +306,7 @@ const Home = ({ navigation }: Props) => {
       numColumns={2}
       contentContainerStyle={{ paddingHorizontal: 14}}
       ListHeaderComponent={() => (
-        <View style={{ marginHorizontal: -14, }}>
+        <View style={{ marginHorizontal: -14 }}>
           <View style={{
             alignItems: 'center',
             marginBottom: 16, marginTop: 44 + sbHeight
@@ -321,6 +322,7 @@ const Home = ({ navigation }: Props) => {
         </View>
       )}
     />
+    </View>
    );
 
   return (
