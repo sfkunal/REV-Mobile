@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, ActivityIndicator, NativeModules, StatusBar, Platform } from 'react-native'
+import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput } from 'react-native'
 import { useEffect, useState } from 'react'
 import { hasHomeIndicator, theme } from '../constants/theme'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
@@ -67,14 +67,14 @@ const Home = ({ navigation }: Props) => {
             }
           }
         }`
-  
+
         const response: any = await storefrontApiClient(query)
-  
+
         if (response.errors && response.errors.length != 0) {
           setIsLoading(false)
           throw response.errors[0].message
         }
-  
+
         const userOrders = response.data.customer.orders.nodes.length
         setUserOrders(userOrders);
         setIsLoading(false)
@@ -107,7 +107,7 @@ const Home = ({ navigation }: Props) => {
         "8626515116320",
         "8626695995680",
       ];
-      
+
       const queries = productIds.map(id => getProductInfoQuery(id));
       const responses = await Promise.all(queries.map(query => storefrontApiClient(query)));
       const products = responses.map((response: { data: any }) => response.data.product);
@@ -297,42 +297,56 @@ const Home = ({ navigation }: Props) => {
   }, [userToken])
 
   const HomeList = ({ data }) => (
-    <View style={{ paddingTop: config.logoWidth * config.logoSizeRatio + 25 }}>
-    <FlatList
-      data={data}
-      renderItem={({ item }) => <ProductCard data={item} />}
-      keyboardDismissMode='on-drag'
-      showsVerticalScrollIndicator={false}
-      numColumns={2}
-      contentContainerStyle={{ paddingHorizontal: 14}}
-      ListHeaderComponent={() => (
-        <View style={{ marginHorizontal: -14 }}>
-          <View style={{
-            alignItems: 'center',
-            marginBottom: 16, marginTop: 44 + sbHeight
-          }}>
-            <Text style={{
-              color: theme.colors.text,
-              fontSize: 18,
-              letterSpacing: 1.8,
-              fontWeight: '500'
-            }}>FOR YOU</Text>
+    <View style={{ paddingTop: 10, paddingBottom: 500 }}>
+      <FlatList
+        data={data}
+        renderItem={({ item }) => <ProductCard data={item} />}
+        keyboardDismissMode='on-drag'
+        showsVerticalScrollIndicator={false}
+        numColumns={2}
+        contentContainerStyle={{ paddingHorizontal: 14 }}
+        ListHeaderComponent={() => (
+          <View style={{ marginHorizontal: -14 }}>
+            <View style={{
+              alignItems: 'center',
+            }}>
+              {/* <Text style={{
+                color: theme.colors.text,
+                fontSize: 18,
+                letterSpacing: 1.8,
+                fontWeight: '500'
+              }}>FOR YOU</Text> */}
+            </View>
+            {/* <Text style={styles.text}>Check out our curated selection of products.</Text> */}
           </View>
-          {/* <Text style={styles.text}>Check out our curated selection of products.</Text> */}
-        </View>
-      )}
-    />
+        )}
+      />
     </View>
-   );
+  );
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center' }}>
+    <View style={{ flex: 1 }}>
       {isLoading ? (
         <ActivityIndicator style={{ alignSelf: 'center' }} />
       ) : (
-        <View style={{}}>
-          <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} />
-          <HomeList data={userOrders < 10 ? popularProducts : forYou}/>
+        <View>
+          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+            <Image source={theme.dark == true ? logoDark : logo} style={{ ...styles.logo, marginBottom: 30, top: sbHeight + 5}} />
+            <TextInput
+              style={{...styles.searchBox, top: '20%'}}
+              placeholder="  Where Are We Delivering?"
+              placeholderTextColor='grey'
+            />
+            <Text style={{
+                color: theme.colors.text,
+                fontSize: 18,
+                letterSpacing: 1.8,
+                fontWeight: '500',
+                alignSelf: 'center',
+                marginTop: '15%'
+              }}>FOR YOU</Text>
+          </View>
+          <HomeList data={userOrders < 10 ? popularProducts : forYou} />
         </View>
       )}
     </View>
@@ -365,13 +379,18 @@ const styles = StyleSheet.create({
   },
   logo: {
     backgroundColor: 'transparent',
-    // position: 'absolute',
-    // resizeMode: 'contain',
     width: config.logoWidth,
     height: config.logoWidth * config.logoSizeRatio,
-    top: "10%",
-    // left: 24,
     alignSelf: 'center'
+  },
+  searchBox: {
+   height: 40,
+   borderColor: 'black',
+   borderWidth: 1,
+   borderRadius: 7,
+   marginTop: '5%',
+   alignSelf: 'center',
+   width: '90%',
   }
 })
 

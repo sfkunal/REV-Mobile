@@ -2,10 +2,11 @@ import { View, StyleSheet, Image, Dimensions, Text, TouchableWithoutFeedback } f
 import { theme } from '../../constants/theme'
 import { useNavigationContext } from '../../context/NavigationContext'
 import { Product } from '../../types/dataTypes'
+import { memo } from 'react';
 
-const ProductCard = ({data}: {data: Product}) => {
-  const { rootNavigation } = useNavigationContext()
-
+const ProductCard = memo(({data}: {data: Product}) => {
+  const { rootNavigation } = useNavigationContext();
+ 
   return (
     <TouchableWithoutFeedback onPress={() => rootNavigation.push('ProductScreen', { data })}>
       <View style={styles.container}>
@@ -25,7 +26,7 @@ const ProductCard = ({data}: {data: Product}) => {
       </View>
     </TouchableWithoutFeedback>
   )
-}
+ });
 
 const screenWidth = Dimensions.get('screen').width
 
