@@ -261,15 +261,13 @@ const Home = ({ navigation }: Props) => {
       numColumns={2}
       contentContainerStyle={{ paddingHorizontal: 14 }}
       ListHeaderComponent={() => (
-        <View style={{ marginHorizontal: -14 }}>
+        <View style={{ marginHorizontal: -14, }}>
           <View style={{
-            backgroundColor: theme.colors.text,
-            paddingVertical: 16,
             alignItems: 'center',
             marginBottom: 16, marginTop: 44 + sbHeight
           }}>
             <Text style={{
-              color: theme.colors.background,
+              color: theme.colors.text,
               fontSize: 18,
               letterSpacing: 1.8,
               fontWeight: '500'
@@ -286,7 +284,7 @@ const Home = ({ navigation }: Props) => {
       {isLoading ? (
         <ActivityIndicator style={{ alignSelf: 'center' }} />
       ) : (
-        <HomeList data={allProducts}/>
+        <HomeList data={forYou}/>
       )}
     </View>
   )
