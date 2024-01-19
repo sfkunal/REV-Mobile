@@ -37,8 +37,8 @@ const TabNavigator = ({ navigation }: Props) => {
           tabBarActiveTintColor: '#4B2D83',
           tabBarInactiveTintColor: '#4B2D83',
           tabBarShowLabel: false,
-          tabBarActiveBackgroundColor: '#F5F7F5',
-          tabBarInactiveBackgroundColor: '#F5F7F5',
+          tabBarActiveBackgroundColor: 'white',
+          tabBarInactiveBackgroundColor: 'white',
           tabBarIcon: ({ focused, color, size }) => {
             var size = 20
             if (route.name == 'Home') {

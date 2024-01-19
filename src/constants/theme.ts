@@ -13,7 +13,7 @@ export const theme = colorScheme == 'light' ? {
     ...DefaultTheme.colors,
     infoText: 'rgba(0,0,0,0.67)',
     disabledText: 'rgba(0,0,0,0.33)',
-    background: 'rgb(245,247,245)', 
+    background: 'rgb(255,255,255)', 
     primary: config.primaryColor,
   }
 } : {
