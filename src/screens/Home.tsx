@@ -332,9 +332,7 @@ const Home = ({ navigation }: Props) => {
       ) : (
         <View style={{}}>
           <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} />
-          {/* <View style={{marginTop: config.logoWidth * config.logoSizeRatio + 25}}> */}
           <HomeList data={userOrders < 10 ? popularProducts : forYou}/>
-          {/* </View> */}
         </View>
       )}
     </View>
