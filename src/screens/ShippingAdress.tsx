@@ -105,7 +105,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
       }`
       
       if (province == null) {
-        throw 'Please select a county.'
+        throw 'Please select a State.'
       }
 
       const variables2 = {
@@ -116,7 +116,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           address2: address2,
           city: city,
           company: "",
-          country: "RO",
+          country: "US",
           firstName: firstName,
           lastName: lastName,
           phone: phone,
@@ -126,7 +126,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
       }
 
       const response: any = await storefrontApiClient(query2, variables2)
-      
+      console.log(response)
       if (response.errors && response.errors.length != 0 ) {
         throw response.errors[0].message
       }
