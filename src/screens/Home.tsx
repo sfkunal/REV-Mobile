@@ -12,6 +12,7 @@ import { config } from '../../config'
 import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext'
 import ProductCard from '../components/shared/ProductCard'
+import { getProductInfoQuery } from '../queries/PopularProductsStaticQuery'
 // import { useNavigationContext } from '../context/NavigationContext'
 
 
@@ -24,6 +25,7 @@ const Home = ({ navigation }: Props) => {
   const { userToken } = useAuthContext()
   const [collections, setCollections] = useState<any[]>([])
   const [forYou, setForYou] = useState<any[]>([])
+  const [popularProducts, setPopularProducts] = useState<any[]>([])
   const [allProducts, setAllProducts] = useState<any[]>([])
   const { rootNavigation } = useNavigationContext()
   const [isLoading, setIsLoading] = useState(true)
@@ -55,25 +57,67 @@ const Home = ({ navigation }: Props) => {
     setErrorMessage('')
 
     try {
-      const query = `query {
-        customer(customerAccessToken: "${userToken.accessToken}") {
-          orders(first: 100) {
-            nodes {
-              id
+      if (userToken) {
+        const query = `query {
+          customer(customerAccessToken: "${userToken.accessToken}") {
+            orders(first: 100) {
+              nodes {
+                id
+              }
             }
           }
+        }`
+  
+        const response: any = await storefrontApiClient(query)
+  
+        if (response.errors && response.errors.length != 0) {
+          setIsLoading(false)
+          throw response.errors[0].message
         }
-      }`
-
-      const response: any = await storefrontApiClient(query)
-
-      if (response.errors && response.errors.length != 0) {
+  
+        const userOrders = response.data.customer.orders.nodes.length
+        setUserOrders(userOrders);
         setIsLoading(false)
-        throw response.errors[0].message
       }
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
-      const userOrders = response.data.customer.orders.nodes.length
-      setUserOrders(userOrders);
+  const fetchPopularProducts = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    try {
+      const productIds = [
+        "8626723258656",
+        "8651298799904",
+        "8651303616800",
+        "8651309023520",
+        "8837273714976",
+        "8656809001248",
+        "8738456109344",
+        "8772894523680",
+        "8651307483424",
+        "8837266243872",
+        "8837226266912",
+        "8926543642912",
+        "8837446435104",
+        "8794648740128",
+        "8626515116320",
+        "8626695995680",
+      ];
+      
+      const queries = productIds.map(id => getProductInfoQuery(id));
+      const responses = await Promise.all(queries.map(query => storefrontApiClient(query)));
+      const products = responses.map((response: { data: any }) => response.data.product);
+
+      // if (responses.errors && responses.errors.length != 0) {
+      //   setIsLoading(false)
+      //   throw response.errors[0].message
+      // }
+
+      setPopularProducts(products)
       setIsLoading(false)
 
     } catch (e) {
@@ -170,12 +214,11 @@ const Home = ({ navigation }: Props) => {
         const sortedProducts = Object.entries(productCounts)
           .filter(([, quantity]) => quantity !== undefined)
           .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .slice(0, 20)
+          .slice(0, 16)
           .map(([key, value]) => value); // map to get rid of keys
 
         setForYou(sortedProducts)
         setIsLoading(false)
-
       } catch (e) {
         console.log(e)
       }
@@ -250,6 +293,7 @@ const Home = ({ navigation }: Props) => {
     fetchForYou()
     fetchAllProducts()
     fetchUserOrders()
+    fetchPopularProducts()
   }, [userToken])
 
   const HomeList = ({ data }) => (
@@ -259,7 +303,7 @@ const Home = ({ navigation }: Props) => {
       keyboardDismissMode='on-drag'
       showsVerticalScrollIndicator={false}
       numColumns={2}
-      contentContainerStyle={{ paddingHorizontal: 14 }}
+      contentContainerStyle={{ paddingHorizontal: 14}}
       ListHeaderComponent={() => (
         <View style={{ marginHorizontal: -14, }}>
           <View style={{
@@ -284,7 +328,12 @@ const Home = ({ navigation }: Props) => {
       {isLoading ? (
         <ActivityIndicator style={{ alignSelf: 'center' }} />
       ) : (
-        <HomeList data={forYou}/>
+        <View style={{}}>
+          <Image source={theme.dark == true ? logoDark : logo} style={styles.logo} />
+          {/* <View style={{marginTop: config.logoWidth * config.logoSizeRatio + 25}}> */}
+          <HomeList data={userOrders < 10 ? popularProducts : forYou}/>
+          {/* </View> */}
+        </View>
       )}
     </View>
   )
@@ -316,12 +365,13 @@ const styles = StyleSheet.create({
   },
   logo: {
     backgroundColor: 'transparent',
-    position: 'absolute',
-    resizeMode: 'contain',
+    // position: 'absolute',
+    // resizeMode: 'contain',
     width: config.logoWidth,
     height: config.logoWidth * config.logoSizeRatio,
-    top: 72,
-    left: 24
+    top: "10%",
+    // left: 24,
+    alignSelf: 'center'
   }
 })
 
