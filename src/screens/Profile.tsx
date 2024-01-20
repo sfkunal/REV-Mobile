@@ -20,8 +20,8 @@ const Profile = ({ navigation }: Props) => {
     navigation.setOptions({
       headerRight: () => (
         <>
-          { userToken ?
-            <TouchableOpacity onPress={() => signOut() }>
+          {userToken ?
+            <TouchableOpacity onPress={() => signOut()}>
               <Text style={styles.textButton}>LOG OUT</Text>
             </TouchableOpacity> :
             <TouchableOpacity onPress={() => rootNavigation.push('LoginStackNavigator', { screen: 'Login' })}>
@@ -35,7 +35,7 @@ const Profile = ({ navigation }: Props) => {
 
   const deleteAccount = () => {
     Alert.alert(
-      'Delete Account', 
+      'Delete Account',
       'Are you sure that you want to delete your account? Please note that there is no option to restore your account or its data. You would still be able to check your order status using its order number.',
       [
         {
@@ -43,7 +43,7 @@ const Profile = ({ navigation }: Props) => {
           style: 'destructive',
           onPress: () => signOut()
         },
-        { 
+        {
           text: 'Cancel',
           style: 'cancel'
         }
@@ -52,28 +52,28 @@ const Profile = ({ navigation }: Props) => {
   }
 
   return (
-    <ScrollView 
+    <ScrollView
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
       <Text style={styles.greeting}>Welcome back{userToken && `, ${userToken.customer.firstName}`}!</Text>
 
-      <View style={{marginBottom: 16}}>
-        <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-          onPress={() => navigation.push('Wishlist') }
+      <View style={{ marginBottom: 16 }}>
+        <TouchableOpacity
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+          onPress={() => navigation.push('Wishlist')}
         >
           <Text style={styles.settingTitle}>Wishlist</Text>
           <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
+        <TouchableOpacity
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
           onPress={() => {
             if (userToken) {
               navigation.push('Orders')
             } else {
-              rootNavigation.push('LoginStackNavigator', { screen: 'Login'})
+              rootNavigation.push('LoginStackNavigator', { screen: 'Login' })
             }
           }}
         >
@@ -84,10 +84,10 @@ const Profile = ({ navigation }: Props) => {
       </View>
 
       <Text style={styles.subTitle}>Social Media</Text>
-      <View style={{marginBottom: 16}}>
-        <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-          onPress={() => Linking.openURL(`instagram://user?username=${config.instagramUsername}`) } 
+      <View style={{ marginBottom: 16 }}>
+        <TouchableOpacity
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+          onPress={() => Linking.openURL(`instagram://user?username=${config.instagramUsername}`)}
         >
           <Text style={styles.settingTitle}>Instagram</Text>
           <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
@@ -100,66 +100,75 @@ const Profile = ({ navigation }: Props) => {
           <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
         </TouchableOpacity> */}
       </View>
-      
-      { userToken &&
+
+      {userToken &&
         <>
           <Text style={styles.subTitle}>Account Settings</Text>
-          <View style={{marginBottom: 16}}>
-            <TouchableOpacity 
-              style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
+          <View style={{ marginBottom: 16 }}>
+            <TouchableOpacity
+              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
               onPress={() => navigation.push('PersonalInformations')}
             >
               <Text style={styles.settingTitle}>Personal Information</Text>
               <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-              onPress={() => navigation.push('ResetPassword') }
+            <TouchableOpacity
+              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+              onPress={() => navigation.push('ResetPassword')}
             >
               <Text style={styles.settingTitle}>Change Password</Text>
               <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
             </TouchableOpacity>
           </View>
-        </>        
+        </>
       }
 
       <Text style={styles.subTitle}>Customer Support</Text>
-      <View style={{marginBottom: 16}}>
-        <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-          onPress={() => WebBrowser.openBrowserAsync('https://juet.ro/pages/contact') }
+      <View style={{ marginBottom: 16 }}>
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+
         >
-          <Text style={styles.settingTitle}>Contact</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-          onPress={() => WebBrowser.openBrowserAsync('https://juet.ro/policies/terms-of-service') }
+          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
+            <Text style={styles.settingTitle}>Contact</Text>
+            <TouchableOpacity onPress={() => Linking.openURL('mailto:griffin@rev.delivery')}>
+              <Text style={{ color: '#4B2D83', fontWeight: 'bold', paddingBottom: 5 }}>griffin@rev.delivery</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => Linking.openURL('tel:(206) 552-0730')}>
+              <Text style={{ color: '#4B2D83', fontWeight: 'bold', paddingBottom: 10 }}>(206) 552-0730</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} /> */}
+        </View>
+        <TouchableOpacity
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+          onPress={() => WebBrowser.openBrowserAsync('https://rev.delivery/policies/terms-of-service')}
         >
           <Text style={styles.settingTitle}>Terms of Service</Text>
           <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
         </TouchableOpacity>
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
           style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
           onPress={() => WebBrowser.openBrowserAsync('https://juet.ro/policies/refund-policy') }
         >
           <Text style={styles.settingTitle}>Refund Policy</Text>
           <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-          onPress={() => WebBrowser.openBrowserAsync('https://juet.ro/policies/privacy-policy') }
+        </TouchableOpacity> */}
+        <TouchableOpacity
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+          onPress={() => WebBrowser.openBrowserAsync('https://rev.delivery/policies/privacy-policy')}
         >
-          <Text style={styles.settingTitle}>Privacy Policy</Text> 
+          <Text style={styles.settingTitle}>Privacy Policy</Text>
           <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
         </TouchableOpacity>
       </View>
 
-      { userToken && 
+      {userToken &&
         <>
           <Text style={styles.subTitle}>Delete Account</Text>
-          <TouchableOpacity 
-            style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
+          <TouchableOpacity
+            style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
             onPress={deleteAccount}
           >
             <Text style={styles.settingTitle}>Delete Account</Text>
@@ -174,7 +183,7 @@ const Profile = ({ navigation }: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     paddingHorizontal: 14,
     paddingTop: 16
   },
