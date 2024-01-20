@@ -165,6 +165,15 @@ export const AuthContext = ({children}: Props) => {
                 acceptsMarketing
                 email
                 phone
+                addresses(first: 1) {
+                  nodes {
+                    address1
+                    address2
+                    city
+                    province
+                    country
+                  }
+                }
               }
             }`
 

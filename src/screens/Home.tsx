@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, Touchable } from 'react-native'
 import { useEffect, useState } from 'react'
 import { hasHomeIndicator, theme } from '../constants/theme'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
@@ -297,71 +297,8 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
-  const fetchAllProducts = async () => {
-    setIsLoading(true)
-    setErrorMessage('')
-
-    try {
-      const query = `query {
-        products(first: 100) {
-          nodes {
-            id
-            title
-            description
-            vendor
-            availableForSale
-            compareAtPriceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            priceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            images(first: 10) {
-              nodes {
-                url
-                width
-                height
-              }
-            }
-            options {
-              id
-              name
-              values
-            }
-            variants(first: 200) {
-              nodes {
-                availableForSale
-                selectedOptions {
-                  value
-                }
-              }
-            }
-          }
-        }
-      }`
-
-      const response: any = await storefrontApiClient(query)
-
-      if (response.errors && response.errors.length != 0) {
-        setIsLoading(false)
-        throw response.errors[0].message
-      }
-      const products = response.data.products.nodes
-      setAllProducts(products)
-      setIsLoading(false)
-
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
   useEffect(() => {
+    console.log(userToken.customer.addresses.nodes)
     fetchUserOrders()
     if (userOrders < 5) {
       fetchPopularProducts()
@@ -369,9 +306,9 @@ const Home = ({ navigation }: Props) => {
       fetchForYou()
     }
     fetchExploreProducts()
-    
+
     // fetchAllProducts()
-    
+
   }, [userToken, userOrders])
 
   const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
@@ -400,13 +337,19 @@ const Home = ({ navigation }: Props) => {
       ) : (
         <View>
           <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-            <TextInput
+            {/* <TextInput
               style={{ ...styles.searchBox }}
               placeholder="  Where Are We Delivering?"
               placeholderTextColor='grey'
-            />
+            /> */}
+            <TouchableOpacity style={styles.addressBox}>
+              <Text style={{paddingLeft: 6, fontSize: 17}}>
+                Where are we delivering today?
+              </Text>
+            </TouchableOpacity>
+            
             <View style={{ flexDirection: 'row', marginTop: '5%', justifyContent: 'center' }}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => setSelectedMode('forYou')}
                 style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
                 <Text style={{
@@ -420,7 +363,7 @@ const Home = ({ navigation }: Props) => {
                   {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => setSelectedMode('explore')}
                 style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
                 <Text style={{
@@ -474,7 +417,7 @@ const styles = StyleSheet.create({
     height: config.logoWidth * config.logoSizeRatio,
     alignSelf: 'center'
   },
-  searchBox: {
+  addressBox: {
     height: 40,
     borderColor: 'black',
     borderWidth: 1,
@@ -482,6 +425,7 @@ const styles = StyleSheet.create({
     marginTop: '2%',
     alignSelf: 'center',
     width: '90%',
+    justifyContent: 'center', // Add this line to center content vertically
   },
   selectedMode: {
     backgroundColor: 'purple',
