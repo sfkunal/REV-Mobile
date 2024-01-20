@@ -29,7 +29,8 @@ const { rootNavigation } = useNavigationContext();
             headerShown: true, 
             headerStyle:{backgroundColor: theme.colors.background}, 
             headerShadowVisible: false,
-            headerTitle: () => (
+            headerTitle: () => '',
+            headerLeft: () => (
               <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
             ),
             headerRight: () => (
