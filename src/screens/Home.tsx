@@ -306,7 +306,7 @@ const Home = ({ navigation }: Props) => {
         keyExtractor={item => item.id} // Make sure to have a keyExtractor for unique keys
         ItemSeparatorComponent={ItemSeparator} // Add this line
         keyboardDismissMode='on-drag'
-        showsVerticalScrollIndicator={false}
+        showsVerticalScrollIndicator={true}
         numColumns={2}
         contentContainerStyle={{ paddingHorizontal: 14 }}
       />
