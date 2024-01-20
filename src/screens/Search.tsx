@@ -222,6 +222,17 @@ const Search = ({navigation}: Props) => {
      setProducts([]);
    }
   }, [searchInput]);
+
+  const renderCollectionItem = ({ item }) => (
+    <TouchableOpacity
+      key={item.id}
+      style={styles.collectionContainer}
+      onPress={() => navigation.navigate('Collection', { collectionId: item.id })}
+    >
+      <Text style={styles.text}>{item.title}</Text>
+      {/* Optional: Add more details or images here */}
+    </TouchableOpacity>
+  );
   
   return (
     <View style={{ marginTop: 8, flex: 1 }}>
@@ -256,18 +267,15 @@ const Search = ({navigation}: Props) => {
                   </ScrollView>
                 )
               ) : (
-                collections.map((collection: any) => (
-                  <TouchableOpacity key={collection.id} style={styles.collectionContainer} onPress={() => navigation.navigate('Collection', { collectionId: collection.id })}>
-                  <Text style={styles.text}>{collection.title}</Text>
-                  {/* {collection.description && <Text style={styles.text}>{collection.description}</Text>}
-                  {collection.image &&
-                  <Image 
-                    source={{uri: collection.image.url}} 
-                    style={{width: screenWidth, height: screenWidth*collection.image.height/collection.image.width, marginBottom: 16}}
+                <View style={{paddingTop: 10}}>
+                  <FlatList
+                    data={collections}
+                    renderItem={renderCollectionItem}
+                    keyExtractor={(item) => item.id}
+                    numColumns={2}
+                    contentContainerStyle={{ paddingHorizontal: 14, justifyContent: 'center', flexGrow: 1 }}
                   />
-                  } */}
-                  </TouchableOpacity>
-                 ))
+                </View>
               )}
             </>
           )}
@@ -278,6 +286,8 @@ const Search = ({navigation}: Props) => {
 }
 
 const windowWidth = Dimensions.get('window').width
+const screenWidth = Dimensions.get('screen').width
+
 
 const styles = StyleSheet.create({
   container: {
@@ -313,12 +323,16 @@ const styles = StyleSheet.create({
     marginTop:12
   },
   collectionContainer: {
-    marginHorizontal: -14,
-    // marginTop: 44+sbHeight,
-    backgroundColor: theme.colors.background,
-    // paddingVertical: 8,
-    alignItems:'center',
-    // marginBottom: 16,
+    flex:1,
+    paddingBottom: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // maxHeight: (((screenWidth-28-14)/2)*1.5+130) * 0.2,
+    borderColor: '#D9D9D9',
+    borderWidth: 1,
+    padding: 5,
+    borderRadius: 15,
+    margin: 5
    },
    title: {
     color: '#FFFFFF',
