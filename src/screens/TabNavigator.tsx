@@ -63,7 +63,7 @@ const TabNavigator = ({ navigation }: Props) => {
         <Tab.Screen name="Home" component={HomeStackNavigator} />
         {/* <Tab.Screen name="Menu" component={MenuStackNavigator} /> */}
         <Tab.Screen name="Search" component={SearchStackNavigator} />
-        <Tab.Screen name="Cart" component={CartStackNavigator} />
+        {/* <Tab.Screen name="Cart" component={CartStackNavigator} /> */}
         <Tab.Screen name="Profile" component={ProfileStackNavigator} />
       </Tab.Navigator>
     </NavigationContainer>

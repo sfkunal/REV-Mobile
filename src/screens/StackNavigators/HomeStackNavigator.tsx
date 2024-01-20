@@ -8,11 +8,15 @@ import Home from '../Home'
 import Collection from '../Collection'
 import { TouchableOpacity, Image } from 'react-native'
 import { CartIcon } from '../../components/shared/Icons'
+import Cart from '../Cart'
+import { useNavigationContext } from '../../context/NavigationContext';
+
 
 const HomeStack = createNativeStackNavigator<HomeStackParamList>()
 
 const HomeStackNavigator = () => {
-const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
+const { rootNavigation } = useNavigationContext();
+
 
   return (
     <NavigationContainer theme={theme} independent={true}>
@@ -29,7 +33,7 @@ const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>(
               <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
             ),
             headerRight: () => (
-              <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={{paddingRight: 20, paddingTop: 10}}>
+              <TouchableOpacity onPress={() => rootNavigation.navigate('Cart')} style={{paddingRight: 20, paddingTop: 5}}>
                 <CartIcon color="#4a307e" size={28} />
               </TouchableOpacity>
             ),

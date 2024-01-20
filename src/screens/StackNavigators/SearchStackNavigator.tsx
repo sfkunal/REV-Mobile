@@ -8,12 +8,13 @@ import Collection from '../Collection';
 import Search from '../Search'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { CartIcon } from '../../components/shared/Icons';
+import { useNavigationContext } from '../../context/NavigationContext';
 
 const SearchStack = createNativeStackNavigator<SearchStackParamList>()
 
 const SearchStackNavigator = () => {
-  const navigation = useNavigation<NativeStackNavigationProp<HomeStackParamList>>();
-  
+  const { rootNavigation } = useNavigationContext();
+
   return (
     <NavigationContainer theme={theme} independent={true}>
       <SearchStack.Navigator>
@@ -24,7 +25,7 @@ const SearchStackNavigator = () => {
             headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
             headerRight: () => (
-              <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={{paddingRight: 20, paddingTop: 10}}>
+              <TouchableOpacity onPress={() => rootNavigation.navigate('Cart')} style={{paddingRight: 20, paddingTop: 5}}>
                 <CartIcon color="#4a307e" size={28} />
               </TouchableOpacity>
             ),
@@ -36,7 +37,12 @@ const SearchStackNavigator = () => {
           options={{
             headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
-            headerTitle: ''
+            headerTitle: '',
+            headerRight: () => (
+              <TouchableOpacity onPress={() => rootNavigation.navigate('Cart')} style={{paddingRight: 20, paddingTop: 5}}>
+                <CartIcon color="#4a307e" size={28} />
+              </TouchableOpacity>
+            ),
           }}
         />
       </SearchStack.Navigator>
