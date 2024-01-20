@@ -130,9 +130,8 @@ const Profile = ({ navigation }: Props) => {
 
         >
           <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
-            <Text style={styles.settingTitle}>Contact</Text>
             <TouchableOpacity onPress={() => Linking.openURL('mailto:griffin@rev.delivery')}>
-              <Text style={{ color: '#4B2D83', fontWeight: 'bold', paddingBottom: 5 }}>griffin@rev.delivery</Text>
+              <Text style={{ color: '#4B2D83', fontWeight: 'bold', paddingBottom: 5, paddingTop: 5 }}>griffin@rev.delivery</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => Linking.openURL('tel:(206) 552-0730')}>
               <Text style={{ color: '#4B2D83', fontWeight: 'bold', paddingBottom: 10 }}>(206) 552-0730</Text>
