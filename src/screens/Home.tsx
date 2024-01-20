@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext'
 import ProductCard from '../components/shared/ProductCard'
 import { getProductInfoQuery } from '../queries/PopularProductsStaticQuery'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 // import { useNavigationContext } from '../context/NavigationContext'
 
 
@@ -23,14 +24,16 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Collection'>
 
 const Home = ({ navigation }: Props) => {
   const { userToken } = useAuthContext()
-  const [collections, setCollections] = useState<any[]>([])
   const [forYou, setForYou] = useState<any[]>([])
   const [popularProducts, setPopularProducts] = useState<any[]>([])
+  const [exploreProducts, setExploreProducts] = useState<any[]>([])
   const [allProducts, setAllProducts] = useState<any[]>([])
   const { rootNavigation } = useNavigationContext()
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [userOrders, setUserOrders] = useState(0);
+  const [selectedMode, setSelectedMode] = useState('forYou'); // 'forYou' or 'explore'
+
 
 
   const { StatusBarManager } = NativeModules
@@ -225,6 +228,75 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
+  const fetchExploreProducts = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    try {
+      const query = `query {
+        collection(id: "gid://shopify/Collection/469310570784") {
+    id
+    title
+    products(first: 100) {
+      nodes {
+        id
+        title
+        description
+        vendor
+        availableForSale
+        compareAtPriceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        images(first: 10) {
+          nodes {
+            url
+            width
+            height
+          }
+        }
+        options {
+          id
+          name
+          values
+        }
+        variants(first: 200) {
+          nodes {
+            availableForSale
+            selectedOptions {
+              value
+            }
+          }
+        }
+      }
+    }
+  }
+      }`
+
+      const response: any = await storefrontApiClient(query)
+
+      if (response.errors && response.errors.length != 0) {
+        setIsLoading(false)
+        throw response.errors[0].message
+      }
+      // console.log(response.data.collection.products.nodes)
+      const products = response.data.collection.products.nodes
+      setExploreProducts(products)
+      setIsLoading(false)
+
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   const fetchAllProducts = async () => {
     setIsLoading(true)
     setErrorMessage('')
@@ -290,16 +362,22 @@ const Home = ({ navigation }: Props) => {
   }
 
   useEffect(() => {
-    fetchForYou()
-    // fetchAllProducts()
     fetchUserOrders()
-    fetchPopularProducts()
-  }, [userToken])
+    if (userOrders < 5) {
+      fetchPopularProducts()
+    } else {
+      fetchForYou()
+    }
+    fetchExploreProducts()
+    
+    // fetchAllProducts()
+    
+  }, [userToken, userOrders])
 
   const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
 
   const HomeList = ({ data }) => (
-    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 200}}>
+    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 220 }}>
       <FlatList
         data={data}
         renderItem={({ item }) => <ProductCard data={item} />}
@@ -327,16 +405,39 @@ const Home = ({ navigation }: Props) => {
               placeholder="  Where Are We Delivering?"
               placeholderTextColor='grey'
             />
-            <Text style={{
-              color: theme.colors.text,
-              fontSize: 18,
-              letterSpacing: 1.8,
-              fontWeight: '500',
-              alignSelf: 'center',
-              marginTop: '5%'
-            }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
+            <View style={{ flexDirection: 'row', marginTop: '5%', justifyContent: 'center' }}>
+              <TouchableOpacity 
+                onPress={() => setSelectedMode('forYou')}
+                style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
+                <Text style={{
+                  color: selectedMode === 'forYou' ? 'white' : theme.colors.text,
+                  fontSize: 18,
+                  letterSpacing: 1.8,
+                  fontWeight: '500',
+                  paddingLeft: 10,
+                  paddingRight: 10 // Add some space between the two buttons
+                }}>
+                  {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                onPress={() => setSelectedMode('explore')}
+                style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
+                <Text style={{
+                  color: selectedMode === 'explore' ? 'white' : theme.colors.text,
+                  fontSize: 18,
+                  letterSpacing: 1.8,
+                  fontWeight: '500',
+                  paddingLeft: 10,
+                  paddingRight: 10
+                }}>
+                  Explore
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <HomeList data={userOrders < 5 ? popularProducts : forYou} />
+          {/* <HomeList data={userOrders < 5 ? popularProducts : forYou} /> */}
+          <HomeList data={selectedMode === 'explore' ? exploreProducts : forYou} />
         </View>
       )}
     </View>
@@ -381,7 +482,17 @@ const styles = StyleSheet.create({
     marginTop: '2%',
     alignSelf: 'center',
     width: '90%',
-  }
+  },
+  selectedMode: {
+    backgroundColor: 'purple',
+    borderRadius: 20, // Optional: if you want rounded corners
+    padding: 5, // Adjust padding as needed
+  },
+  notSelectedMode: {
+    // backgroundColor: 'purple',
+    borderRadius: 20, // Optional: if you want rounded corners
+    padding: 5, // Adjust padding as needed
+  },
 })
 
 export default Home
