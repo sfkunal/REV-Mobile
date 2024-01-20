@@ -1,26 +1,102 @@
-import { View, StyleSheet, Image, Dimensions, Text, TouchableWithoutFeedback } from 'react-native'
+import { View, StyleSheet, Image, Dimensions, Text, TouchableWithoutFeedback, TouchableOpacity, ActivityIndicator } from 'react-native'
 import { theme } from '../../constants/theme'
 import { useNavigationContext } from '../../context/NavigationContext'
-import { Product } from '../../types/dataTypes'
-import { memo } from 'react';
+import { CartItem, Product } from '../../types/dataTypes'
+import { memo, useMemo, useState } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import the Icon component
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useCartContext } from '../../context/CartContext';
+import { storefrontApiClient } from '../../utils/storefrontApiClient';
 
 
 const ProductCard = memo(({ data }: { data: Product }) => {
   const { rootNavigation } = useNavigationContext();
+  const { addItemToCart } = useCartContext();
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+
+
+  const [selectedOptions, setSelectedOptions] = useState<{ name: string; value: string | null }[]>(
+    data.options.map((option) => (
+      {
+        name: option.name,
+        value: option.values.length == 1 ? option.values[0] : null
+      }
+    )
+    ))
+
+  const selectedItem = useMemo(() => data.variants.nodes.find((item) => {
+    return item.selectedOptions.every((option, index) => {
+      if (option.value != selectedOptions[index].value) {
+        return false
+      }
+      return true
+    })
+  }) || null, [selectedOptions])
+  const noVariants = useMemo(() => data.variants.nodes.length <= 1 && data.variants.nodes[0].selectedOptions.length <= 1 && data.variants.nodes[0].selectedOptions[0].value == 'Default Title', [data])
 
   const handlePressProduct = () => {
     rootNavigation.push('ProductScreen', { data });
   };
 
-  const handlePressPlusIcon = () => {
-    console.log('hi');
-  };
+  const addToCart = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    try {
+      const query = `query getProductById($id: ID!) {
+        product(id: $id) {
+          variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
+            id
+            title
+            image {
+              url
+              width
+              height
+            }
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            product {
+              title
+            }
+            availableForSale
+            quantityAvailable
+            selectedOptions {
+              value
+            }
+          }
+        }
+      }`
+
+      const variables = { id: data.id }
+
+      const response: any = await storefrontApiClient(query, variables)
+
+      if (response.errors && response.errors.length != 0) {
+        throw response.errors[0].message
+      }
+
+      addItemToCart(response.data.product.variantBySelectedOptions as CartItem)
+
+    } catch (e) {
+      if (typeof e == 'string') {
+        setErrorMessage(e)
+      } else {
+        setErrorMessage('Something went wrong. Try again.')
+      }
+    }
+
+    setIsLoading(false)
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableWithoutFeedback onPress={handlePressProduct}>
+      <TouchableOpacity onPress={handlePressProduct}>
         <View>
           <Image
             source={{ uri: data.images.nodes[0].url }}
@@ -41,12 +117,16 @@ const ProductCard = memo(({ data }: { data: Product }) => {
             </View>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
       <TouchableOpacity
         style={styles.cartContainer}
-        onPress={handlePressPlusIcon}
+        onPress={addToCart}
       >
-        <Icon name="plus" size={20} color="white" style={styles.plusIcon} />
+        {isLoading ? (
+          <ActivityIndicator style={{ alignSelf: 'center' }} color='#4B2D83' />
+        ) : selectedItem?.availableForSale ? ( // Check if the selected item is available for sale
+          <Icon name="plus" size={20} color="#4B2D83" style={styles.plusIcon} />
+        ) : null}
       </TouchableOpacity>
     </View>
   );
@@ -101,11 +181,11 @@ const styles = StyleSheet.create({
   },
   cartContainer: {
     position: 'absolute', // Position the icon absolutely within the container
-    bottom: 0, // Distance from the bottom
-    right: 0,
-    borderWidth: 1,
-    borderRadius: 100,
-    backgroundColor: '#4B2D83'
+    bottom: 10, // Distance from the bottom
+    right: 10,
+    // borderWidth: 1,
+    // borderRadius: 100,
+    // backgroundColor: '#4B2D83'
   },
 })
 
