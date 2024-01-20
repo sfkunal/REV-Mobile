@@ -254,7 +254,7 @@ const ProductScreen = ({route, navigation}: Props) => {
                           title='ADD TO CART' 
                         />
                         <View style={{marginLeft:16}}></View>
-                        <FillButton 
+                        {/* <FillButton 
                           onPress={() => { 
                             bottomSheetMode = 'buy'
                             setBottomSheetModeState('buy')
@@ -265,7 +265,7 @@ const ProductScreen = ({route, navigation}: Props) => {
                             }
                           }} 
                           title='BUY IT NOW' 
-                        />
+                        /> */}
                       </View>
                     }
                   </>
