@@ -79,7 +79,7 @@ const ProductScreen = ({route, navigation}: Props) => {
 
   var bottomSheetMode: 'add' | 'buy' = 'add'
   const [bottomSheetModeState, setBottomSheetModeState] = useState<'add' | 'buy'>('add')
-  const snapPoints = useMemo(() => [124, "90%"], [])
+  const snapPoints = useMemo(() => [350, "80%"], [])
   const snapPoints2 = useMemo(() => [220], [])
   const snapPoints3 = useMemo(() => [240], [])
   const sheetRef2 = useRef<BottomSheet>(null)
@@ -211,7 +211,7 @@ const ProductScreen = ({route, navigation}: Props) => {
   }
   
   return (
-    <View style={{marginBottom: hasHomeIndicator ? 14 : 0}}>
+    <View style={{flex: 1, marginBottom: hasHomeIndicator ? 14 : 0}}>
       <FlatList 
         data={data.images.nodes || []}
         renderItem={({item}) => <Image source={{uri: item.url}} style={styles.image} />}
@@ -432,8 +432,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   image: {
-    width: screenWidth,
-    height: windowHeight-100,
+    width: screenWidth - 50, // reduce the width by 100 units
+    height: (windowHeight - 100) / 1.3, // reduce the height by half after subtracting 100 units
+    resizeMode: 'contain', // maintain the aspect ratio of the image
+    alignSelf: 'center', // center the image horizontally
   },
   container: {
     flex:1,
