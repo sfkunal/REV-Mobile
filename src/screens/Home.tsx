@@ -400,7 +400,7 @@ const Home = ({ navigation }: Props) => {
   }
 
   useEffect(() => {
-    if (Object.keys(selectedAddress).length > 0) {
+    if (selectedAddress && Object.keys(selectedAddress).length > 0) {
       updateCustomerAddress();
     }
   }, [selectedAddress]);
@@ -504,7 +504,7 @@ const Home = ({ navigation }: Props) => {
           <View>
             <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
               <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
-                {selectedAddress.address1 ? (
+                {selectedAddress ? (
                   <View>
                     <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                       Delivering to:
@@ -556,8 +556,7 @@ const Home = ({ navigation }: Props) => {
                 </TouchableOpacity>
               </View>
             </View>
-            {/* <HomeList data={userOrders < 5 ? popularProducts : forYou} /> */}
-            <HomeList data={selectedMode === 'explore' ? exploreProducts : forYou} />
+            <HomeList data={selectedMode === 'explore' ? exploreProducts : (userOrders > 4 ? forYou : popularProducts)} />
           </View>
           <BottomSheet
             ref={bottomSheetRef}

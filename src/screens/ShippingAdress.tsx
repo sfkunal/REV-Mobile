@@ -396,7 +396,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                   <Text style={styles.error}>{errorMessage}</Text>
                 }
                 <FillButton
-                  title='CONTINUE TO SHIPPING OPTIONS'
+                  title='CONTINUE'
                   onPress={updateShippingAdress}
                 />
               </View>

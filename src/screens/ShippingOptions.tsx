@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ActivityIndicator, Dimensions, TouchableOpacity } from 'react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { CartStackParamList } from '../types/navigation'
 import { theme } from '../constants/theme'
@@ -65,6 +65,8 @@ const ShippingOptions = ({route, navigation}: Props) => {
     
     setIsLoading(false)
   }
+
+  console.log(availableShippingRates)
 
   return (
     <View style={{flex: 1}}>
