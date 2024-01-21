@@ -345,6 +345,14 @@ const Home = ({ navigation }: Props) => {
 
     if (userToken && selectedAddress) {
       try {
+        // const queryy = `query {
+        //   customer(customerAccessToken: "${userToken.accessToken}") {
+        //     defaultAddress {
+        //       id
+        //     }
+        //   }
+        // }`
+
         const query = `query {
           customer(customerAccessToken: "${userToken.accessToken}") {
             defaultAddress {
@@ -360,42 +368,74 @@ const Home = ({ navigation }: Props) => {
           throw response.errors[0].message
         }
 
-        const defaultAddressId = response.data.customer.defaultAddress.id
+        if (response.customer) {
+          const defaultAddressId = response.data.customer.defaultAddress.id
 
-        const mutation = `mutation {
-          customerAddressUpdate(
-            customerAccessToken: "${userToken.accessToken}"
-            id: "${defaultAddressId}"
-            address: {
-              address1: "${selectedAddress.address1}"
-              address2: "${selectedAddress.address2}"
-              city: "${selectedAddress.city}"
-              province: "${selectedAddress.state}"
-              country: "${selectedAddress.country}"
-              zip: "${selectedAddress.zip}"
+          const mutation = `mutation {
+            customerAddressUpdate(
+              customerAccessToken: "${userToken.accessToken}"
+              id: "${defaultAddressId}"
+              address: {
+                address1: "${selectedAddress.address1}"
+                address2: "${selectedAddress.address2}"
+                city: "${selectedAddress.city}"
+                province: "${selectedAddress.state}"
+                country: "${selectedAddress.country}"
+                zip: "${selectedAddress.zip}"
+              }
+            ) {
+              customerAddress {
+                address1
+                city
+                province
+                country
+                zip
+              }
             }
-          ) {
-            customerAddress {
-              address1
-              city
-              province
-              country
-              zip
-            }
+          }`
+          const mutationResponse: any = await storefrontApiClient(mutation)
+
+          if (response.errors && response.errors.length != 0) {
+            setIsLoading(false)
+            throw response.errors[0].message
           }
-        }`
 
-        const mutationResponse: any = await storefrontApiClient(mutation)
-
-        if (response.errors && response.errors.length != 0) {
           setIsLoading(false)
-          throw response.errors[0].message
-        }
+        } else {
+          const mutation = `mutation {
+            customerAddressCreate(
+              customerAccessToken: "${userToken.accessToken}"
+              address: {
+                address1: "${selectedAddress.address1}"
+                address2: "${selectedAddress.address2}"
+                city: "${selectedAddress.city}"
+                province: "${selectedAddress.state}"
+                country: "${selectedAddress.country}"
+                zip: "${selectedAddress.zip}"
+              }
+            ) {
+              customerAddress {
+                address1
+                city
+                province
+                country
+                zip
+              }
+            }
+          }`
+          const mutationResponse: any = await storefrontApiClient(mutation)
 
-        setIsLoading(false)
+          if (response.errors && response.errors.length != 0) {
+            setIsLoading(false)
+            throw response.errors[0].message
+          }
+          setIsLoading(false)
+        }
       } catch (e) {
         console.log(e)
       }
+      setIsLoading(false)
+
     }
   }
 
@@ -503,7 +543,7 @@ const Home = ({ navigation }: Props) => {
         <>
           <View>
             <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-              <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
+              <TouchableOpacity style={{}} onPress={() => bottomSheetRef.current?.expand()}>
                 {selectedAddress ? (
                   <View>
                     <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
@@ -522,7 +562,6 @@ const Home = ({ navigation }: Props) => {
                     <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} />
                   </View>
                 )}
-
               </TouchableOpacity>
 
               <View style={{ flexDirection: 'row', marginTop: '5%', justifyContent: 'center' }}>
