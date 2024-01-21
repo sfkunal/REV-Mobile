@@ -472,7 +472,7 @@ const Home = ({ navigation }: Props) => {
                     <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                       Delivering to:
                     </Text>
-                    <Text style={{ paddingLeft: 6, fontSize: 14 }}>
+                    <Text style={{ paddingLeft: 6, fontSize: 14, width: '80%' }}>
                       {formatAddress(selectedAddress)}
                     </Text>
                     <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} />
@@ -580,6 +580,7 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     // borderWidth: 1,
     // borderRadius: 7,
+    flexDirection: 'row',
     marginTop: '2%',
     alignSelf: 'center',
     width: '93%',
