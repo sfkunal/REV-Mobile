@@ -396,7 +396,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     }
   }, [defaultAddress]);
 
-  const sendToCheckOut = (shippingRate: { handle: any; title?: string; price?: { amount: number; currencyCode: string } }) => {
+  const sendToCheckOut =  (shippingRate: { handle: any; title?: string; price?: { amount: number; currencyCode: string } }) => {
     setSelectedRateHandle(shippingRate.handle)
     updateShippingOption()
   }
@@ -429,6 +429,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                 <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} />
               </View>
             )}
+
           </TouchableOpacity>
           <TextInput
             placeholder='Phone'
@@ -440,26 +441,26 @@ const ShippingAddress = ({ route, navigation }: Props) => {
             value={phone}
           />
           <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'position' : 'height'}
-            keyboardVerticalOffset={44 + sbHeight}
-          >
-            <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50 }]}>
-              {isLoading ?
-                <View style={{ width: 100, alignItems: 'center' }}>
-                  <ActivityIndicator size='small' />
-                </View> :
-                <View>
-                  {errorMessage.length != 0 &&
-                    <Text style={styles.error}>{errorMessage}</Text>
-                  }
-                  <FillButton
-                    title='Looks Good!'
-                    onPress={updateShippingAdress}
-                  />
-                </View>
-              }
-            </View>
-          </KeyboardAvoidingView>
+          behavior={Platform.OS === 'ios' ? 'position' : 'height'}
+          keyboardVerticalOffset={44 + sbHeight}
+        >
+          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50 }]}>
+            {isLoading ?
+              <View style={{ width: 100, alignItems: 'center' }}>
+                <ActivityIndicator size='small' />
+              </View> :
+              <View>
+                {errorMessage.length != 0 &&
+                  <Text style={styles.error}>{errorMessage}</Text>
+                }
+                <FillButton
+                  title='Looks Good!'
+                  onPress={updateShippingAdress}
+                />
+              </View>
+            }
+          </View>
+        </KeyboardAvoidingView>
           <View style={{ marginTop: 20 }}>
             {availableShippingRates && <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Select a shipping option:</Text>}
             {availableShippingRates && availableShippingRates.shippingRates.map((shippingRate) => (
@@ -479,7 +480,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           </View>
         </ScrollView>
 
-
+        
       </View>
       <BottomSheet
         ref={bottomSheetRef}
