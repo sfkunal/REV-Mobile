@@ -455,6 +455,20 @@ const Home = ({ navigation }: Props) => {
 
   const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
 
+  interface Address {
+    address1?: string;
+    address2?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zip?: string;
+  }
+
+  const formatAddress = (address: Address) => {
+    const { address1, address2, city, state, country, zip } = address;
+    return `${address1 ? `${address1}` : ''}${address2 ? `, ${address2}` : ''}${city ? `, ${city}` : ''}${state ? `, ${state}` : ''}${zip ? `, ${zip}` : ''}`;
+  };
+
   const HomeList = ({ data }) => (
     <View style={{ paddingTop: 10, paddingBottom: sbHeight + 220 }}>
       <FlatList
@@ -469,20 +483,6 @@ const Home = ({ navigation }: Props) => {
       />
     </View>
   );
-
-  interface Address {
-    address1?: string;
-    address2?: string;
-    city?: string;
-    state?: string;
-    country?: string;
-    zip?: string;
-  }
-
-  const formatAddress = (address: Address) => {
-    const { address1, address2, city, state, country, zip } = address;
-    return `${address1 ? `${address1}` : ''}${address2 ? `, ${address2}` : ''}${city ? `, ${city}` : ''}${state ? `, ${state}` : ''}${zip ? `, ${zip}` : ''}`;
-  };
 
   const GooglePlacesInput = () => {
     return (
