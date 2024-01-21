@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, Touchable } from 'react-native'
-import { useEffect, useState } from 'react'
+import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, Modal, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, Touchable } from 'react-native'
+import { useEffect, useState, useRef } from 'react'
 import { hasHomeIndicator, theme } from '../constants/theme'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
 import logoDark from '../../assets/logo-dark.png'
@@ -14,6 +14,11 @@ import { useNavigationContext } from '../context/NavigationContext'
 import ProductCard from '../components/shared/ProductCard'
 import { getProductInfoQuery } from '../queries/PopularProductsStaticQuery'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import BottomSheet from '@gorhom/bottom-sheet';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import the Icon component
+// import GooglePlacesInput from './AddressAutocomplete'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+
 // import { useNavigationContext } from '../context/NavigationContext'
 
 
@@ -33,7 +38,8 @@ const Home = ({ navigation }: Props) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [userOrders, setUserOrders] = useState(0);
   const [selectedMode, setSelectedMode] = useState('forYou'); // 'forYou' or 'explore'
-
+  const bottomSheetRef = useRef<BottomSheet>(null);
+  const [selectedAddress, setSelectedAddress] = useState<Address>({});
 
 
   const { StatusBarManager } = NativeModules
@@ -298,7 +304,7 @@ const Home = ({ navigation }: Props) => {
   }
 
   useEffect(() => {
-    console.log(userToken.customer.addresses.nodes)
+    // console.log(userToken.customer.addresses.nodes)
     fetchUserOrders()
     if (userOrders < 5) {
       fetchPopularProducts()
@@ -328,60 +334,150 @@ const Home = ({ navigation }: Props) => {
     </View>
   );
 
+  interface Address {
+    address1?: string;
+    city?: string;
+    state?: string;
+    country?: string;
+    zip?: string;
+  }
+
+  const formatAddress = (address: Address) => {
+    const { address1, city, state, country, zip } = address;
+    return `${address1}, ${city}, ${state}`;
+  };
+
+  const GooglePlacesInput = () => {
+    return (
+      <GooglePlacesAutocomplete
+        placeholder='Where To?'
+        fetchDetails={true}
+        minLength={3}
+        onPress={(data, details = null) => {
+          bottomSheetRef.current?.close();
+          if (details) {
+            const addressComponents = details.address_components;
+            const address1 = `${addressComponents.find(c => c.types.includes('street_number'))?.long_name} ${addressComponents.find(c => c.types.includes('route'))?.long_name}`;
+            const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
+            const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
+            const country = addressComponents.find(c => c.types.includes('country'))?.short_name;
+            const zip = addressComponents.find(c => c.types.includes('postal_code'))?.long_name;
+            const addressDict = {
+              address1: address1,
+              city: city,
+              state: state,
+              country: country,
+              zip: zip
+            };
+
+            setSelectedAddress(addressDict);
+          }
+        }}
+        query={{
+          key: 'AIzaSyCK1fS3nkmrrPJKjxunXnVNc3pRCHNWWJ4',
+          language: 'en',
+          location: '47.6062,-122.3321', // Latitude and longitude for Seattle
+          radius: '5000',
+          components: 'country:us',
+        }}
+        styles={{
+          textInput: {
+            height: 38,
+            color: '#FFFFFF',
+            fontSize: 16,
+            backgroundColor: '#4B2D83',
+          },
+          predefinedPlacesDescription: {
+            color: '#1faadb',
+          },
+        }}
+        
+      />
+    );
+  };
+
   return (
     <View style={{ flex: 0 }}>
-      {/* <Image source={theme.dark == true ? logoDark : logo} style={{ ...styles.logo, marginBottom: 10}} /> */}
-
       {isLoading ? (
         <ActivityIndicator style={{ alignSelf: 'center' }} />
       ) : (
-        <View>
-          <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-            {/* <TextInput
-              style={{ ...styles.searchBox }}
-              placeholder="  Where Are We Delivering?"
-              placeholderTextColor='grey'
-            /> */}
-            <TouchableOpacity style={styles.addressBox}>
-              <Text style={{paddingLeft: 6, fontSize: 17}}>
-                Where are we delivering today?
-              </Text>
-            </TouchableOpacity>
-            
-            <View style={{ flexDirection: 'row', marginTop: '5%', justifyContent: 'center' }}>
-              <TouchableOpacity
-                onPress={() => setSelectedMode('forYou')}
-                style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
-                <Text style={{
-                  color: selectedMode === 'forYou' ? 'white' : theme.colors.text,
-                  fontSize: 18,
-                  letterSpacing: 1.8,
-                  fontWeight: '500',
-                  paddingLeft: 10,
-                  paddingRight: 10 // Add some space between the two buttons
-                }}>
-                  {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
-                </Text>
+        <>
+          <View>
+            <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+              <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
+                {selectedAddress.address1 ? (
+                  <View>
+                    <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                      Delivering to:
+                    </Text>
+                    <Text style={{ paddingLeft: 6, fontSize: 14 }}>
+                      {formatAddress(selectedAddress)}
+                    </Text>
+                    <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} />
+                  </View>
+                ) : (
+                <View style={{ flexDirection: 'row'}}>
+                    <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                      Where are we delivering?
+                    </Text>
+                    <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} />
+                  </View>
+                )}
+                
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setSelectedMode('explore')}
-                style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
-                <Text style={{
-                  color: selectedMode === 'explore' ? 'white' : theme.colors.text,
-                  fontSize: 18,
-                  letterSpacing: 1.8,
-                  fontWeight: '500',
-                  paddingLeft: 10,
-                  paddingRight: 10
-                }}>
-                  Explore
-                </Text>
-              </TouchableOpacity>
+
+              <View style={{ flexDirection: 'row', marginTop: '5%', justifyContent: 'center' }}>
+                <TouchableOpacity
+                  onPress={() => setSelectedMode('forYou')}
+                  style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
+                  <Text style={{
+                    color: selectedMode === 'forYou' ? 'white' : theme.colors.text,
+                    fontSize: 18,
+                    letterSpacing: 1.8,
+                    fontWeight: '500',
+                    paddingLeft: 10,
+                    paddingRight: 10 // Add some space between the two buttons
+                  }}>
+                    {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setSelectedMode('explore')}
+                  style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
+                  <Text style={{
+                    color: selectedMode === 'explore' ? 'white' : theme.colors.text,
+                    fontSize: 18,
+                    letterSpacing: 1.8,
+                    fontWeight: '500',
+                    paddingLeft: 10,
+                    paddingRight: 10
+                  }}>
+                    Explore
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
+            {/* <HomeList data={userOrders < 5 ? popularProducts : forYou} /> */}
+            <HomeList data={selectedMode === 'explore' ? exploreProducts : forYou} />
           </View>
-          {/* <HomeList data={userOrders < 5 ? popularProducts : forYou} /> */}
-          <HomeList data={selectedMode === 'explore' ? exploreProducts : forYou} />
-        </View>
+          <BottomSheet
+            ref={bottomSheetRef}
+            index={-1} // Start closed
+            enablePanDownToClose
+            snapPoints={['90%']} // Set the heights of the bottom sheet
+          >
+            <View
+              style={{
+                margin: 12,
+                backgroundColor: "transparent",
+                zIndex: 10,
+                height: 400,
+              }}
+            >
+              <GooglePlacesInput />
+            </View>
+          </BottomSheet>
+        </>
       )}
     </View>
   )
@@ -420,15 +516,15 @@ const styles = StyleSheet.create({
   addressBox: {
     height: 40,
     borderColor: 'black',
-    borderWidth: 1,
-    borderRadius: 7,
+    // borderWidth: 1,
+    // borderRadius: 7,
     marginTop: '2%',
     alignSelf: 'center',
-    width: '90%',
+    width: '93%',
     justifyContent: 'center', // Add this line to center content vertically
   },
   selectedMode: {
-    backgroundColor: 'purple',
+    backgroundColor: '#4B2D83',
     borderRadius: 20, // Optional: if you want rounded corners
     padding: 5, // Adjust padding as needed
   },
