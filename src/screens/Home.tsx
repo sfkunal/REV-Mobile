@@ -293,7 +293,7 @@ const Home = ({ navigation }: Props) => {
         setIsLoading(false)
         throw response.errors[0].message
       }
-      // console.log(response.data.collection.products.nodes)
+
       const products = response.data.collection.products.nodes
       setExploreProducts(products)
       setIsLoading(false)
@@ -332,6 +332,7 @@ const Home = ({ navigation }: Props) => {
             id: "${defaultAddressId}"
             address: {
               address1: "${selectedAddress.address1}"
+              address2: "${selectedAddress.address2}"
               city: "${selectedAddress.city}"
               province: "${selectedAddress.state}"
               country: "${selectedAddress.country}"
@@ -355,7 +356,6 @@ const Home = ({ navigation }: Props) => {
           throw response.errors[0].message
         }
 
-        // console.log(mutationResponse.data.customerAddressUpdate.customerAddress)
         setIsLoading(false)
       } catch (e) {
         console.log(e)
@@ -395,6 +395,7 @@ const Home = ({ navigation }: Props) => {
 
   interface Address {
     address1?: string;
+    address2?: string;
     city?: string;
     state?: string;
     country?: string;
@@ -402,8 +403,8 @@ const Home = ({ navigation }: Props) => {
   }
 
   const formatAddress = (address: Address) => {
-    const { address1, city, state, country, zip } = address;
-    return `${address1}, ${city}, ${state}, ${zip}`;
+    const { address1, address2, city, state, country, zip } = address;
+    return `${address1}, ${address2}, ${city}, ${state}, ${zip}`;
   };
 
   const GooglePlacesInput = () => {
@@ -417,12 +418,14 @@ const Home = ({ navigation }: Props) => {
           if (details) {
             const addressComponents = details.address_components;
             const address1 = `${addressComponents.find(c => c.types.includes('street_number'))?.long_name} ${addressComponents.find(c => c.types.includes('route'))?.long_name}`;
+            const address2 = addressComponents.find(c => c.types.includes('subpremise'))?.long_name; // This line is new
             const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
             const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
             const country = addressComponents.find(c => c.types.includes('country'))?.short_name;
             const zip = addressComponents.find(c => c.types.includes('postal_code'))?.long_name;
             const addressDict = {
               address1: address1,
+              address2: address2,
               city: city,
               state: state,
               country: country,
@@ -430,7 +433,6 @@ const Home = ({ navigation }: Props) => {
             };
 
             setSelectedAddress(addressDict);
-            // console.log(selectedAddress)
           }
         }}
         query={{

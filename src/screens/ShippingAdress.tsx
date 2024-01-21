@@ -45,6 +45,9 @@ const ShippingAddress = ({ route, navigation }: Props) => {
   const [phone, setPhone] = useState(userToken && userToken.customer.phone ? userToken.customer.phone : '')
   const [province, setProvince] = useState<{code: string, province: string} | null>(null)
   const [zip, setZip] = useState('')
+
+  const [defaultAddress, setDefaultAddress] = useState(null);
+
   
 
   const updateShippingAdress = async () => {
@@ -126,7 +129,6 @@ const ShippingAddress = ({ route, navigation }: Props) => {
       }
 
       const response: any = await storefrontApiClient(query2, variables2)
-      console.log(response)
       if (response.errors && response.errors.length != 0 ) {
         throw response.errors[0].message
       }
@@ -150,6 +152,56 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
     setIsLoading(false)
   }
+
+  const getCustomerAddress = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    if (userToken) {
+      try {
+        const query = `query {
+          customer(customerAccessToken: "${userToken.accessToken}") {
+            defaultAddress {
+              address1
+              address2
+              city
+              province
+              country
+              zip
+            }
+          }
+        }`
+
+        const response: any = await storefrontApiClient(query)
+
+        if (response.errors && response.errors.length != 0) {
+          setIsLoading(false)
+          throw response.errors[0].message
+        }
+
+        const fetchedDefaultAddress = response.data.customer.defaultAddress;
+        setDefaultAddress(fetchedDefaultAddress);
+        setIsLoading(false)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  }
+
+  useEffect(() => {
+    getCustomerAddress()
+  }, [userToken])
+
+  useEffect(() => {
+    if (defaultAddress) {
+      setAddress1(defaultAddress.address1);
+      setAddress2(defaultAddress.address2);
+      setCity(defaultAddress.city);
+      setProvince({ code: defaultAddress.province, province: defaultAddress.province });
+      setZip(defaultAddress.zip);
+    }
+  }, [defaultAddress]);
+  
 
   return (
     <View style={{flex: 1 }} >
