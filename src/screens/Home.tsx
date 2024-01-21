@@ -241,50 +241,50 @@ const Home = ({ navigation }: Props) => {
     try {
       const query = `query {
         collection(id: "gid://shopify/Collection/469310570784") {
-    id
-    title
-    products(first: 100) {
-      nodes {
-        id
-        title
-        description
-        vendor
-        availableForSale
-        compareAtPriceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        priceRange {
-          minVariantPrice {
-            amount
-            currencyCode
-          }
-        }
-        images(first: 10) {
-          nodes {
-            url
-            width
-            height
-          }
-        }
-        options {
           id
-          name
-          values
-        }
-        variants(first: 200) {
-          nodes {
-            availableForSale
-            selectedOptions {
-              value
+          title
+          products(first: 100) {
+            nodes {
+              id
+              title
+              description
+              vendor
+              availableForSale
+              compareAtPriceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              images(first: 10) {
+                nodes {
+                  url
+                  width
+                  height
+                }
+              }
+              options {
+                id
+                name
+                values
+              }
+              variants(first: 200) {
+                nodes {
+                  availableForSale
+                  selectedOptions {
+                    value
+                  }
+                }
+              }
             }
           }
         }
-      }
-    }
-  }
       }`
 
       const response: any = await storefrontApiClient(query)
@@ -303,18 +303,77 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
-  useEffect(() => {
-    // console.log(userToken.customer.addresses.nodes)
-    fetchUserOrders()
-    if (userOrders < 5) {
-      fetchPopularProducts()
-    } else {
-      fetchForYou()
+  const updateCustomerAddress = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    if (userToken && selectedAddress) {
+      try {
+        const query = `query {
+          customer(customerAccessToken: "${userToken.accessToken}") {
+            defaultAddress {
+              id
+            }
+          }
+        }`
+
+        const response: any = await storefrontApiClient(query)
+
+        if (response.errors && response.errors.length != 0) {
+          setIsLoading(false)
+          throw response.errors[0].message
+        }
+
+        const defaultAddressId = response.data.customer.defaultAddress.id
+
+        const mutation = `mutation {
+          customerAddressUpdate(
+            customerAccessToken: "${userToken.accessToken}"
+            id: "${defaultAddressId}"
+            address: {
+              address1: "${selectedAddress.address1}"
+              city: "${selectedAddress.city}"
+              province: "${selectedAddress.state}"
+              country: "${selectedAddress.country}"
+              zip: "${selectedAddress.zip}"
+            }
+          ) {
+            customerAddress {
+              address1
+              city
+              province
+              country
+              zip
+            }
+          }
+        }`
+
+        const mutationResponse: any = await storefrontApiClient(mutation)
+
+        if (response.errors && response.errors.length != 0) {
+          setIsLoading(false)
+          throw response.errors[0].message
+        }
+
+        // console.log(mutationResponse.data.customerAddressUpdate.customerAddress)
+        setIsLoading(false)
+      } catch (e) {
+        console.log(e)
+      }
     }
+  }
+
+  useEffect(() => {
+    if (Object.keys(selectedAddress).length > 0) {
+      updateCustomerAddress();
+    }
+  }, [selectedAddress]);
+
+  useEffect(() => {
+    fetchUserOrders()
+    fetchPopularProducts()
+    fetchForYou()
     fetchExploreProducts()
-
-    // fetchAllProducts()
-
   }, [userToken, userOrders])
 
   const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
@@ -344,7 +403,7 @@ const Home = ({ navigation }: Props) => {
 
   const formatAddress = (address: Address) => {
     const { address1, city, state, country, zip } = address;
-    return `${address1}, ${city}, ${state}`;
+    return `${address1}, ${city}, ${state}, ${zip}`;
   };
 
   const GooglePlacesInput = () => {
@@ -371,6 +430,7 @@ const Home = ({ navigation }: Props) => {
             };
 
             setSelectedAddress(addressDict);
+            // console.log(selectedAddress)
           }
         }}
         query={{
@@ -391,7 +451,7 @@ const Home = ({ navigation }: Props) => {
             color: '#1faadb',
           },
         }}
-        
+
       />
     );
   };
@@ -416,14 +476,14 @@ const Home = ({ navigation }: Props) => {
                     <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} />
                   </View>
                 ) : (
-                <View style={{ flexDirection: 'row'}}>
+                  <View style={{ flexDirection: 'row' }}>
                     <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                       Where are we delivering?
                     </Text>
                     <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} />
                   </View>
                 )}
-                
+
               </TouchableOpacity>
 
               <View style={{ flexDirection: 'row', marginTop: '5%', justifyContent: 'center' }}>
