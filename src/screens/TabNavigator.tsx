@@ -32,7 +32,7 @@ const TabNavigator = ({ navigation }: Props) => {
       <Tab.Navigator
         id='TabNavigator'
         screenOptions={({ route }) => ({
-          tabBarStyle: { },
+          tabBarStyle: { height: 40},
           headerShown: false,
           tabBarActiveTintColor: '#4B2D83',
           tabBarInactiveTintColor: '#4B2D83',
