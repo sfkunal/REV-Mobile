@@ -49,14 +49,78 @@ const ShippingAddress = ({ route, navigation }: Props) => {
   const [phone, setPhone] = useState(userToken && userToken.customer.phone ? userToken.customer.phone : '')
   const [province, setProvince] = useState<{ code: string, province: string } | null>(null)
   const [zip, setZip] = useState('')
+  const [selectedRateHandle, setSelectedRateHandle] = useState<string | null>(null);
+  const [shippingOptionError, setShippingOptionError] = useState('');
+  const [availableShippingRates, setAvailableShippingRates] = useState<AvailableShippingRatesType | null>(null);
+
 
   const [defaultAddress, setDefaultAddress] = useState(null);
 
+  const updateShippingOption = async () => {
+    if (!selectedRateHandle) {
+      setShippingOptionError('Please select a shipping option.');
+      return;
+    }
+    setShippingOptionError('');
+    setIsLoading(true);
 
+    try {
+      const query = `mutation checkoutShippingLineUpdate($checkoutId: ID!, $shippingRateHandle: String!) {
+        checkoutShippingLineUpdate(checkoutId: $checkoutId, shippingRateHandle: $shippingRateHandle) {
+          checkout {
+            id
+            webUrl
+          }
+          checkoutUserErrors {
+            code
+            field
+            message
+          }
+        }
+      }`;
+
+      const variables = {
+        checkoutId,
+        shippingRateHandle: selectedRateHandle
+      };
+
+      const response: any = await storefrontApiClient(query, variables);
+
+      if (response.errors && response.errors.length != 0) {
+        throw response.errors[0].message;
+      }
+
+      if (response.data.checkoutShippingLineUpdate.checkoutUserErrors && response.data.checkoutShippingLineUpdate.checkoutUserErrors.length != 0) {
+        throw response.data.checkoutShippingLineUpdate.checkoutUserErrors[0].message;
+      }
+
+      const webUrl = response.data.checkoutShippingLineUpdate.checkout.webUrl;
+
+      // Here you can navigate to the payment screen or handle the webUrl as needed
+      // For example: navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle });
+      navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle })
+
+    } catch (e) {
+      console.log(e);
+      if (typeof e === 'string') {
+        setShippingOptionError(e);
+      } else {
+        setShippingOptionError('An error occurred while updating the shipping option.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const updateShippingAdress = async () => {
     setIsLoading(true)
     setErrorMessage('')
+
+    if (!phone) {
+      setErrorMessage('Please add your phone number.')
+      setIsLoading(false)
+      return
+    }
 
     try {
       const query = `mutation checkoutEmailUpdateV2($checkoutId: ID!, $email: String!) {
@@ -142,8 +206,8 @@ const ShippingAddress = ({ route, navigation }: Props) => {
       }
 
       const availableShippingRates: AvailableShippingRatesType = response.data.checkoutShippingAddressUpdateV2.checkout.availableShippingRates as AvailableShippingRatesType
-
-      navigation.push('ShippingOptions', { checkoutId, availableShippingRates })
+      setAvailableShippingRates(availableShippingRates)
+      // navigation.push('ShippingOptions', { checkoutId, availableShippingRates })
 
     } catch (e) {
       console.log(e)
@@ -332,6 +396,11 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     }
   }, [defaultAddress]);
 
+  const sendToCheckOut =  (shippingRate: { handle: any; title?: string; price?: { amount: number; currencyCode: string } }) => {
+    setSelectedRateHandle(shippingRate.handle)
+    updateShippingOption()
+  }
+
 
   return (
     <>
@@ -341,15 +410,6 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           contentContainerStyle={styles.container}
           ref={scrollViewRef}
         >
-          {/* <View>
-          <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-            Delivering to:
-          </Text>
-          <Text style={{ paddingLeft: 6, fontSize: 14, width: '80%' }}>
-            {defaultAddress ? formatAddress(defaultAddress) : ''}
-          </Text>
-          <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} />
-        </View> */}
           <TouchableOpacity style={{}} onPress={() => bottomSheetRef.current?.expand()}>
             {defaultAddress ? (
               <View>
@@ -380,9 +440,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
             autoCapitalize='none'
             value={phone}
           />
-        </ScrollView>
-
-        <KeyboardAvoidingView
+          <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'position' : 'height'}
           keyboardVerticalOffset={44 + sbHeight}
         >
@@ -396,13 +454,33 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                   <Text style={styles.error}>{errorMessage}</Text>
                 }
                 <FillButton
-                  title='CONTINUE'
+                  title='Looks Good!'
                   onPress={updateShippingAdress}
                 />
               </View>
             }
           </View>
         </KeyboardAvoidingView>
+          <View style={{ marginTop: 20 }}>
+            {availableShippingRates && <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Select a shipping option:</Text>}
+            {availableShippingRates && availableShippingRates.shippingRates.map((shippingRate) => (
+              <TouchableOpacity
+                key={shippingRate.handle}
+                onPress={() => sendToCheckOut(shippingRate)}
+                style={{
+                  padding: 10,
+                  borderWidth: 1,
+                  borderColor: selectedRateHandle === shippingRate.handle ? 'blue' : 'grey',
+                  marginBottom: 10,
+                }}
+              >
+                <Text>{shippingRate.title} - {shippingRate.price.amount} {shippingRate.price.currencyCode}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+
+        
       </View>
       <BottomSheet
         ref={bottomSheetRef}
