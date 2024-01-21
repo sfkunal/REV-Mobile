@@ -229,11 +229,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
             }
           ) {
             customerAddress {
-              address1
-              city
-              province
-              country
-              zip
+              id
             }
           }
         }`

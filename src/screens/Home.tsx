@@ -18,6 +18,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import the Icon component
 // import GooglePlacesInput from './AddressAutocomplete'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 
 // import { useNavigationContext } from '../context/NavigationContext'
 
@@ -303,6 +304,41 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
+  const getCustomerAddress = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    if (userToken) {
+      try {
+        const query = `query {
+          customer(customerAccessToken: "${userToken.accessToken}") {
+            defaultAddress {
+              address1
+              address2
+              city
+              province
+              country
+              zip
+            }
+          }
+        }`
+
+        const response: any = await storefrontApiClient(query)
+
+        if (response.errors && response.errors.length != 0) {
+          setIsLoading(false)
+          throw response.errors[0].message
+        }
+
+        const fetchedDefaultAddress = response.data.customer.defaultAddress;
+        setSelectedAddress(fetchedDefaultAddress);
+        setIsLoading(false)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+  }
+
   const updateCustomerAddress = async () => {
     setIsLoading(true)
     setErrorMessage('')
@@ -374,6 +410,7 @@ const Home = ({ navigation }: Props) => {
     fetchPopularProducts()
     fetchForYou()
     fetchExploreProducts()
+    getCustomerAddress()
   }, [userToken, userOrders])
 
   const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
