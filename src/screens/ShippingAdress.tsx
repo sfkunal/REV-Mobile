@@ -277,6 +277,10 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           throw response.errors[0].message
         }
 
+        if (response.data.customer.defaultAddress === null) {
+          createCustomerAddress()
+        } else {
+
         const defaultAddressId = response.data.customer.defaultAddress.id
 
         const mutation = `mutation {
@@ -304,12 +308,57 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           setIsLoading(false)
           throw response.errors[0].message
         }
+        setIsLoading(false)
+      }
 
         setIsLoading(false)
       } catch (e) {
         console.log(e)
       }
     }
+    setIsLoading(false)
+  }
+
+  const createCustomerAddress = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    if (userToken) {
+      try {
+        const mutation = `mutation {
+          customerAddressCreate(
+            customerAccessToken: "${userToken.accessToken}"
+            address: {
+              address1: "${defaultAddress.address1}"
+              address2: "${defaultAddress.address2}"
+              city: "${defaultAddress.city}"
+              province: "${defaultAddress.state}"
+              country: "${defaultAddress.country}"
+              zip: "${defaultAddress.zip}"
+            }
+          ) {
+            customerAddress {
+              address1
+              city
+              province
+              country
+              zip
+            }
+          }
+        }`
+
+        const response: any = await storefrontApiClient(mutation)
+
+        if (response.errors && response.errors.length != 0) {
+          setIsLoading(false)
+          throw response.errors[0].message
+        }
+        setIsLoading(false)
+      } catch (e) {
+        console.log(e)
+      }
+    }
+    setIsLoading(false)
   }
 
   const GooglePlacesInput = () => {
@@ -396,7 +445,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     }
   }, [defaultAddress]);
 
-  const sendToCheckOut =  (shippingRate: { handle: any; title?: string; price?: { amount: number; currencyCode: string } }) => {
+  const sendToCheckOut = (shippingRate: { handle: any; title?: string; price?: { amount: number; currencyCode: string } }) => {
     setSelectedRateHandle(shippingRate.handle)
     updateShippingOption()
   }
@@ -419,14 +468,14 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                 <Text style={{ paddingLeft: 6, fontSize: 14, width: '80%' }}>
                   {formatAddress(defaultAddress)}
                 </Text>
-                <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} />
+                {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} /> */}
               </View>
             ) : (
               <View style={{ flexDirection: 'row' }}>
                 <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                   Where are we delivering?
                 </Text>
-                <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} />
+                {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} /> */}
               </View>
             )}
 
@@ -441,26 +490,26 @@ const ShippingAddress = ({ route, navigation }: Props) => {
             value={phone}
           />
           <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'position' : 'height'}
-          keyboardVerticalOffset={44 + sbHeight}
-        >
-          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50 }]}>
-            {isLoading ?
-              <View style={{ width: 100, alignItems: 'center' }}>
-                <ActivityIndicator size='small' />
-              </View> :
-              <View>
-                {errorMessage.length != 0 &&
-                  <Text style={styles.error}>{errorMessage}</Text>
-                }
-                <FillButton
-                  title='Looks Good!'
-                  onPress={updateShippingAdress}
-                />
-              </View>
-            }
-          </View>
-        </KeyboardAvoidingView>
+            behavior={Platform.OS === 'ios' ? 'position' : 'height'}
+            keyboardVerticalOffset={44 + sbHeight}
+          >
+            <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50 }]}>
+              {isLoading ?
+                <View style={{ width: 100, alignItems: 'center' }}>
+                  <ActivityIndicator size='small' />
+                </View> :
+                <View>
+                  {errorMessage.length != 0 &&
+                    <Text style={styles.error}>{errorMessage}</Text>
+                  }
+                  <FillButton
+                    title='Looks Good!'
+                    onPress={updateShippingAdress}
+                  />
+                </View>
+              }
+            </View>
+          </KeyboardAvoidingView>
           <View style={{ marginTop: 20 }}>
             {availableShippingRates && <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Select a shipping option:</Text>}
             {availableShippingRates && availableShippingRates.shippingRates.map((shippingRate) => (
@@ -480,7 +529,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           </View>
         </ScrollView>
 
-        
+
       </View>
       <BottomSheet
         ref={bottomSheetRef}

@@ -360,12 +360,16 @@ const Home = ({ navigation }: Props) => {
           throw response.errors[0].message
         }
 
-        const defaultAddressId = response.data.customer.defaultAddress.id
+        if (response.data.customer.defaultAddress === null) {
+          createCustomerAddress()
+        } else {
+
+        const defaultAddressId = response.data.customer.defaultAddress.id ? response.data.customer.defaultAddress.id : null;
 
         const mutation = `mutation {
           customerAddressUpdate(
             customerAccessToken: "${userToken.accessToken}"
-            id: "${defaultAddressId}"
+           id: "${defaultAddressId}"
             address: {
               address1: "${selectedAddress.address1}"
               address2: "${selectedAddress.address2}"
@@ -391,12 +395,55 @@ const Home = ({ navigation }: Props) => {
           setIsLoading(false)
           throw response.errors[0].message
         }
+        setIsLoading(false)
+      }
+      } catch (e) {
+        console.log(e)
+      }
+      setIsLoading(false)
+    }
+  }
 
+  const createCustomerAddress = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    if (userToken) {
+      try {
+        const mutation = `mutation {
+          customerAddressCreate(
+            customerAccessToken: "${userToken.accessToken}"
+            address: {
+              address1: "${selectedAddress.address1}"
+              address2: "${selectedAddress.address2}"
+              city: "${selectedAddress.city}"
+              province: "${selectedAddress.state}"
+              country: "${selectedAddress.country}"
+              zip: "${selectedAddress.zip}"
+            }
+          ) {
+            customerAddress {
+              address1
+              city
+              province
+              country
+              zip
+            }
+          }
+        }`
+
+        const response: any = await storefrontApiClient(mutation)
+
+        if (response.errors && response.errors.length != 0) {
+          setIsLoading(false)
+          throw response.errors[0].message
+        }
         setIsLoading(false)
       } catch (e) {
         console.log(e)
       }
     }
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -512,14 +559,14 @@ const Home = ({ navigation }: Props) => {
                     <Text style={{ paddingLeft: 6, fontSize: 14, width: '80%' }}>
                       {formatAddress(selectedAddress)}
                     </Text>
-                    <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} />
+                    {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} /> */}
                   </View>
                 ) : (
                   <View style={{ flexDirection: 'row' }}>
                     <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                       Where are we delivering?
                     </Text>
-                    <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} />
+                    {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} /> */}
                   </View>
                 )}
 
