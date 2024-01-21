@@ -404,7 +404,7 @@ const Home = ({ navigation }: Props) => {
 
   const formatAddress = (address: Address) => {
     const { address1, address2, city, state, country, zip } = address;
-    return `${address1}, ${address2}, ${city}, ${state}, ${zip}`;
+    return `${address1 ? `${address1}` : ''}${address2 ? `, ${address2}` : ''}${city ? `, ${city}` : ''}${state ? `, ${state}` : ''}${zip ? `, ${zip}` : ''}`;
   };
 
   const GooglePlacesInput = () => {
