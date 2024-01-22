@@ -13,6 +13,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
   const { addItemToCart } = useCartContext();
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [showCheckmark, setShowCheckmark] = useState(false);
 
 
   const [selectedOptions, setSelectedOptions] = useState<{ name: string; value: string | null }[]>(
@@ -82,6 +83,8 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       }
 
       addItemToCart(response.data.product.variantBySelectedOptions as CartItem)
+      setShowCheckmark(true);
+      setTimeout(() => setShowCheckmark(false), 2000);
 
     } catch (e) {
       if (typeof e == 'string') {
@@ -124,6 +127,8 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       >
         {isLoading ? (
           <ActivityIndicator style={{ alignSelf: 'center' }} color='#4B2D83' />
+        ) : showCheckmark ? ( // Show checkmark if showCheckmark is true
+          <Icon name="check" size={23} color="green" style={styles.checkIcon} />
         ) : selectedItem?.availableForSale ? ( // Check if the selected item is available for sale
           <Icon name="plus" size={20} color="#4B2D83" style={styles.plusIcon} />
         ) : null}
@@ -178,6 +183,9 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     padding: 4
+  },
+  checkIcon: {
+    padding: 2
   },
   cartContainer: {
     position: 'absolute', // Position the icon absolutely within the container
