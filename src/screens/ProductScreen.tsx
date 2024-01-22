@@ -20,7 +20,7 @@ const windowHeight = Dimensions.get('window').height
 
 type Props = NativeStackScreenProps<StackParamList, 'ProductScreen'>
 
-const ProductScreen = ({route, navigation}: Props) => {
+const ProductScreen = ({ route, navigation }: Props) => {
   const { wishlist, addItemToWishlist, removeItemFromWishlist } = useWishlistContext()
   const { data } = route.params
   const { addItemToCart } = useCartContext()
@@ -35,47 +35,47 @@ const ProductScreen = ({route, navigation}: Props) => {
     navigation.setOptions({
       headerRight: () => (
         <>
-        <TouchableOpacity style={{paddingRight: 10}} onPress={() => {
+          <TouchableOpacity style={{ paddingRight: 10 }} onPress={() => {
             navigation.goBack()
             navigation.push('Cart')
           }}>
-          <CartIcon color="#4a307e" size={24} />
-          {cartItemCount > 0 && (
-            <View style={{
-              position: 'absolute',
-              right: -1,
-              bottom: -5,
-              backgroundColor: '#4a307e',
-              borderRadius: 10,
-              width: 18,
-              height: 18,
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-              <Text style={{
-                color: 'white',
-                // fontSize: 10,
-                fontWeight: 'bold'
+            <CartIcon color="#4a307e" size={24} />
+            {cartItemCount > 0 && (
+              <View style={{
+                position: 'absolute',
+                right: -1,
+                bottom: -5,
+                backgroundColor: '#4a307e',
+                borderRadius: 10,
+                width: 18,
+                height: 18,
+                justifyContent: 'center',
+                alignItems: 'center'
               }}>
-                {cartItemCount}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-        
-          { wishlist.includes(data.id) ?
+                <Text style={{
+                  color: 'white',
+                  // fontSize: 10,
+                  fontWeight: 'bold'
+                }}>
+                  {cartItemCount}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          {wishlist.includes(data.id) ?
             <TouchableOpacity
-              style={{padding: 6}}
-              onPress={() => removeItemFromWishlist(data.id) }
+              style={{ padding: 6 }}
+              onPress={() => removeItemFromWishlist(data.id)}
             >
               <FontAwesome name="heart" size={24} color='#4a307e' />
             </TouchableOpacity> :
             <TouchableOpacity
-            style={{padding: 6}}
-            onPress={() => addItemToWishlist(data.id) }
-          >
-            <FontAwesome name="heart-o" size={24} color='#4a307e' />
-          </TouchableOpacity>
+              style={{ padding: 6 }}
+              onPress={() => addItemToWishlist(data.id)}
+            >
+              <FontAwesome name="heart-o" size={24} color='#4a307e' />
+            </TouchableOpacity>
           }
         </>
       )
@@ -94,15 +94,15 @@ const ProductScreen = ({route, navigation}: Props) => {
 
   }, [])
 
-  const [selectedOptions, setSelectedOptions] = useState<{name: string; value: string | null}[]>(
+  const [selectedOptions, setSelectedOptions] = useState<{ name: string; value: string | null }[]>(
     data.options.map((option) => (
       {
-        name: option.name, 
-        value: option.values.length == 1 ? option.values[0] : null 
+        name: option.name,
+        value: option.values.length == 1 ? option.values[0] : null
       }
-    ) 
-  ))
-  
+    )
+    ))
+
   const selectedItem = useMemo(() => data.variants.nodes.find((item) => {
     return item.selectedOptions.every((option, index) => {
       if (option.value != selectedOptions[index].value) {
@@ -123,14 +123,14 @@ const ProductScreen = ({route, navigation}: Props) => {
   const showBuyBottomSheet = useCallback(() => {
     sheetRef2.current?.snapToIndex(0)
   }, [])
-  
+
   const [productRecommendations, setProductRecommendations] = useState<Product[]>([])
 
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
   const getProductRecommendations = async () => {
-    
+
     const query = `query getProductRecommendations {
       productRecommendations(productId: "${data.id}") {
         id
@@ -175,11 +175,11 @@ const ProductScreen = ({route, navigation}: Props) => {
 
     const response: any = await storefrontApiClient(query)
 
-    if (response.errors && response.errors.length != 0 ) {
+    if (response.errors && response.errors.length != 0) {
       throw response.errors[0].message
     }
 
-    setProductRecommendations(response.data.productRecommendations.slice(0,4) as Product[])
+    setProductRecommendations(response.data.productRecommendations.slice(0, 4) as Product[])
   }
 
   const addToCart = async () => {
@@ -215,15 +215,15 @@ const ProductScreen = ({route, navigation}: Props) => {
           }
         }
       }`
-  
-      const variables = { id: data.id}
-  
+
+      const variables = { id: data.id }
+
       const response: any = await storefrontApiClient(query, variables)
-  
-      if (response.errors && response.errors.length != 0 ) {
+
+      if (response.errors && response.errors.length != 0) {
         throw response.errors[0].message
       }
-  
+
       addItemToCart(response.data.product.variantBySelectedOptions as CartItem, itemQuantity)
       //console.log(bottomSheetMode)
       if (bottomSheetMode == 'buy') {
@@ -244,243 +244,169 @@ const ProductScreen = ({route, navigation}: Props) => {
 
     setIsLoading(false)
   }
-  
+
   return (
-    <View style={{flex: 1, marginBottom: hasHomeIndicator ? 14 : 0}}>
-      <FlatList 
+    <View style={{ flex: 1, marginBottom: hasHomeIndicator ? 14 : 0 }}>
+      <FlatList
         data={data.images.nodes || []}
-        renderItem={({item}) => <Image source={{uri: item.url}} style={styles.image} />}
+        renderItem={({ item }) => <Image source={{ uri: item.url }} style={styles.image} />}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom:120}}
+        contentContainerStyle={{ paddingBottom: 120 }}
       />
 
       <BottomSheet
         snapPoints={snapPoints}
-        style={{backgroundColor: theme.colors.background}}
-        handleIndicatorStyle={{backgroundColor: theme.colors.text, borderRadius: 0, height: 2}}
-        backgroundComponent={() => <View style={{backgroundColor: theme.colors.background}}></View>}
+        style={{ backgroundColor: theme.colors.background }}
+        handleIndicatorStyle={{ backgroundColor: theme.colors.text, borderRadius: 0, height: 2 }}
+        backgroundComponent={() => <View style={{ backgroundColor: theme.colors.background }}></View>}
       >
-        <BottomSheetScrollView 
-          style={styles.container} 
+        <BottomSheetScrollView
+          style={styles.container}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{backgroundColor: theme.colors.background}}
+          contentContainerStyle={{ backgroundColor: theme.colors.background }}
         >
-          <View style={{marginRight: 14}}>
+          <View style={{ width: '100%' }}>
             <Text style={styles.title}>{data.title.toUpperCase()}</Text>
             <Text style={styles.price}>{data.priceRange.minVariantPrice.amount} USD</Text>
-            { data.availableForSale ?
+            {data.availableForSale ?
               <>
-                { isLoading ? 
-                  <ActivityIndicator size='small' style={{alignSelf: 'center', marginTop: 30.5}} /> :
-                  <> 
-                    { noVariants && errorMessage != '' ?
-                      <Text style={{color: 'red', alignSelf: 'center', marginTop: 24}}>{errorMessage}</Text> :
-                      <View style={styles.buttonsContainer}>
-                        <View style={styles.quantitySelector}>
-                          <TouchableOpacity 
-                            onPress={() => {
-                              if (itemQuantity > 0) {
-                                setItemQuantity(itemQuantity - 1)
-                              }
-                            }} 
-                          >
-                            <Text style={{color: theme.colors.text, fontSize: 28, paddingHorizontal: 8, paddingVertical: 4}}>-</Text>
-                          </TouchableOpacity>
-
-                          <Text style={styles.quantity}>{itemQuantity}</Text>
-
-                          <TouchableOpacity 
-                            onPress={() => {
-                              if (itemQuantity < 100) {
-                                setItemQuantity(itemQuantity + 1)
-                              }
-                            }} 
-                          >
-                            <Text style={{color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4}}>+</Text>
-                          </TouchableOpacity>
+                {isLoading ?
+                  <ActivityIndicator size='small' style={{ alignSelf: 'center', marginTop: 30.5 }} /> :
+                  <>
+                    {noVariants && errorMessage != '' ?
+                      <Text style={{ color: 'red', alignSelf: 'center', marginTop: 24 }}>{errorMessage}</Text> :
+                      <View style={{ flexDirection: 'row', width: '100%' }}>
+                        <View style={styles.buttonsContainer}>
+                          {/* <View style={{ marginLeft: 30 }}></View> */}
+                          {itemQuantity > 0 && (
+                            <OutlineButton
+                              onPress={() => {
+                                bottomSheetMode = 'add'
+                                setBottomSheetModeState('add')
+                                if (!noVariants) {
+                                  setTimeout(() => showBuyBottomSheet(), 1)
+                                } else {
+                                  addToCart()
+                                }
+                              }}
+                              title='ADD TO CART'
+                            />
+                          )}
                         </View>
-                        <View style={{marginLeft:30}}></View>
-                        {itemQuantity > 0 && (
-                          <OutlineButton 
-                          onPress={() => { 
-                            bottomSheetMode = 'add'
-                            setBottomSheetModeState('add')
-                            if (!noVariants) {
-                              setTimeout(() => showBuyBottomSheet(), 1)
-                            } else {
-                              addToCart()
-                            }
-                          }} 
-                          title='ADD TO CART' 
-                        />
-                        )}
-                        
-                        
-                        <View style={{marginLeft:16}}></View>
-                        {/* <FillButton 
-                          onPress={() => { 
-                            bottomSheetMode = 'buy'
-                            setBottomSheetModeState('buy')
-                            if (!noVariants) {
-                              setTimeout(() => showBuyBottomSheet(), 1)
-                            } else {
-                              addToCart()
-                            }
-                          }} 
-                          title='BUY IT NOW' 
-                        /> */}
+                        <View style={styles.quantitySelector}>
+                          <TouchableOpacity
+                              onPress={() => {
+                                if (itemQuantity < 100) {
+                                  setItemQuantity(itemQuantity + 1)
+                                }
+                              }}
+                            >
+                              <Text style={{ color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>+</Text>
+                            </TouchableOpacity>
+                            <Text style={{ color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
+                            <TouchableOpacity
+                              onPress={() => {
+                                if (itemQuantity > 0) {
+                                  setItemQuantity(itemQuantity - 1)
+                                }
+                              }}
+                            >
+                              <Text style={{ color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>-</Text>
+                            </TouchableOpacity>
+                          </View>
                       </View>
                     }
                   </>
                 }
               </> :
-              <Text style={[styles.text, {marginTop: 32}]}>Out of stock.</Text>
+              <Text style={[styles.text, { marginTop: 32 }]}>Out of stock.</Text>
             }
-            
-            { data.description.length != 0 && <Text style={styles.subTitle}>DESCRIPTION</Text> }
-            { data.description.length != 0 && <Text style={styles.subTitle}>{data.description}</Text> }
+
+            {data.description.length != 0 && <Text style={styles.subTitle}>DESCRIPTION</Text>}
+            {data.description.length != 0 && <Text style={styles.subTitle}>{data.description}</Text>}
             {/* <Text style={styles.subTitle}>VENDOR: {data.vendor.toUpperCase()}</Text> */}
             <Text style={styles.subTitle}>DISCOVER MORE</Text>
           </View>
 
-          <FlatList 
+          <FlatList
             data={productRecommendations}
             scrollEnabled={false}
-            renderItem={({item}) => <ProductCard data={item} /> }
+            renderItem={({ item }) => <ProductCard data={item} />}
             keyboardDismissMode='on-drag'
             showsVerticalScrollIndicator={false}
             numColumns={2}
-            contentContainerStyle={{paddingTop: 16}}
+            contentContainerStyle={{ paddingTop: 16 }}
           />
         </BottomSheetScrollView>
       </BottomSheet>
 
-      <BottomSheet 
+      <BottomSheet
         snapPoints={snapPoints2}
         index={-1}
         enablePanDownToClose={true}
         ref={sheetRef2}
-        style={{backgroundColor: theme.colors.background}}
-        handleIndicatorStyle={{backgroundColor: theme.colors.text, borderRadius: 0, height: 2}}
-        backgroundComponent={() => <View style={{backgroundColor: theme.colors.background}}></View>}
+        style={{ backgroundColor: theme.colors.background }}
+        handleIndicatorStyle={{ backgroundColor: theme.colors.text, borderRadius: 0, height: 2 }}
+        backgroundComponent={() => <View style={{ backgroundColor: theme.colors.background }}></View>}
       >
-        <BottomSheetView style={{flex:1, marginHorizontal: 14, paddingBottom: 14, justifyContent: 'space-between'}}>
-          
+        <BottomSheetView style={{ flex: 1, marginHorizontal: 14, paddingBottom: 14, justifyContent: 'space-between' }}>
           <View>
-          { data.options.map((option, index) => (
-            <View 
-              style={{marginTop: 4}} 
-              key={option.id}
-            >
-              <Text style={styles.optionTitle}>{option.name}</Text>
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                style={{marginHorizontal:-14}}
+            {data.options.map((option, index) => (
+              <View
+                style={{ marginTop: 4 }}
+                key={option.id}
               >
-                {
-                  option.values.map((item) => (
-                    <TouchableOpacity 
-                      onPress={() => setSelectedOptions(selectedOptions => selectedOptions.map( selectedOption => 
-                        selectedOption.name == option.name ? 
-                        {name: selectedOption.name, value: item} : 
-                        {name: selectedOption.name, value: selectedOption.value}
-                      ))}
-                      key={item} 
-                    >
-                      <Text 
-                        style={[
-                          styles.optionValue, 
-                          selectedOptions[index].value == item ? {backgroundColor: theme.colors.text, color: theme.colors.background } : null 
-                        ]} 
+                <Text style={styles.optionTitle}>{option.name}</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginHorizontal: -14 }}
+                >
+                  {
+                    option.values.map((item) => (
+                      <TouchableOpacity
+                        onPress={() => setSelectedOptions(selectedOptions => selectedOptions.map(selectedOption =>
+                          selectedOption.name == option.name ?
+                            { name: selectedOption.name, value: item } :
+                            { name: selectedOption.name, value: selectedOption.value }
+                        ))}
+                        key={item}
                       >
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  ))
-                }
-              </ScrollView>
-            </View>
-          ))}
-          </View>
-          
-          <View style={{marginBottom: 16}}></View>
-          { bottomSheetModeState == 'buy' ? 
-            <>
-              { selectedItem ?
-                <>
-                  { selectedItem.availableForSale ?
-                    <>
-                      { isLoading ? 
-                        <ActivityIndicator size='small' style={{alignSelf: 'center'}} /> :
-                        <>
-                          { errorMessage != '' ?
-                            <Text style={{color: 'red', alignSelf: 'center'}}>{errorMessage}</Text> :
-                            <FillButton 
-                              onPress={() => {
-                                bottomSheetMode = 'buy'
-                                addToCart()
-                              }}  
-                              title='BUY IT NOW' 
-                            />
-                          }
-                        </>
-                      }
-                    </> :
-                    <Text style={styles.text}>Out of stock.</Text>
+                        <Text
+                          style={[
+                            styles.optionValue,
+                            selectedOptions[index].value == item ? { backgroundColor: theme.colors.text, color: theme.colors.background } : null
+                          ]}
+                        >
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
+                    ))
                   }
-                </> :
-                <Text style={styles.text}>Make a selection.</Text>
-              }
-            </> :
-            <>
-              { selectedItem ?
-                <>
-                  { selectedItem.availableForSale ?
-                    <>
-                      { isLoading ? 
-                        <ActivityIndicator size='small' style={{alignSelf: 'center'}} /> :
-                        <>
-                          { errorMessage != '' ?
-                            <Text style={{color: 'red', alignSelf: 'center'}}>{errorMessage}</Text> :
-                            <OutlineButton 
-                              onPress={() => {
-                                bottomSheetMode = 'add'
-                                addToCart()
-                              }}  
-                              title='ADD TO CART' 
-                            />
-                          }
-                        </>
-                      }
-                    </> :
-                    <Text style={styles.text}>Out of stock.</Text>
-                  }
-                </> :
-                <Text style={styles.text}>Make a selection.</Text>
-              }
-            </>
-          }
+                </ScrollView>
+              </View>
+            ))}
+          </View>          
         </BottomSheetView>
       </BottomSheet>
 
       {/* Succesfully added to the cart message bottom sheet. */}
-      <BottomSheet 
+      <BottomSheet
         snapPoints={snapPoints3}
         index={-1}
         enablePanDownToClose={true}
         ref={sheetRef3}
-        style={{backgroundColor: theme.colors.background}}
-        handleIndicatorStyle={{backgroundColor: theme.colors.text, borderRadius: 0, height: 2}}
-        backgroundComponent={() => <View style={{backgroundColor: theme.colors.background}}></View>}
+        style={{ backgroundColor: theme.colors.background }}
+        handleIndicatorStyle={{ backgroundColor: theme.colors.text, borderRadius: 0, height: 2 }}
+        backgroundComponent={() => <View style={{ backgroundColor: theme.colors.background }}></View>}
       >
-        <BottomSheetView style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+        <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.text}>Item was added succesfully to the cart.</Text>
           <TouchableOpacity onPress={() => {
             navigation.goBack()
             navigation.push('Cart')
           }}>
-            <Text style={[styles.text, {marginTop:8, fontWeight: '600', paddingBottom: 24}]}>Visualize</Text>
+            <Text style={[styles.text, { marginTop: 8, fontWeight: '600', paddingBottom: 24 }]}>Visualize</Text>
           </TouchableOpacity>
         </BottomSheetView>
       </BottomSheet>
@@ -501,8 +427,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center', // center the image horizontally
   },
   container: {
-    flex:1,
-    marginHorizontal:14,
+    flex: 1,
+    marginHorizontal: 14,
     backgroundColor: theme.colors.background
   },
   title: {
@@ -526,7 +452,7 @@ const styles = StyleSheet.create({
   optionValue: {
     color: theme.colors.text,
     letterSpacing: 1.5,
-    marginLeft:6,
+    marginLeft: 6,
     marginTop: 8,
     marginBottom: 5.5,
     paddingHorizontal: 8,
@@ -540,20 +466,21 @@ const styles = StyleSheet.create({
     marginTop: 4
   },
   buttonsContainer: {
-    flexDirection:'row',
-    marginTop: 24
+    flexDirection: 'row',
+    justifyContent: 'center', // Align the 'ADD TO CART' button to the left
+    marginTop: 30,
+    bottom: -10,
+    flex: 1, 
   },
   quantitySelector: {
-    flexDirection: 'row',
+    // position: 'absolute',
+    right: -30,
+    // top: -35,
+    flexDirection: 'column',
     alignItems: 'center',
-    marginVertical: -8
+    justifyContent: 'flex-end', // Align the quantity selector to the right
+    flex: 1,
   },
-  quantity: {
-    color: theme.colors.text,
-    fontSize: 15,
-    paddingHorizontal: Platform.OS == 'ios' ? 16 : 14,
-    width: 38,
-  }
 })
 
 export default ProductScreen
