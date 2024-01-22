@@ -473,8 +473,15 @@ const Home = ({ navigation }: Props) => {
 
   const formatAddress = (address: Address) => {
     const { address1, address2, city, state, country, zip } = address;
-    return `${address1 ? `${address1}` : ''}${address2 ? `, ${address2}` : ''}${city ? `, ${city}` : ''}${state ? `, ${state}` : ''}${zip ? `, ${zip}` : ''}`;
-  };
+    const parts = [
+        address1 && address1.length !== 0 ? address1 : '',
+        address2 && address2.length !== 0 ? `, ${address2}` : '',
+        city && city.length !== 0 ? `, ${city}` : '',
+        state && state.length !== 0 ? `, ${state}` : '',
+        zip && zip.length !== 0 ? `, ${zip}` : '',
+    ];
+    return parts.join('');
+};
 
   const HomeList = ({ data }) => (
     <View style={{ paddingTop: 10, paddingBottom: sbHeight + 220 }}>
@@ -508,12 +515,12 @@ const Home = ({ navigation }: Props) => {
             const country = addressComponents.find(c => c.types.includes('country'))?.short_name;
             const zip = addressComponents.find(c => c.types.includes('postal_code'))?.long_name;
             const addressDict = {
-              address1: address1,
-              address2: address2,
-              city: city,
-              state: state,
-              country: country,
-              zip: zip
+              address1: address1 ? address1 : '',
+              address2: address2 ? address2 : '',
+              city: city ? city : '',
+              state: state ? state : '',
+              country: country ? country : '',
+              zip: zip ? zip : '',
             };
 
             setSelectedAddress(addressDict);
@@ -556,14 +563,14 @@ const Home = ({ navigation }: Props) => {
                     <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                       Delivering to:
                     </Text>
-                    <Text style={{ paddingLeft: 6, fontSize: 14, width: '80%' }}>
+                    <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
                       {formatAddress(selectedAddress)}
                     </Text>
                     {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} /> */}
                   </View>
                 ) : (
                   <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                    <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                       Where are we delivering?
                     </Text>
                     {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} /> */}
@@ -572,7 +579,7 @@ const Home = ({ navigation }: Props) => {
 
               </TouchableOpacity>
 
-              <View style={{ flexDirection: 'row', marginTop: '5%', justifyContent: 'center' }}>
+              <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
                 <TouchableOpacity
                   onPress={() => setSelectedMode('forYou')}
                   style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
@@ -609,7 +616,7 @@ const Home = ({ navigation }: Props) => {
             ref={bottomSheetRef}
             index={-1} // Start closed
             enablePanDownToClose
-            snapPoints={['90%']} // Set the heights of the bottom sheet
+            snapPoints={['60%']} // Set the heights of the bottom sheet
           >
             <View
               style={{
@@ -659,7 +666,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   addressBox: {
-    height: 40,
+    // height: 40,
     borderColor: 'black',
     // borderWidth: 1,
     // borderRadius: 7,
@@ -667,7 +674,9 @@ const styles = StyleSheet.create({
     marginTop: '2%',
     alignSelf: 'center',
     width: '93%',
-    justifyContent: 'center', // Add this line to center content vertically
+    justifyContent: 'flex-start', // Add this line to center content vertically
+    borderBottomWidth: 2,
+    borderBottomColor: '#4B2D83',
   },
   selectedMode: {
     backgroundColor: '#4B2D83',
