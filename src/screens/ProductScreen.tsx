@@ -12,6 +12,8 @@ import ProductCard from '../components/shared/ProductCard'
 import { useCartContext } from '../context/CartContext'
 import { FontAwesome } from '@expo/vector-icons'
 import { useWishlistContext } from '../context/WishlistContext'
+import { useNavigationContext } from '../context/NavigationContext'
+import { CartIcon } from '../components/shared/Icons'
 
 const screenWidth = Dimensions.get('screen').width
 const windowHeight = Dimensions.get('window').height
@@ -22,23 +24,31 @@ const ProductScreen = ({route, navigation}: Props) => {
   const { wishlist, addItemToWishlist, removeItemFromWishlist } = useWishlistContext()
   const { data } = route.params
   const { addItemToCart } = useCartContext()
+  const { rootNavigation } = useNavigationContext();
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <>
+        <TouchableOpacity style={{paddingRight: 8}} onPress={() => {
+            navigation.goBack()
+            navigation.push('Cart')
+          }}>
+          <CartIcon color="#4a307e" size={24} />
+        </TouchableOpacity>
+        
           { wishlist.includes(data.id) ?
             <TouchableOpacity
               style={{padding: 6}}
               onPress={() => removeItemFromWishlist(data.id) }
             >
-              <FontAwesome name="heart" size={22} color='black' />
+              <FontAwesome name="heart" size={24} color='#4a307e' />
             </TouchableOpacity> :
             <TouchableOpacity
             style={{padding: 6}}
             onPress={() => addItemToWishlist(data.id) }
           >
-            <FontAwesome name="heart-o" size={22} color='black' />
+            <FontAwesome name="heart-o" size={24} color='#4a307e' />
           </TouchableOpacity>
           }
         </>
