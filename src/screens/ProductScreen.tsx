@@ -25,16 +25,39 @@ const ProductScreen = ({route, navigation}: Props) => {
   const { data } = route.params
   const { addItemToCart } = useCartContext()
   const { rootNavigation } = useNavigationContext();
+  const { getItemsCount, cartItems } = useCartContext();
+  let cartItemCount = getItemsCount();
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <>
-        <TouchableOpacity style={{paddingRight: 8}} onPress={() => {
+        <TouchableOpacity style={{paddingRight: 10}} onPress={() => {
             navigation.goBack()
             navigation.push('Cart')
           }}>
           <CartIcon color="#4a307e" size={24} />
+          {cartItemCount > 0 && (
+            <View style={{
+              position: 'absolute',
+              right: -1,
+              bottom: -5,
+              backgroundColor: '#4a307e',
+              borderRadius: 10,
+              width: 18,
+              height: 18,
+              justifyContent: 'center',
+              alignItems: 'center'
+            }}>
+              <Text style={{
+                color: 'white',
+                // fontSize: 10,
+                fontWeight: 'bold'
+              }}>
+                {cartItemCount}
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
         
           { wishlist.includes(data.id) ?
@@ -54,7 +77,7 @@ const ProductScreen = ({route, navigation}: Props) => {
         </>
       )
     })
-  }, [wishlist])
+  }, [wishlist, cartItemCount])
 
   useEffect(() => {
     try {
