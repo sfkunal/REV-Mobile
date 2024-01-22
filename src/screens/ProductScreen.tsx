@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions, Image, FlatList, View, Text, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native'
+import { StyleSheet, Dimensions, Image, FlatList, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, Platform } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { StackParamList } from '../types/navigation'
@@ -27,6 +27,9 @@ const ProductScreen = ({route, navigation}: Props) => {
   const { rootNavigation } = useNavigationContext();
   const { getItemsCount, cartItems } = useCartContext();
   let cartItemCount = getItemsCount();
+  const { addQuantityOfItem, substractQuantityOfItem } = useCartContext()
+  const [itemQuantity, setItemQuantity] = useState(0)
+
 
   useEffect(() => {
     navigation.setOptions({
@@ -182,7 +185,6 @@ const ProductScreen = ({route, navigation}: Props) => {
   const addToCart = async () => {
     setIsLoading(true)
     setErrorMessage('')
-    
     try {
       const query = `query getProductById($id: ID!) {
         product(id: $id) {
@@ -222,7 +224,7 @@ const ProductScreen = ({route, navigation}: Props) => {
         throw response.errors[0].message
       }
   
-      addItemToCart(response.data.product.variantBySelectedOptions as CartItem)
+      addItemToCart(response.data.product.variantBySelectedOptions as CartItem, itemQuantity)
       //console.log(bottomSheetMode)
       if (bottomSheetMode == 'buy') {
         navigation.goBack()
@@ -274,7 +276,32 @@ const ProductScreen = ({route, navigation}: Props) => {
                     { noVariants && errorMessage != '' ?
                       <Text style={{color: 'red', alignSelf: 'center', marginTop: 24}}>{errorMessage}</Text> :
                       <View style={styles.buttonsContainer}>
-                        <OutlineButton 
+                        <View style={styles.quantitySelector}>
+                          <TouchableOpacity 
+                            onPress={() => {
+                              if (itemQuantity > 0) {
+                                setItemQuantity(itemQuantity - 1)
+                              }
+                            }} 
+                          >
+                            <Text style={{color: theme.colors.text, fontSize: 28, paddingHorizontal: 8, paddingVertical: 4}}>-</Text>
+                          </TouchableOpacity>
+
+                          <Text style={styles.quantity}>{itemQuantity}</Text>
+
+                          <TouchableOpacity 
+                            onPress={() => {
+                              if (itemQuantity < 100) {
+                                setItemQuantity(itemQuantity + 1)
+                              }
+                            }} 
+                          >
+                            <Text style={{color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4}}>+</Text>
+                          </TouchableOpacity>
+                        </View>
+                        <View style={{marginLeft:30}}></View>
+                        {itemQuantity > 0 && (
+                          <OutlineButton 
                           onPress={() => { 
                             bottomSheetMode = 'add'
                             setBottomSheetModeState('add')
@@ -286,6 +313,9 @@ const ProductScreen = ({route, navigation}: Props) => {
                           }} 
                           title='ADD TO CART' 
                         />
+                        )}
+                        
+                        
                         <View style={{marginLeft:16}}></View>
                         {/* <FillButton 
                           onPress={() => { 
@@ -512,6 +542,17 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection:'row',
     marginTop: 24
+  },
+  quantitySelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: -8
+  },
+  quantity: {
+    color: theme.colors.text,
+    fontSize: 15,
+    paddingHorizontal: Platform.OS == 'ios' ? 16 : 14,
+    width: 38,
   }
 })
 

@@ -8,7 +8,7 @@ type CartContextType = {
   getItemsCount: () => number
   getTotalPrice: () => number
   cartItems: CartItem[]
-  addItemToCart: (item: CartItem) => void
+  addItemToCart: (item: CartItem, quantity: number) => void
   removeItemFromCart: (itemId: string) => void
   addQuantityOfItem: (itemId: string) => void
   substractQuantityOfItem: (itemId: string) => void
@@ -124,15 +124,32 @@ export const CartContext = ({children}: Props) => {
     return totalPrice
   }
 
-  const addItemToCart = (item: CartItem) => {
-    const index = cartItems.findIndex((arrayItem) => arrayItem.id == item.id)
-
+  const addItemToCart = (item: CartItem, quantity: number = 1) => {
+    const index = cartItems.findIndex((arrayItem) => arrayItem.id == item.id);
+  
     if (index == -1) {
-      item.quantity = 1
-      setcartItems(cartItems => [item, ...cartItems])
+      item.quantity = quantity;
+      setcartItems(cartItems => [item, ...cartItems]);
     }
     else {
-      addQuantityOfItem(item.id)
+      // If the item is already in the cart, increase its quantity by the specified amount
+      setcartItems(cartItems => (
+        cartItems.map((cartItem) => {
+          if (cartItem.id === item.id) {
+            const notTrackingStock = cartItem.quantityAvailable <= 0 && cartItem.availableForSale;
+            var newQuantity: number;
+  
+            if (notTrackingStock) {
+              newQuantity = cartItem.quantity + quantity;
+            } else {
+              newQuantity = cartItem.quantityAvailable < cartItem.quantity + quantity ? cartItem.quantityAvailable : cartItem.quantity + quantity;
+            }
+  
+            return { ...cartItem, quantity: newQuantity };
+          }
+          return cartItem;
+        })
+      ));
     }
   }
 
