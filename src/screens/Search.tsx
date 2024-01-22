@@ -9,6 +9,7 @@ import ProductCard from '../components/shared/ProductCard';
 import { TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext';
+import { LinearGradient } from 'expo-linear-gradient';
 
 type Props = NativeStackScreenProps<SearchStackParamList, 'Search'>
 
@@ -223,14 +224,21 @@ const Search = ({navigation}: Props) => {
   }, [searchInput]);
 
   const renderCollectionItem = ({ item }) => (
-    <TouchableOpacity
+    
+      <LinearGradient
+        colors={['#8671ae', '#d9d9d9']} // Replace with your desired gradient colors
+        style={styles.collectionContainer}
+      >
+        <TouchableOpacity
       key={item.id}
-      style={styles.collectionContainer}
+      // style={styles.collectionContainer}
       onPress={() => navigation.navigate('Collection', { collectionId: item.id })}
     >
-      <Text style={styles.text}>{item.title}</Text>
-      {/* Optional: Add more details or images here */}
-    </TouchableOpacity>
+        <Text style={styles.text}>{item.title}</Text>
+        {/* Optional: Add more details or images here */}
+        </TouchableOpacity>
+      </LinearGradient>
+    
   );
   
   return (
@@ -294,11 +302,11 @@ const styles = StyleSheet.create({
     paddingLeft:14,
   },
   text: {
-    color: '#000000',
+    color: '#FFFFFF',
     alignSelf: 'center',
     fontSize: 16,
     letterSpacing: 1.5,
-    fontWeight: '300',
+    fontWeight: '600',
     marginBottom: 16,
     textAlign: 'center'
    },
@@ -327,8 +335,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     // maxHeight: (((screenWidth-28-14)/2)*1.5+130) * 0.2,
-    borderColor: '#D9D9D9',
-    borderWidth: 1,
+    borderColor: '#4B2D83',
+    // borderWidth: 2,
     padding: 5,
     borderRadius: 15,
     margin: 5
@@ -339,6 +347,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1.8,
     fontWeight: '500'
    },
+   gradient: {
+    // flex: 1,
+    // width: '100%',
+    // borderRadius: 15, // Match your TouchableOpacity's borderRadius
+    // justifyContent: 'center', // Center the children vertically
+    // alignItems: 'center', // Center the children horizontally
+  },
 })
 
 export default Search
