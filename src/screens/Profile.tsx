@@ -56,7 +56,7 @@ const Profile = ({ navigation }: Props) => {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={styles.greeting}>Welcome back{userToken && `, ${userToken.customer.firstName}`}!</Text>
+      {/* <Text style={styles.greeting}>Welcome back{userToken && `, ${userToken.customer.firstName}`}!</Text> */}
 
       <View style={{ marginBottom: 16 }}>
         <TouchableOpacity

@@ -616,7 +616,7 @@ const Home = ({ navigation }: Props) => {
             ref={bottomSheetRef}
             index={-1} // Start closed
             enablePanDownToClose
-            snapPoints={['60%']} // Set the heights of the bottom sheet
+            snapPoints={['95%']} // Set the heights of the bottom sheet
           >
             <View
               style={{
@@ -684,7 +684,6 @@ const styles = StyleSheet.create({
     padding: 5, // Adjust padding as needed
   },
   notSelectedMode: {
-    // backgroundColor: 'purple',
     borderRadius: 20, // Optional: if you want rounded corners
     padding: 5, // Adjust padding as needed
   },
