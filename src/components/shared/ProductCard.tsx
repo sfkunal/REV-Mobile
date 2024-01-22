@@ -82,7 +82,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
         throw response.errors[0].message
       }
 
-      addItemToCart(response.data.product.variantBySelectedOptions as CartItem)
+      addItemToCart(response.data.product.variantBySelectedOptions as CartItem, 1)
       setShowCheckmark(true);
       setTimeout(() => setShowCheckmark(false), 2000);
 
@@ -99,7 +99,10 @@ const ProductCard = memo(({ data }: { data: Product }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handlePressProduct}>
+      <TouchableOpacity 
+        onPress={handlePressProduct}
+        disabled={selectedItem?.availableForSale ? false : true}
+      >
         <View>
           <Image
             source={{ uri: data.images.nodes[0].url }}
@@ -114,9 +117,19 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                     {data.compareAtPriceRange.minVariantPrice.amount}
                   </Text>
                 )}
-              <Text style={styles.price}>
-                ${data.priceRange.minVariantPrice.amount}
-              </Text>
+              {selectedItem?.availableForSale ? (
+                <Text style={styles.price}>
+                  ${data.priceRange.minVariantPrice.amount}
+                </Text>
+              ) : (
+                <Text style={{marginTop: 3,
+                  fontSize: 16.2,
+                  fontWeight: '500',
+                  color: '#4B2D83',}}>
+                  Out of Stock
+                </Text>
+              )}
+              
             </View>
           </View>
         </View>
