@@ -177,8 +177,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     justifyContent: 'space-between',
     maxHeight: (((screenWidth - 28 - 14) / 2) * 1.5 + 130) * 0.8,
-    borderColor: '#D9D9D9',
-    borderWidth: 1,
+    // borderColor: '#D9D9D9',
+    // borderWidth: 1,
     padding: 5,
     borderRadius: 15,
     margin: 5
