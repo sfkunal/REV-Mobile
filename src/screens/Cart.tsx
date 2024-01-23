@@ -130,27 +130,27 @@ const Cart = ({ navigation }: Props) => {
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           />
-          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 150}]}>
+          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 130}]}>
             {isLoading ?
               <View style={{ width: 100, alignItems: 'center' }}>
                 <ActivityIndicator size='small' />
               </View> :
-              <View style={{borderWidth: 3}}>
+              <View style={{}}>
                 {errorMessage.length != 0 &&
                   <Text style={styles.error}>{errorMessage}</Text>
                 }
-                <View style={{ flexDirection: 'column', borderWidth: 1, width: '70%', alignSelf: 'center' }}>
+                <View style={{ flexDirection: 'column', width: '100%', alignSelf: 'center', paddingTop: 5 }}>
                   <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
-                    <Text style={{}}>Subtotal:</Text>
-                    <Text style={{}}>{totalPrice} USD</Text>
+                    <Text style={{ flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#3C3C43' }}>Subtotal:</Text>
+                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#3C3C43' }}>{parseFloat(totalPrice.toFixed(2))} USD</Text>
                   </View>
                   <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
-                    <Text style={{}}>Tax: </Text>
-                    <Text style={{}}>0.99 USD</Text>
+                    <Text style={{ flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#3C3C43' }}>Tax: </Text>
+                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#3C3C43' }}>0.99 USD</Text>
                   </View>
                   <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
-                    <Text style={{}}>Total: </Text>
-                    <Text style={{}}>{totalPrice + 0.99} USD</Text>
+                    <Text style={{ flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#3C3C43' }}>Total: </Text>
+                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#3C3C43' }}>{parseFloat((totalPrice + 0.99).toFixed(2))} USD</Text>
                   </View>
                 </View>
                 {/* <FillButton
@@ -158,7 +158,7 @@ const Cart = ({ navigation }: Props) => {
                   onPress={createCheckout}
                 /> */}
                 <TouchableOpacity onPress={createCheckout} style={styles.reviewOrderContainer}>
-                  <Text>hi</Text>
+                  <Text style={{fontSize: 18, fontWeight: 'bold', color: 'white'}}>Review Order</Text>
                 </TouchableOpacity>
               </View>
             }
@@ -184,13 +184,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1
   },
   checkoutContainer: {
-    // height: 50,
-    borderColor: theme.colors.infoText,
-    borderTopWidth: 0.5,
-    flexDirection: 'row',
+    // borderColor: '#4B2D83',
+    // borderTopWidth: 3,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 14
+    paddingHorizontal: 10
   },
   error: {
     alignSelf: 'center',
@@ -205,6 +202,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   reviewOrderContainer: {
+    marginTop: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
