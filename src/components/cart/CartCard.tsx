@@ -24,7 +24,7 @@ const CartCard = ({cartItem}: {cartItem: CartItem}) => {
           <TouchableOpacity 
             onPress={() => substractQuantityOfItem(cartItem.id) } 
           >
-            <Text style={{color: theme.colors.text, fontSize: 28, paddingHorizontal: 8, paddingVertical: 4}}>-</Text>
+            <Text style={{color: '#4B2D83', fontWeight: 'bold', fontSize: 28, paddingHorizontal: 8, paddingVertical: 4}}>-</Text>
           </TouchableOpacity>
 
           <Text style={styles.quantity}>{cartItem.quantity}</Text>
@@ -32,7 +32,7 @@ const CartCard = ({cartItem}: {cartItem: CartItem}) => {
           <TouchableOpacity 
             onPress={() => addQuantityOfItem(cartItem.id) } 
           >
-            <Text style={{color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4}}>+</Text>
+            <Text style={{color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4}}>+</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -46,17 +46,20 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     width: screenWidth-28,
-    paddingTop: 16
+    paddingTop: 16,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginVertical: 5,
   },
   detailsContainer: {
     flex: 1,
-    paddingLeft: 14,
     justifyContent: 'space-between'
   },
   title: {
-    color: theme.colors.text,
-    fontWeight: '300',
-    letterSpacing: 1.5
+    color: 'black',
+    fontWeight: '500',
+    letterSpacing: 1.5,
+    margin: 3
   },
   options: {
     color: theme.colors.text,
@@ -65,23 +68,25 @@ const styles = StyleSheet.create({
     paddingTop: 16
   },
   price: {
-    color: theme.colors.text,
+    color: 'grey',
+    fontWeight: '600',
     letterSpacing: 1.5,
     paddingTop: 4
   },
   image: {
     width: (screenWidth-28)*0.45,
-    maxHeight: (screenWidth-28)*0.45*1.5
+    maxHeight: (screenWidth-28)*0.45*1.5,
+    margin: 5
   },
   quantitySelector: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: -8
   },
   quantity: {
-    color: theme.colors.text,
+    color: '#4B2D83',
     fontSize: 15,
     paddingHorizontal: Platform.OS == 'ios' ? 16 : 14,
     width: 38,
+    fontWeight: 'bold'
   }
 })
