@@ -277,9 +277,8 @@ const ProductScreen = ({ route, navigation }: Props) => {
                       <Text style={{ color: 'red', alignSelf: 'center', marginTop: 24 }}>{errorMessage}</Text> :
                       <View style={{ flexDirection: 'row', width: '100%' }}>
                         <View style={styles.buttonsContainer}>
-                          {/* <View style={{ marginLeft: 30 }}></View> */}
-                          {itemQuantity > 0 && (
-                            <OutlineButton
+                          {itemQuantity > 0 ? (
+                            <TouchableOpacity 
                               onPress={() => {
                                 bottomSheetMode = 'add'
                                 setBottomSheetModeState('add')
@@ -288,9 +287,27 @@ const ProductScreen = ({ route, navigation }: Props) => {
                                 } else {
                                   addToCart()
                                 }
-                              }}
-                              title='ADD TO CART'
-                            />
+                              }}>
+                              <View style={styles.addCartContainer}>
+                                <Text style={styles.addCartText}>Add to Cart</Text>
+                              </View>
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity 
+                              disabled={true}
+                              onPress={() => {
+                                bottomSheetMode = 'add'
+                                setBottomSheetModeState('add')
+                                if (!noVariants) {
+                                  setTimeout(() => showBuyBottomSheet(), 1)
+                                } else {
+                                  addToCart()
+                                }
+                              }}>
+                              <View style={styles.addCartDisabledContainer}>
+                                <Text style={styles.addCartDisabledText}>Add to Cart</Text>
+                              </View>
+                            </TouchableOpacity>
                           )}
                         </View>
                         <View style={styles.quantitySelector}>
@@ -301,9 +318,10 @@ const ProductScreen = ({ route, navigation }: Props) => {
                                 }
                               }}
                             >
-                              <Text style={{ color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>+</Text>
+                              {/* <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>+</Text> */}
+                              <FontAwesome name="angle-up" size={32} color='#4B2D83' />
                             </TouchableOpacity>
-                            <Text style={{ color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
+                            <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
                             <TouchableOpacity
                               onPress={() => {
                                 if (itemQuantity > 0) {
@@ -311,7 +329,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
                                 }
                               }}
                             >
-                              <Text style={{ color: theme.colors.text, fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>-</Text>
+                              <FontAwesome name="angle-down" size={32} color='#4B2D83' />
                             </TouchableOpacity>
                           </View>
                       </View>
@@ -432,10 +450,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background
   },
   title: {
-    color: theme.colors.text,
-    fontWeight: '300',
+    color: 'black',
+    fontWeight: '400',
     letterSpacing: 1.5,
-    fontSize: 12
+    fontSize: 15
   },
   subTitle: {
     color: theme.colors.text,
@@ -459,15 +477,15 @@ const styles = StyleSheet.create({
     paddingVertical: 2
   },
   price: {
-    color: theme.colors.text,
-    fontWeight: '400',
+    color: '#4B2D83',
+    fontWeight: '600',
     letterSpacing: 1.5,
     fontSize: 12,
     marginTop: 4
   },
   buttonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'center', // Align the 'ADD TO CART' button to the left
+    // justifyContent: 'center', // Align the 'ADD TO CART' button to the left
     marginTop: 30,
     bottom: -10,
     flex: 1, 
@@ -478,9 +496,41 @@ const styles = StyleSheet.create({
     // top: -35,
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'flex-end', // Align the quantity selector to the right
+    alignSelf: 'flex-end', // Align the quantity selector to the right
     flex: 1,
   },
+  addCartContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: '#4B2D83', 
+    alignItems:'center',
+    width: 250,
+  },
+  addCartText: {
+    color: '#FFFFFF', 
+    fontSize:12, 
+    letterSpacing:1,
+    fontWeight: 'bold'
+  },
+  addCartDisabledContainer: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: '#D9D9D9', 
+    backgroundOpacity: 0.4,
+    borderColor: '#4B2D83',
+    borderOpacity: 0.2,
+    borderWidth: 0.5,
+    alignItems:'center',
+    width: 250,
+  },
+  addCartDisabledText: {
+    color: theme.colors.text, 
+    fontSize:12, 
+    letterSpacing:1,
+    fontWeight: '500'
+  }
 })
 
 export default ProductScreen
