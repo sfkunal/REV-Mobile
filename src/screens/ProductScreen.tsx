@@ -28,7 +28,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
   const { getItemsCount, cartItems } = useCartContext();
   let cartItemCount = getItemsCount();
   const { addQuantityOfItem, substractQuantityOfItem } = useCartContext()
-  const [itemQuantity, setItemQuantity] = useState(0)
+  const [itemQuantity, setItemQuantity] = useState(1)
 
 
   useEffect(() => {
@@ -324,7 +324,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
                             <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
                             <TouchableOpacity
                               onPress={() => {
-                                if (itemQuantity > 0) {
+                                if (itemQuantity > 1) {
                                   setItemQuantity(itemQuantity - 1)
                                 }
                               }}

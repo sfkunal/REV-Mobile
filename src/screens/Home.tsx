@@ -486,9 +486,9 @@ const Home = ({ navigation }: Props) => {
   const HomeList = ({ data }) => (
     <View style={{ paddingTop: 10, paddingBottom: sbHeight + 220 }}>
       <FlatList
-        data={data}
+        data={data.filter(item => item != null)}
         renderItem={({ item }) => <ProductCard data={item} />}
-        keyExtractor={item => item.id} // Make sure to have a keyExtractor for unique keys
+        keyExtractor={item => item.id.toString()} // Make sure to have a keyExtractor for unique keys
         ItemSeparatorComponent={ItemSeparator} // Add this line
         keyboardDismissMode='on-drag'
         showsVerticalScrollIndicator={true}
