@@ -17,6 +17,7 @@ const Register = ({ navigation }: Props) => {
   const { rootNavigation } = useNavigationContext()
   const scrollRef = useRef<ScrollView>()
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [password, setPassword] = useState('')
@@ -36,7 +37,7 @@ const Register = ({ navigation }: Props) => {
     }
 
     try {
-      await signUp(firstName, lastName, email, password, acceptsMarketing)
+      await signUp(firstName, lastName, email, phone, password, acceptsMarketing)
       rootNavigation.goBack()
     } catch (error: any) {
       error.code === 'CUSTOMER_DISABLED' && navigation.push('VerifyEmail', { message: error.message })
@@ -48,42 +49,44 @@ const Register = ({ navigation }: Props) => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'position' : 'height'}>
-      <ScrollView 
+      <ScrollView
         scrollEnabled={Platform.OS == 'ios' ? false : true}
         showsVerticalScrollIndicator={false}
         ref={scrollRef}
       >
         <View style={styles.container} >
-          <Image source={theme.dark == true ? logoDark : logo} style={styles.image}/>
+          <Image source={theme.dark == true ? logoDark : logo} style={styles.image} />
 
-          { errorMessage ?
-            <View style={{height:32, justifyContent: 'flex-end'}}>
-              <Text style={{color:'red'}}>{errorMessage}</Text>
+          {errorMessage ?
+            <View style={{ height: 32, justifyContent: 'flex-end' }}>
+              <Text style={{ color: 'red' }}>{errorMessage}</Text>
             </View> :
-            <View style={{height:32}}><Text style={{color:theme.colors.background}}>peco</Text></View>
+            <View style={{ height: 32 }}><Text style={{ color: theme.colors.background }}>peco</Text></View>
           }
 
-          <TextInput 
-            placeholder='First Name'
-            placeholderTextColor={theme.colors.disabledText}
-            keyboardType='default'
-            style={[styles.input, {marginTop: 0}]}
-            onChangeText={(text: string) => setFirstName(text)}
-            autoCapitalize='words'
-            value={firstName}
-            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({y: 280, animated: true})}
-          />
-          <TextInput 
-            placeholder='Last Name'
-            placeholderTextColor={theme.colors.disabledText}
-            keyboardType='default'
-            style={styles.input}
-            onChangeText={(text: string) => setLastName(text)}
-            autoCapitalize='words'
-            value={lastName}
-            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({y: 280, animated: true})}
-          />
-          <TextInput 
+          <View style={{ ...styles.input, flexDirection: 'row', justifyContent: 'space-between', }}>
+            <TextInput
+              placeholder='First Name'
+              placeholderTextColor={theme.colors.disabledText}
+              keyboardType='default'
+              style={[styles.input, { width: '45%', marginRight: '5%', borderBottomWidth: 0, paddingHorizontal: 0, padding: 2 }]}
+              onChangeText={(text: string) => setFirstName(text)}
+              autoCapitalize='words'
+              value={firstName}
+              onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 280, animated: true })}
+            />
+            <TextInput
+              placeholder='Last Name'
+              placeholderTextColor={theme.colors.disabledText}
+              keyboardType='default'
+              style={[styles.input, { width: '45%', borderBottomWidth: 0, paddingHorizontal: 0, padding: 2 }]}
+              onChangeText={(text: string) => setLastName(text)}
+              autoCapitalize='words'
+              value={lastName}
+              onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 280, animated: true })}
+            />
+          </View>
+          <TextInput
             placeholder='Email'
             placeholderTextColor={theme.colors.disabledText}
             keyboardType='email-address'
@@ -91,9 +94,19 @@ const Register = ({ navigation }: Props) => {
             onChangeText={(text: string) => setEmail(text)}
             autoCapitalize='none'
             value={email}
-            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({y: 280, animated: true})}
+            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 280, animated: true })}
           />
-          <TextInput 
+          <TextInput
+            placeholder='Phone'
+            placeholderTextColor={theme.colors.disabledText}
+            keyboardType='phone-pad'
+            style={styles.input}
+            onChangeText={(text: string) => setPhone(text)}
+            autoCapitalize='none'
+            value={phone}
+            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 280, animated: true })}
+          />
+          <TextInput
             placeholder='Password'
             placeholderTextColor={theme.colors.disabledText}
             keyboardType='default'
@@ -102,41 +115,41 @@ const Register = ({ navigation }: Props) => {
             autoCapitalize='none'
             value={password}
             secureTextEntry={true}
-            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({y: 280, animated: true})}
+            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 280, animated: true })}
           />
-          <TextInput 
+          <TextInput
             placeholder='Confirm Password'
             placeholderTextColor={theme.colors.disabledText}
             keyboardType='default'
-            style={[styles.input, {marginBottom: 16}]}
+            style={[styles.input, { marginBottom: 16 }]}
             onChangeText={(text: string) => setVerifyPassword(text)}
             autoCapitalize='none'
             value={verifyPassword}
             secureTextEntry={true}
-            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({y: 280, animated: true})}
+            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 280, animated: true })}
           />
           <View style={styles.acceptsMarketingContainer}>
-            <Switch 
+            <Switch
               onValueChange={value => setAcceptsMarketing(value)}
               value={acceptsMarketing}
-              
+
             />
             <Text style={styles.acceptsMarketingText}>Subscribe to our newsletter</Text>
           </View>
 
-          { loading ? 
+          {loading ?
             <ActivityIndicator /> :
-            <FillButton 
+            <FillButton
               title='REGISTER'
               onPress={onSignUp}
             />
           }
 
-          <Text style={{marginVertical: 24, color:theme.colors.infoText}}>
+          <Text style={{ marginVertical: 24, color: theme.colors.infoText }}>
             Already have an account?
-            <Text 
-              style={{color:theme.colors.primary, fontWeight:'500', marginLeft:4}} 
-              onPress={() => { navigation.navigate('Login')} }
+            <Text
+              style={{ color: theme.colors.primary, fontWeight: '500', marginLeft: 4 }}
+              onPress={() => { navigation.navigate('Login') }}
             >
               {' '}Login
             </Text>
@@ -151,7 +164,7 @@ export default Register
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     alignItems: 'center',
     paddingTop: 32,
     paddingBottom: 52,
@@ -169,19 +182,19 @@ const styles = StyleSheet.create({
     height: config.logoWidth * config.logoSizeRatio,
   },
   acceptsMarketingContainer: {
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginBottom: 24, 
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 24,
     width: '75%'
   },
   input: {
-    marginTop:16,
-    fontSize:16,
+    marginTop: 16,
+    fontSize: 16,
     width: '75%',
-    borderBottomWidth:0.5,
-    borderColor: theme.colors.text, 
-    padding:8,
-    paddingHorizontal:4,
+    borderBottomWidth: 0.5,
+    borderColor: theme.colors.text,
+    padding: 8,
+    paddingHorizontal: 4,
     color: theme.colors.text
   }
 }

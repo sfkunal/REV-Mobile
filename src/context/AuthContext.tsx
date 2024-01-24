@@ -6,7 +6,7 @@ import { convertDateToTimestamp } from "../utils/convertDateToTimestamp"
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<unknown>
   signOut: () => Promise<void>
-  signUp: (firstName: string, lastName: string, email: string, password: string, acceptsMarketing: boolean) => Promise<unknown>
+  signUp: (firstName: string, lastName: string, email: string, phone: string, password: string, acceptsMarketing: boolean) => Promise<unknown>
   userToken: any
   dispatch: React.Dispatch<any>
 }
@@ -209,13 +209,15 @@ export const AuthContext = ({children}: Props) => {
         }       
       },
 
-      signUp: async (firstName: string, lastName: string, email: string, password: string, acceptsMarketing: boolean) => {  
+      signUp: async (firstName: string, lastName: string, email: string, phone: string, password: string, acceptsMarketing: boolean) => {  
         var p = new Promise(async (resolve, reject) => {
-
+          phone = phone.replace(/[\s()-]/g, '');
+          console.log(phone)
           try {
             const variables = {
               input: {
                 email,
+                phone, 
                 firstName,
                 lastName,
                 password,
@@ -228,6 +230,7 @@ export const AuthContext = ({children}: Props) => {
                 customer {
                   id
                   email
+                  phone
                   firstName
                   lastName
                 }
