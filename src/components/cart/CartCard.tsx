@@ -39,7 +39,7 @@ const CartCard = ({ cartItem }: { cartItem: CartItem }) => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity onPress={() => removeItemFromCart(cartItem.id)} style={{ paddingRight: 15 }}>
-            <Icon name="times" size={18} color="#4B2D83" />
+            <Icon name="times" size={18} color="#4B2D83" style={{ padding: 2}}/>
           </TouchableOpacity>
         </View>
       </View>
