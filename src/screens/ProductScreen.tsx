@@ -28,7 +28,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
   const { getItemsCount, cartItems } = useCartContext();
   let cartItemCount = getItemsCount();
   const { addQuantityOfItem, substractQuantityOfItem } = useCartContext()
-  const [itemQuantity, setItemQuantity] = useState(1)
+  const [itemQuantity, setItemQuantity] = useState(0)
 
 
   useEffect(() => {
