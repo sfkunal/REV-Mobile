@@ -129,7 +129,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                 <Text style={{marginTop: 3,
                   fontSize: 16.2,
                   fontWeight: '500',
-                  color: '#4B2D83',}}>
+                  color: '#ccc',}}>
                   Out of Stock
                 </Text>
               )}
