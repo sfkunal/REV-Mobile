@@ -597,8 +597,8 @@ const Home = ({ navigation }: Props) => {
                       fontSize: 22,
                       letterSpacing: 1,
                       fontWeight: 'bold',
-                      paddingLeft: 5,
-                      paddingRight: 5 // Add some space between the two buttons
+                      paddingLeft: 10,
+                      paddingRight: 10
                     }}>
                       {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
                     </Text>
@@ -611,8 +611,8 @@ const Home = ({ navigation }: Props) => {
                       fontSize: 22,
                       letterSpacing: 1,
                       fontWeight: 'bold',
-                      paddingLeft: 5,
-                      paddingRight: 5
+                      paddingLeft: 10,
+                      paddingRight: 10
                     }}>
                       Explore
                     </Text>

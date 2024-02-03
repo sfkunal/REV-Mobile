@@ -468,14 +468,14 @@ const styles = StyleSheet.create({
   },
   price: {
     color: '#4B2D83',
-    fontWeight: '600',
+    fontWeight: 'bold',
     letterSpacing: 1,
     fontSize: 17,
     marginTop: 4
   },
   smallPrice: {
     color: '#4B2D83',
-    fontWeight: '600',
+    fontWeight: 'bold',
     letterSpacing: 1,
     fontSize: 15,
     marginTop: 4
