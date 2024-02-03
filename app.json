@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sfkunal.shopifyreactnativetemplate"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,11 +29,21 @@
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "a49a860d-f29d-45e5-9c1f-7bd56181cdd2"
       }
     },
     "updates": {
       "url": ""
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "17.0"
+          }
+        }
+      ]
+    ]
   }
 }
