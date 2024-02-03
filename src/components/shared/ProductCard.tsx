@@ -109,7 +109,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
             style={styles.image}
           />
           <View>
-            <Text style={styles.text}>{data.title.toUpperCase()}</Text>
+          <Text style={styles.text} numberOfLines={1} ellipsizeMode='tail'>{data.title}</Text>
             <View style={styles.priceContainer}>
               {data.compareAtPriceRange.minVariantPrice.amount >
                 data.priceRange.minVariantPrice.amount && (
@@ -119,8 +119,12 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                 )}
               {selectedItem?.availableForSale ? (
                 <Text style={styles.price}>
-                  ${data.priceRange.minVariantPrice.amount}
+                  ${data.priceRange.minVariantPrice.amount.toString().split('.')[0]}.
+                  <Text style={styles.smallPrice}>
+                    {data.priceRange.minVariantPrice.amount.toString().split('.')[1]}
+                  </Text>
                 </Text>
+              
               ) : (
                 <Text style={{marginTop: 3,
                   fontSize: 16.2,
@@ -156,14 +160,21 @@ const styles = StyleSheet.create({
   text: {
     marginTop: 10,
     paddingRight: 14,
-    fontSize: 11,
-    fontWeight: '300',
-    color: theme.colors.text,
-    letterSpacing: 1
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'black',
+    letterSpacing: 1,
+    paddingBottom: 8
   },
   price: {
     marginTop: 2,
     fontSize: 16.2,
+    fontWeight: '800',
+    color: '#4B2D83',
+  },
+  smallPrice: {
+    marginTop: 2,
+    fontSize: 13,
     fontWeight: '800',
     color: '#4B2D83',
   },
