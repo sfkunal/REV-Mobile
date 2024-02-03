@@ -62,21 +62,6 @@ const ProductScreen = ({ route, navigation }: Props) => {
               </View>
             )}
           </TouchableOpacity>
-
-          {wishlist.includes(data.id) ?
-            <TouchableOpacity
-              style={{ padding: 6 }}
-              onPress={() => removeItemFromWishlist(data.id)}
-            >
-              <FontAwesome name="heart" size={24} color='#4a307e' />
-            </TouchableOpacity> :
-            <TouchableOpacity
-              style={{ padding: 6 }}
-              onPress={() => addItemToWishlist(data.id)}
-            >
-              <FontAwesome name="heart-o" size={24} color='#4a307e' />
-            </TouchableOpacity>
-          }
         </>
       )
     })

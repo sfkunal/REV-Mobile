@@ -59,13 +59,13 @@ const Profile = ({ navigation }: Props) => {
       {/* <Text style={styles.greeting}>Welcome back{userToken && `, ${userToken.customer.firstName}`}!</Text> */}
 
       <View style={{ marginBottom: 16 }}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
           onPress={() => navigation.push('Wishlist')}
         >
           <Text style={styles.settingTitle}>Wishlist</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
-        </TouchableOpacity>
+          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
@@ -78,7 +78,7 @@ const Profile = ({ navigation }: Props) => {
           }}
         >
           <Text style={styles.settingTitle}>My orders</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
+          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
         </TouchableOpacity>
 
       </View>
@@ -90,7 +90,7 @@ const Profile = ({ navigation }: Props) => {
           onPress={() => Linking.openURL(`instagram://user?username=${config.instagramUsername}`)}
         >
           <Text style={styles.settingTitle}>Instagram</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
+          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
         </TouchableOpacity>
         {/* <TouchableOpacity 
           style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
@@ -110,14 +110,14 @@ const Profile = ({ navigation }: Props) => {
               onPress={() => navigation.push('PersonalInformations')}
             >
               <Text style={styles.settingTitle}>Personal Information</Text>
-              <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
+              <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
             </TouchableOpacity>
             <TouchableOpacity
               style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
               onPress={() => navigation.push('ResetPassword')}
             >
               <Text style={styles.settingTitle}>Change Password</Text>
-              <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
+              <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
             </TouchableOpacity>
           </View>
         </>
@@ -145,21 +145,14 @@ const Profile = ({ navigation }: Props) => {
           onPress={() => WebBrowser.openBrowserAsync('https://rev.delivery/policies/terms-of-service')}
         >
           <Text style={styles.settingTitle}>Terms of Service</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
+          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
         </TouchableOpacity>
-        {/* <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-          onPress={() => WebBrowser.openBrowserAsync('https://juet.ro/policies/refund-policy') }
-        >
-          <Text style={styles.settingTitle}>Refund Policy</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
-        </TouchableOpacity> */}
         <TouchableOpacity
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
           onPress={() => WebBrowser.openBrowserAsync('https://rev.delivery/policies/privacy-policy')}
         >
           <Text style={styles.settingTitle}>Privacy Policy</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
+          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
         </TouchableOpacity>
       </View>
 
@@ -171,7 +164,7 @@ const Profile = ({ navigation }: Props) => {
             onPress={deleteAccount}
           >
             <Text style={styles.settingTitle}>Delete Account</Text>
-            <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
+            <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
           </TouchableOpacity>
         </>
       }
@@ -190,7 +183,7 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontSize: 20,
     letterSpacing: 1,
-    marginBottom: 32
+    // marginBottom: 32
   },
   text: {
     color: theme.colors.text
@@ -206,9 +199,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   settingTitle: {
-    color: theme.colors.text,
-    letterSpacing: 1.8,
+    color: '#000000',
+    letterSpacing: 1,
     fontSize: 16,
+    fontWeight: 'bold',
     paddingVertical: 8
   }
 })

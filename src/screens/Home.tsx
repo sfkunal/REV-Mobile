@@ -579,7 +579,7 @@ const Home = ({ navigation }: Props) => {
 
               </TouchableOpacity>
 
-              <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
+              <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center'}}>
                 <TouchableOpacity
                   onPress={() => setSelectedMode('forYou')}
                   style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
@@ -588,8 +588,8 @@ const Home = ({ navigation }: Props) => {
                     fontSize: 18,
                     letterSpacing: 1.8,
                     fontWeight: '500',
-                    paddingLeft: 10,
-                    paddingRight: 10 // Add some space between the two buttons
+                    paddingLeft: 5,
+                    paddingRight: 5 // Add some space between the two buttons
                   }}>
                     {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
                   </Text>
@@ -602,8 +602,8 @@ const Home = ({ navigation }: Props) => {
                     fontSize: 18,
                     letterSpacing: 1.8,
                     fontWeight: '500',
-                    paddingLeft: 10,
-                    paddingRight: 10
+                    paddingLeft: 5,
+                    paddingRight: 5
                   }}>
                     Explore
                   </Text>

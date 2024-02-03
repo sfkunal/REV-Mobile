@@ -17,13 +17,13 @@ const ProductCard = memo(({ data }: { data: Product }) => {
 
 
   const [selectedOptions, setSelectedOptions] = useState<{ name: string; value: string | null }[]>(
-    data.options.map((option) => (
+    data && data.options ? data.options.map((option) => (
       {
         name: option.name,
         value: option.values.length == 1 ? option.values[0] : null
       }
-    )
-    ))
+    )) : []
+  );
 
   const selectedItem = useMemo(() => data.variants.nodes.find((item) => {
     return item.selectedOptions.every((option, index) => {
@@ -143,7 +143,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
         ) : showCheckmark ? ( // Show checkmark if showCheckmark is true
           <Icon name="check" size={23} color="green" style={styles.checkIcon} />
         ) : selectedItem?.availableForSale ? ( // Check if the selected item is available for sale
-          <Icon name="plus" size={20} color="#4B2D83" style={styles.plusIcon} />
+          <Icon name="plus" size={30} color="#4B2D83" style={styles.plusIcon} />
         ) : null}
       </TouchableOpacity>
     </View>
