@@ -109,7 +109,10 @@ const Collection = ({route, navigation}: Props) => {
           onPress={() => navigation.goBack()}
         />
       ), 
-    })
+      headerTitle: () => (
+        <Text style={styles.title}>{collection?.title || ''}</Text>
+      ),
+    });
     
     try {
       fetchCollection()
@@ -121,7 +124,7 @@ const Collection = ({route, navigation}: Props) => {
       }
     }
 
-  }, [])
+  }, [collection?.title])
   
 
   return (
@@ -137,10 +140,10 @@ const Collection = ({route, navigation}: Props) => {
           contentContainerStyle={styles.container}
           ListHeaderComponent={() => (
             <View style={{marginHorizontal: -14}}>
-              <View style={[styles.titleContainer]}>
+              {/* <View style={[styles.titleContainer]}>
                 <Text style={styles.title}>{collection.title}</Text>
               </View>
-              { collection.description && <Text style={styles.text}>{collection.description}</Text>}             
+              { collection.description && <Text style={styles.text}>{collection.description}</Text>}              */}
               {/* <FlatList 
                 data={collection.products.nodes.slice(0,2) as Product[]}
                 renderItem={({item}) => <ProductCard data={item} /> }
@@ -176,10 +179,10 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    color: theme.colors.background,
+    color: 'black',
     fontSize: 18,
     letterSpacing: 1.8,
-    fontWeight: '500'
+    fontWeight: 'bold'
   },
   text: {
     color: theme.colors.text,

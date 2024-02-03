@@ -537,9 +537,11 @@ const Home = ({ navigation }: Props) => {
         styles={{
           textInput: {
             height: 38,
-            color: '#FFFFFF',
+            color: '#4B2D83',
             fontSize: 16,
-            backgroundColor: '#4B2D83',
+            backgroundColor: '#FFFFFF',
+            borderWidth: 2,
+            borderColor: '#4B2D83',
           },
           predefinedPlacesDescription: {
             color: '#1faadb',
@@ -630,8 +632,8 @@ const Home = ({ navigation }: Props) => {
             >
               <GooglePlacesInput />
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View style={{width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83'}}>  
-                <Text style={styles.textDescription}>{textDescription}</Text>
+                <View style={{width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83', marginBottom: 40}}>  
+                  <Text style={styles.textDescription}>{textDescription}</Text>
                 </View>
                 <Image source={theme.dark == true ? logoDark : logo} style={styles.image}/>
               </View>
@@ -654,7 +656,7 @@ const styles = StyleSheet.create({
   image: {
     width: '50%',
     height: '50%',
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   text: {
     color: theme.colors.text
