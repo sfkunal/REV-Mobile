@@ -25,6 +25,7 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 
 const windowHeight = Dimensions.get('window').height - 50 - (hasHomeIndicator ? 30 : 0)
 const screenWidth = Dimensions.get('screen').width;
+const textDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel semper nisl. Morbi id diam et eros aliquet mollis. Sed cursus, justo ut pellentesque posuere, tortor turpis bibendum ante, eu fringilla mi arcu ac purus.';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Collection'>
 
@@ -484,7 +485,7 @@ const Home = ({ navigation }: Props) => {
 };
 
   const HomeList = ({ data }) => (
-    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 220 }}>
+    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 260 }}>
       <FlatList
         data={data.filter(item => item != null)}
         renderItem={({ item }) => <ProductCard data={item} />}
@@ -624,9 +625,16 @@ const Home = ({ navigation }: Props) => {
                 backgroundColor: "transparent",
                 zIndex: 10,
                 height: 400,
+                paddingTop: 20
               }}
             >
               <GooglePlacesInput />
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+                <View style={{width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83'}}>  
+                <Text style={styles.textDescription}>{textDescription}</Text>
+                </View>
+                <Image source={theme.dark == true ? logoDark : logo} style={styles.image}/>
+              </View>
             </View>
           </BottomSheet>
         </>
@@ -644,8 +652,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: '50%',
+    height: '50%',
     resizeMode: 'contain'
   },
   text: {
@@ -686,6 +694,13 @@ const styles = StyleSheet.create({
   notSelectedMode: {
     borderRadius: 20, // Optional: if you want rounded corners
     padding: 5, // Adjust padding as needed
+  },
+  textDescription: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'black',
+    letterSpacing: 1,
+    paddingBottom: 8,
   },
 })
 

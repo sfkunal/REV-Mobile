@@ -28,7 +28,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
   const { getItemsCount, cartItems } = useCartContext();
   let cartItemCount = getItemsCount();
   const { addQuantityOfItem, substractQuantityOfItem } = useCartContext()
-  const [itemQuantity, setItemQuantity] = useState(0)
+  const [itemQuantity, setItemQuantity] = useState(1)
 
 
   useEffect(() => {
@@ -251,8 +251,13 @@ const ProductScreen = ({ route, navigation }: Props) => {
           contentContainerStyle={{ backgroundColor: theme.colors.background }}
         >
           <View style={{ width: '100%' }}>
-            <Text style={styles.title}>{data.title.toUpperCase()}</Text>
-            <Text style={styles.price}>{data.priceRange.minVariantPrice.amount} USD</Text>
+            <Text style={styles.title}>{data.title}</Text>
+            <Text style={styles.price}>
+                  ${data.priceRange.minVariantPrice.amount.toString().split('.')[0]}.
+                  <Text style={styles.smallPrice}>
+                    {data.priceRange.minVariantPrice.amount.toString().split('.')[1]}
+                  </Text>
+                </Text>
             {data.availableForSale ?
               <>
                 {isLoading ?
@@ -436,15 +441,15 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'black',
-    fontWeight: '400',
+    fontWeight: '600',
     letterSpacing: 1.5,
-    fontSize: 15
+    fontSize: 18
   },
   subTitle: {
-    color: theme.colors.text,
-    fontWeight: '300',
+    color: 'black',
+    fontWeight: '600',
     letterSpacing: 1.5,
-    fontSize: 12,
+    fontSize: 15,
     marginTop: 16,
   },
   optionTitle: {
@@ -464,8 +469,15 @@ const styles = StyleSheet.create({
   price: {
     color: '#4B2D83',
     fontWeight: '600',
-    letterSpacing: 1.5,
-    fontSize: 12,
+    letterSpacing: 1,
+    fontSize: 17,
+    marginTop: 4
+  },
+  smallPrice: {
+    color: '#4B2D83',
+    fontWeight: '600',
+    letterSpacing: 1,
+    fontSize: 15,
     marginTop: 4
   },
   buttonsContainer: {
