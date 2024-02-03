@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "REV Delivery",
-    "slug": "rev-delivery-mobile-app",
+    "slug": "shopify-react-native-template",
     "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
