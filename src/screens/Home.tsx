@@ -365,9 +365,9 @@ const Home = ({ navigation }: Props) => {
           createCustomerAddress()
         } else {
 
-        const defaultAddressId = response.data.customer.defaultAddress.id ? response.data.customer.defaultAddress.id : null;
+          const defaultAddressId = response.data.customer.defaultAddress.id ? response.data.customer.defaultAddress.id : null;
 
-        const mutation = `mutation {
+          const mutation = `mutation {
           customerAddressUpdate(
             customerAccessToken: "${userToken.accessToken}"
            id: "${defaultAddressId}"
@@ -390,14 +390,14 @@ const Home = ({ navigation }: Props) => {
           }
         }`
 
-        const mutationResponse: any = await storefrontApiClient(mutation)
+          const mutationResponse: any = await storefrontApiClient(mutation)
 
-        if (response.errors && response.errors.length != 0) {
+          if (response.errors && response.errors.length != 0) {
+            setIsLoading(false)
+            throw response.errors[0].message
+          }
           setIsLoading(false)
-          throw response.errors[0].message
         }
-        setIsLoading(false)
-      }
       } catch (e) {
         console.log(e)
       }
@@ -475,14 +475,14 @@ const Home = ({ navigation }: Props) => {
   const formatAddress = (address: Address) => {
     const { address1, address2, city, state, country, zip } = address;
     const parts = [
-        address1 && address1.length !== 0 ? address1 : '',
-        address2 && address2.length !== 0 ? `, ${address2}` : '',
-        city && city.length !== 0 ? `, ${city}` : '',
-        state && state.length !== 0 ? `, ${state}` : '',
-        zip && zip.length !== 0 ? `, ${zip}` : '',
+      address1 && address1.length !== 0 ? address1 : '',
+      address2 && address2.length !== 0 ? `, ${address2}` : '',
+      city && city.length !== 0 ? `, ${city}` : '',
+      state && state.length !== 0 ? `, ${state}` : '',
+      zip && zip.length !== 0 ? `, ${zip}` : '',
     ];
     return parts.join('');
-};
+  };
 
   const HomeList = ({ data }) => (
     <View style={{ paddingTop: 10, paddingBottom: sbHeight + 260 }}>
@@ -560,57 +560,64 @@ const Home = ({ navigation }: Props) => {
         <>
           <View>
             <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
-              <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
-                {selectedAddress ? (
-                  <View>
-                    <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-                      Delivering to:
-                    </Text>
-                    <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
-                      {formatAddress(selectedAddress)}
-                    </Text>
-                    {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} /> */}
-                  </View>
-                ) : (
-                  <View style={{ flexDirection: 'row' }}>
-                    <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-                      Where are we delivering?
-                    </Text>
-                    {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} /> */}
-                  </View>
-                )}
 
+              <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
+                
+                  {selectedAddress ? (
+                    <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
+                      {/* <View style={{ flexDirection: 'row' }}>
+                      <Text>hi</Text> */}
+                      <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                        Delivering to:
+                      </Text>
+                      <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
+                        {formatAddress(selectedAddress)}
+                      </Text>
+                      {/* </View> */}
+                      {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, top: 7 }} /> */}
+                    </View>
+                  ) : (
+                    <View style={{ flexDirection: 'row' }}>
+                      <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                        Where are we delivering?
+                      </Text>
+                      {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} /> */}
+                    </View>
+                  )}
+                {/* </View> */}
               </TouchableOpacity>
 
-              <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center'}}>
-                <TouchableOpacity
-                  onPress={() => setSelectedMode('forYou')}
-                  style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
-                  <Text style={{
-                    color: selectedMode === 'forYou' ? 'white' : theme.colors.text,
-                    fontSize: 18,
-                    letterSpacing: 1.8,
-                    fontWeight: '500',
-                    paddingLeft: 5,
-                    paddingRight: 5 // Add some space between the two buttons
-                  }}>
-                    {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setSelectedMode('explore')}
-                  style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
-                  <Text style={{
-                    color: selectedMode === 'explore' ? 'white' : theme.colors.text,
-                    fontSize: 18,
-                    letterSpacing: 1.8,
-                    fontWeight: '500',
-                    paddingLeft: 5,
-                    paddingRight: 5
-                  }}>
-                    Explore
-                  </Text>
-                </TouchableOpacity>
+              <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
+                <View style={{ borderWidth: 2, flexDirection: 'row', alignItems: 'center', borderRadius: 20, borderColor: '#4B2D83' }}>
+                  <TouchableOpacity
+                    onPress={() => setSelectedMode('forYou')}
+                    style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
+                    <Text style={{
+                      color: selectedMode === 'forYou' ? 'white' : '#4B2D83',
+                      fontSize: 22,
+                      letterSpacing: 1,
+                      fontWeight: 'bold',
+                      paddingLeft: 5,
+                      paddingRight: 5 // Add some space between the two buttons
+                    }}>
+                      {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setSelectedMode('explore')}
+                    style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
+                    <Text style={{
+                      color: selectedMode === 'explore' ? 'white' : '#4B2D83',
+                      fontSize: 22,
+                      letterSpacing: 1,
+                      fontWeight: 'bold',
+                      paddingLeft: 5,
+                      paddingRight: 5
+                    }}>
+                      Explore
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
             <HomeList data={selectedMode === 'explore' ? exploreProducts : (userOrders > 4 ? forYou : popularProducts)} />
@@ -631,11 +638,11 @@ const Home = ({ navigation }: Props) => {
               }}
             >
               <GooglePlacesInput />
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-                <View style={{width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83', marginBottom: 40}}>  
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{ width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83', marginBottom: 40 }}>
                   <Text style={styles.textDescription}>{textDescription}</Text>
                 </View>
-                <Image source={theme.dark == true ? logoDark : logo} style={styles.image}/>
+                <Image source={theme.dark == true ? logoDark : logo} style={styles.image} />
               </View>
             </View>
           </BottomSheet>
@@ -682,11 +689,11 @@ const styles = StyleSheet.create({
     // borderRadius: 7,
     flexDirection: 'row',
     marginTop: '2%',
-    alignSelf: 'center',
-    width: '93%',
+    alignSelf: 'flex-start',
+    width: '90%',
     justifyContent: 'flex-start', // Add this line to center content vertically
-    borderBottomWidth: 2,
-    borderBottomColor: '#4B2D83',
+    // borderBottomWidth: 2,
+    // borderBottomColor: '#4B2D83',
   },
   selectedMode: {
     backgroundColor: '#4B2D83',
