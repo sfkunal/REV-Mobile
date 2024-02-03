@@ -40,30 +40,24 @@ const TabNavigator = ({ navigation }: Props) => {
           tabBarActiveBackgroundColor: 'white',
           tabBarInactiveBackgroundColor: 'white',
           tabBarIcon: ({ focused, color, size }) => {
-            var size = 20
+            var size = 22
             if (route.name == 'Home') {
-              return <HomeIcon size={22} color={color} />
-
+              return <HomeIcon size={size} color={color} />
             }
-            // if ( route.name =='Menu' ) {
-            //   return <StoreIcon size={22.5} color={color} />
-            // } 
             if (route.name == 'Search') {
-              return <SearchIcon size={18} color={color} />
+              return <SearchIcon size={size} color={color} />
             }
             if (route.name == 'Cart') {
-              return <CartIcon size={21} color={color} />
+              return <CartIcon size={size} color={color} />
             }
             if (route.name == 'Profile') {
-              return <ProfileIcon size={22} color={color} />
+              return <ProfileIcon size={size} color={color} />
             }
           }
         })}
       >
         <Tab.Screen name="Home" component={HomeStackNavigator} />
-        {/* <Tab.Screen name="Menu" component={MenuStackNavigator} /> */}
         <Tab.Screen name="Search" component={SearchStackNavigator} />
-        {/* <Tab.Screen name="Cart" component={CartStackNavigator} /> */}
         <Tab.Screen name="Profile" component={ProfileStackNavigator} />
       </Tab.Navigator>
     </NavigationContainer>
