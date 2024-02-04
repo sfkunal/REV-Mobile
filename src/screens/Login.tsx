@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { View, Text, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Image, ActivityIndicator, TextInput } from 'react-native'
+import { View, Text, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Image, ActivityIndicator, TextInput, TouchableOpacity } from 'react-native'
 import { useAuthContext } from '../context/AuthContext'
 import logoDark from '../../assets/logo-dark.png'
 import logo from '../../assets/logo.png'
@@ -12,7 +12,7 @@ import { config } from '../../config'
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>
 
-const Login = ({navigation}: Props) => {
+const Login = ({ navigation }: Props) => {
   const { rootNavigation } = useNavigationContext()
   const scrollRef = useRef<ScrollView>()
   const { signIn } = useAuthContext()
@@ -37,64 +37,68 @@ const Login = ({navigation}: Props) => {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'position' : 'height'} >
-      <ScrollView 
+      <ScrollView
         scrollEnabled={Platform.OS == 'ios' ? false : true}
         showsVerticalScrollIndicator={false}
         ref={scrollRef}
       >
         <View style={styles.container} >
-          <Image source={theme.dark == true ? logoDark : logo} style={styles.image}/>
+          <Image source={theme.dark == true ? logoDark : logo} style={styles.image} />
 
-          { errorMessage ?
-            <View style={{height:32}}>
-              <Text style={{color:'red'}}>{errorMessage}</Text>
+          {errorMessage ?
+            <View style={{ height: 32 }}>
+              <Text style={{ color: 'red' }}>{errorMessage}</Text>
             </View> :
-            <View style={{height:32}}><Text style={{color:theme.colors.background}}>peco</Text></View>
+            <View style={{ height: 32 }}><Text style={{ color: theme.colors.background }}>peco</Text></View>
           }
-
-          <TextInput 
+          <TextInput
             placeholder='Email'
             placeholderTextColor={theme.colors.disabledText}
             keyboardType='email-address'
             style={styles.input}
             onChangeText={(text: string) => setEmail(text)}
             autoCapitalize='none'
+            autoComplete="email"
             value={email}
-            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({y: 100, animated: true})}
+            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 100, animated: true })}
           />
-          <TextInput 
+          <TextInput
             placeholder='Password'
             placeholderTextColor={theme.colors.disabledText}
             keyboardType='default'
-            style={[styles.input, {marginBottom: 56}]}
+            style={[styles.input, { marginBottom: 56 }]}
             onChangeText={(text: string) => setPassword(text)}
             autoCapitalize='none'
+            autoComplete="password"
             value={password}
             secureTextEntry={true}
-            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({y: 100, animated: true})}
+            onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 100, animated: true })}
           />
-
-          { loading ? 
+          <View style={{ height: '20%' }} />
+          {loading ?
             <ActivityIndicator /> :
-            <FillButton 
-              title='LOGIN'
-              onPress={signInButton}
-            />
+            // <FillButton
+            //   title='LOGIN'
+            //   onPress={signInButton}
+            // />
+            <TouchableOpacity style={styles.loginContainer} onPress={signInButton}>
+              <Text style={styles.loginText}>Let's Go!</Text>
+            </TouchableOpacity>
           }
 
-          <Text style={{marginTop: 16, color:theme.colors.infoText}}>
+          <Text style={{ marginTop: 16, color: theme.colors.infoText }}>
             Don't have an account?
-            <Text 
-              style={{color:theme.colors.primary, fontWeight:'500', marginLeft:4}} 
-              onPress={() => { navigation.push('Register')} }
+            <Text
+              style={{ color: theme.colors.primary, fontWeight: '500', marginLeft: 4 }}
+              onPress={() => { navigation.push('Register') }}
             >
               {' '}Register
             </Text>
           </Text>
 
-          <Text 
-            style={{color:theme.colors.primary, fontWeight:'500', marginLeft:4, marginTop:6, paddingBottom:24}} 
-            onPress={() => { navigation.push('ForgotPassword')} }
+          <Text
+            style={{ color: theme.colors.primary, fontWeight: '500', marginLeft: 4, marginTop: 6, paddingBottom: 24 }}
+            onPress={() => { navigation.push('ForgotPassword') }}
           >
             Forgot Password?
           </Text>
@@ -109,11 +113,10 @@ export default Login
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
+    flex: 1,
     alignItems: 'center',
     paddingTop: 32,
-    paddingBottom: 56
-    
+    paddingBottom: 100
   },
   text: {
     color: theme.colors.text
@@ -124,14 +127,29 @@ const styles = StyleSheet.create({
     marginBottom: 48,
   },
   input: {
-    marginTop:16,
-    fontSize:16,
-    width: '75%',
-    borderBottomWidth:0.5,
-    borderColor: theme.colors.text, 
-    padding:8,
-    paddingHorizontal:4,
+    marginTop: 15,
+    fontSize: 18,
+    width: '85%',
+    borderRadius: 12,
+    backgroundColor: '#D9D9D9',
+    padding: 10,
+    paddingLeft: 16,
+    paddingHorizontal: 4,
     color: theme.colors.text
+  },
+  loginContainer: {
+    paddingVertical: 6,
+    paddingHorizontal: 20,
+    width: '60%',
+    backgroundColor: '#4B2D83',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  loginText: {
+    color: theme.colors.background,
+    fontSize: 18,
+    letterSpacing: 1,
+    fontWeight: '500'
   }
 }
 )
