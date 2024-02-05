@@ -565,26 +565,23 @@ const Home = ({ navigation }: Props) => {
                 
                   {selectedAddress ? (
                     <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
-                      {/* <View style={{ flexDirection: 'row' }}>
-                      <Text>hi</Text> */}
                       <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                         Delivering to:
                       </Text>
                       <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
                         {formatAddress(selectedAddress)}
                       </Text>
-                      {/* </View> */}
-                      {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, top: 7 }} /> */}
                     </View>
                   ) : (
-                    <View style={{ flexDirection: 'row' }}>
-                      <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                    <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
+                      <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                         Where are we delivering?
                       </Text>
-                      {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} /> */}
+                      <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
+                        Enter your address here...
+                      </Text>
                     </View>
                   )}
-                {/* </View> */}
               </TouchableOpacity>
 
               <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
@@ -690,7 +687,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: '2%',
     alignSelf: 'flex-start',
-    width: '90%',
+    width: '85%',
     justifyContent: 'flex-start', // Add this line to center content vertically
     // borderBottomWidth: 2,
     // borderBottomColor: '#4B2D83',
