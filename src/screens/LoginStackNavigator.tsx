@@ -9,7 +9,6 @@ import ForgotPassword from './ForgotPassword'
 import VerifyEmail from './VerifyEmail'
 import ForgotPasswordEmailSent from './ForgotPasswordEmailSent'
 import { useEffect, useState } from 'react'
-// import OnboardingFlow from './OnboardingFlow'
 import OnboardingName from './OnboardingName'
 import OnboardingEmail from './OnboardingEmail'
 import OnboardingPhone from './OnboardingPhone'
@@ -65,19 +64,12 @@ const LoginStackNavigator = ({route}: Props) => {
           }} 
           initialParams={{message: ''}}
         />
-        {/* <LoginStack.Screen 
-          name='OnboardingFlow' 
-          component={OnboardingFlow}
-          options={{
-            headerShown: false, // Hide the header for the onboarding flow
-            // ... other options
-          }} 
-        /> */}
         <LoginStack.Screen 
           name='OnboardingName' 
           component={OnboardingName}
           options={{
-            headerShown: false, // Hide the header for the onboarding flow
+            headerShown: true, // Hide the header for the onboarding flow
+            headerTitle: '',
             // ... other options
           }} 
         />
@@ -85,7 +77,8 @@ const LoginStackNavigator = ({route}: Props) => {
           name='OnboardingPhone' 
           component={OnboardingPhone}
           options={{
-            headerShown: false, // Hide the header for the onboarding flow
+            headerShown: true, // Hide the header for the onboarding flow
+            headerTitle: '',
             // ... other options
           }} 
           initialParams={{firstName: '', lastName: ''}}
@@ -94,7 +87,8 @@ const LoginStackNavigator = ({route}: Props) => {
           name='OnboardingEmail' 
           component={OnboardingEmail}
           options={{
-            headerShown: false, // Hide the header for the onboarding flow
+            headerShown: true, // Hide the header for the onboarding flow
+            headerTitle: '',
             // ... other options
           }} 
           initialParams={{firstName: '', lastName: '', phoneNumber: ''}}

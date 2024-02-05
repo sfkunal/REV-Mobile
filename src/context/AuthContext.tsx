@@ -212,7 +212,6 @@ export const AuthContext = ({children}: Props) => {
       signUp: async (firstName: string, lastName: string, email: string, phone: string, password: string, acceptsMarketing: boolean) => {  
         var p = new Promise(async (resolve, reject) => {
           phone = phone.replace(/[\s()-]/g, '');
-          console.log(phone)
           try {
             const variables = {
               input: {

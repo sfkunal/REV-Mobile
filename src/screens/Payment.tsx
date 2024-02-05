@@ -27,7 +27,7 @@ const Payment = ({route, navigation}: Props) => {
           { isCompleted ?
             null :
             <BackArrowIcon 
-                color={theme.colors.text}
+                color={'#4B2D83'}
                 size={20}
                 onPress={() => navigation.goBack()}
               />

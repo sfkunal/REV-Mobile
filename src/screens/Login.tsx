@@ -74,13 +74,9 @@ const Login = ({ navigation }: Props) => {
             secureTextEntry={true}
             onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 100, animated: true })}
           />
-          <View style={{ height: '20%' }} />
+          <View style={{ height: '10%' }} />
           {loading ?
             <ActivityIndicator /> :
-            // <FillButton
-            //   title='LOGIN'
-            //   onPress={signInButton}
-            // />
             <TouchableOpacity style={styles.loginContainer} onPress={signInButton}>
               <Text style={styles.loginText}>Let's Go!</Text>
             </TouchableOpacity>
@@ -115,7 +111,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 32,
+    // paddingTop: 32,
     paddingBottom: 100
   },
   text: {
