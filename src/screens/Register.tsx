@@ -69,6 +69,7 @@ const Register = ({ navigation }: Props) => {
               placeholder='First Name'
               placeholderTextColor={theme.colors.disabledText}
               keyboardType='default'
+              autoComplete='given-name'
               style={[styles.input, { width: '45%', marginRight: '5%', borderBottomWidth: 0, paddingHorizontal: 0, padding: 2 }]}
               onChangeText={(text: string) => setFirstName(text)}
               autoCapitalize='words'
@@ -79,6 +80,7 @@ const Register = ({ navigation }: Props) => {
               placeholder='Last Name'
               placeholderTextColor={theme.colors.disabledText}
               keyboardType='default'
+              autoComplete='family-name'
               style={[styles.input, { width: '45%', borderBottomWidth: 0, paddingHorizontal: 0, padding: 2 }]}
               onChangeText={(text: string) => setLastName(text)}
               autoCapitalize='words'
@@ -144,7 +146,6 @@ const Register = ({ navigation }: Props) => {
               onPress={onSignUp}
             />
           }
-
           <Text style={{ marginVertical: 24, color: theme.colors.infoText }}>
             Already have an account?
             <Text
@@ -154,6 +155,10 @@ const Register = ({ navigation }: Props) => {
               {' '}Login
             </Text>
           </Text>
+          <FillButton
+              title='next'
+              onPress={() => { navigation.navigate('OnboardingName'); }}
+            />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

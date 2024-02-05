@@ -69,18 +69,14 @@ const Login = ({ navigation }: Props) => {
             style={[styles.input, { marginBottom: 56 }]}
             onChangeText={(text: string) => setPassword(text)}
             autoCapitalize='none'
-            autoComplete="password"
+            autoComplete="current-password"
             value={password}
             secureTextEntry={true}
             onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 100, animated: true })}
           />
-          <View style={{ height: '20%' }} />
+          <View style={{ height: '10%' }} />
           {loading ?
             <ActivityIndicator /> :
-            // <FillButton
-            //   title='LOGIN'
-            //   onPress={signInButton}
-            // />
             <TouchableOpacity style={styles.loginContainer} onPress={signInButton}>
               <Text style={styles.loginText}>Let's Go!</Text>
             </TouchableOpacity>
@@ -90,7 +86,7 @@ const Login = ({ navigation }: Props) => {
             Don't have an account?
             <Text
               style={{ color: theme.colors.primary, fontWeight: '500', marginLeft: 4 }}
-              onPress={() => { navigation.push('Register') }}
+              onPress={() => { navigation.push('OnboardingName') }}
             >
               {' '}Register
             </Text>
@@ -115,7 +111,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 32,
+    // paddingTop: 32,
     paddingBottom: 100
   },
   text: {

@@ -1,32 +1,52 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext';
 import { LoginStackParamList } from '../types/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { BackArrowIcon } from '../components/shared/Icons';
-import { theme } from '../constants/theme';
 import { config } from '../../config';
+import { theme } from '../constants/theme';
+import { useAuthContext } from '../context/AuthContext';
 
-type Props = NativeStackScreenProps<LoginStackParamList, 'OnboardingPhone'>
+type Props = NativeStackScreenProps<LoginStackParamList, 'OnboardingEmail'>
 
-const OnboardingPhone = ({ navigation, route }: Props) => {
-    const { firstName, lastName } = route.params;
-    const [phoneNumber, setPhoneNumber] = useState('');
+
+const OnboardingEmail = ({ navigation, route }: Props) => {
+    const { signUp } = useAuthContext()
+    const { firstName, lastName, phoneNumber } = route.params;
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [verifyPassword, setVerifyPassword] = useState('');
+    const { rootNavigation } = useNavigationContext()
     const [loading, setLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>()
     const scrollRef = useRef<ScrollView>()
 
+    const handleNext = async () => {
+        setLoading(true)
+        setErrorMessage(null)
 
-    const handleNext = () => {
-        if (!phoneNumber) {
-            setErrorMessage('Please enter your phone number')
+        if (!email || !password || !verifyPassword) {
+            setErrorMessage('Please enter your email and password')
+            setLoading(false)
             return
         }
-        setErrorMessage(null)
-        setLoading(true)
-        navigation.navigate('OnboardingEmail', { firstName, lastName, phoneNumber });
-        setLoading(false)
+
+        if (password != verifyPassword) {
+            setErrorMessage('Please make sure that passwords match. Try again.')
+            setLoading(false)
+            return
+        }
+
+        try {
+            await signUp(firstName, lastName, email, phoneNumber, password, true)
+            rootNavigation.goBack()
+          } catch (error: any) {
+            error.code === 'CUSTOMER_DISABLED' && navigation.push('VerifyEmail', { message: error.message })
+            typeof error.message === 'string' && setErrorMessage(error.message)
+          }
+          setLoading(false)
     };
 
     useEffect(() => {
@@ -49,21 +69,44 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                 ref={scrollRef}
             >
                 <View style={styles.container} >
-                    <Text style={styles.headerText}>Contact</Text>
-                    <Text style={styles.descText}>Can we get your digits?📲</Text>
+                    <Text style={styles.headerText}>Account Setup</Text>
+                    <Text style={styles.descText}>You're almost there!😄</Text>
                     {errorMessage &&
                         <View style={{ height: 20, justifyContent: 'flex-end' }}>
                             <Text style={{ color: 'red' }}>{errorMessage}</Text>
                         </View>
                     }
                     <TextInput
-                        placeholder="Phone Number"
+                        placeholder="Email"
+                        onChangeText={setEmail}
                         placeholderTextColor={theme.colors.disabledText}
                         style={styles.input}
-                        autoComplete='tel'
-                        onChangeText={setPhoneNumber}
-                        value={phoneNumber}
-                        keyboardType="phone-pad"
+                        value={email}
+                        autoComplete='email'
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        placeholder="Password"
+                        onChangeText={setPassword}
+                        placeholderTextColor={theme.colors.disabledText}
+                        style={styles.input}
+                        value={password}
+                        autoComplete='email'
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        secureTextEntry
+                    />
+                    <TextInput
+                        placeholder="Confirm Password"
+                        onChangeText={setVerifyPassword}
+                        placeholderTextColor={theme.colors.disabledText}
+                        style={styles.input}
+                        value={verifyPassword}
+                        autoComplete='email'
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        secureTextEntry
                     />
                     {loading ?
                         <ActivityIndicator /> :
@@ -77,7 +120,7 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
     );
 };
 
-export default OnboardingPhone;
+export default OnboardingEmail;
 
 const styles = StyleSheet.create({
     container: {
@@ -129,4 +172,5 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         marginBottom: 24
     }
-})
+}
+)

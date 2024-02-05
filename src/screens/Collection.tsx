@@ -104,7 +104,7 @@ const Collection = ({route, navigation}: Props) => {
     navigation.setOptions({
       headerLeft: () => (
         <BackArrowIcon 
-          color={theme.colors.text}
+          color={'#4B2D83'}
           size={20}
           onPress={() => navigation.goBack()}
         />

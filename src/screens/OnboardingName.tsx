@@ -1,33 +1,34 @@
+// OnboardingName.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, KeyboardAvoidingView, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { useNavigationContext } from '../context/NavigationContext';
-import { LoginStackParamList } from '../types/navigation';
+import { View, Text, TextInput, Button, StyleSheet, KeyboardAvoidingView, ScrollView, Platform, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { LoginStackParamList } from '../types/navigation';
 import { BackArrowIcon } from '../components/shared/Icons';
 import { theme } from '../constants/theme';
 import { config } from '../../config';
 
-type Props = NativeStackScreenProps<LoginStackParamList, 'OnboardingPhone'>
+type Props = NativeStackScreenProps<LoginStackParamList, 'OnboardingName'>
 
-const OnboardingPhone = ({ navigation, route }: Props) => {
-    const { firstName, lastName } = route.params;
-    const [phoneNumber, setPhoneNumber] = useState('');
+const OnboardingName = ({ navigation }: Props) => {
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const scrollRef = useRef<ScrollView>()
     const [loading, setLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>()
-    const scrollRef = useRef<ScrollView>()
 
 
     const handleNext = () => {
-        if (!phoneNumber) {
-            setErrorMessage('Please enter your phone number')
+        if (!firstName || !lastName) {
+            setErrorMessage('Please enter your first and last name')
             return
         }
         setErrorMessage(null)
         setLoading(true)
-        navigation.navigate('OnboardingEmail', { firstName, lastName, phoneNumber });
+        // console.log(firstName, lastName)
+        navigation.navigate('OnboardingPhone', { firstName, lastName });
         setLoading(false)
     };
+
 
     useEffect(() => {
         navigation.setOptions({
@@ -39,6 +40,9 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                 />
             ),
         });
+        if (firstName && lastName) {
+            setErrorMessage(null)
+        }
     }, [])
 
     return (
@@ -49,21 +53,28 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                 ref={scrollRef}
             >
                 <View style={styles.container} >
-                    <Text style={styles.headerText}>Contact</Text>
-                    <Text style={styles.descText}>Can we get your digits?📲</Text>
+                    <Text style={styles.headerText}>Welcome👋</Text>
+                    <Text style={styles.descText}>What should we call you?</Text>
                     {errorMessage &&
                         <View style={{ height: 20, justifyContent: 'flex-end' }}>
                             <Text style={{ color: 'red' }}>{errorMessage}</Text>
                         </View>
                     }
                     <TextInput
-                        placeholder="Phone Number"
+                        placeholder="First Name"
                         placeholderTextColor={theme.colors.disabledText}
+                        autoComplete='given-name'
+                        onChangeText={setFirstName}
+                        value={firstName}
                         style={styles.input}
-                        autoComplete='tel'
-                        onChangeText={setPhoneNumber}
-                        value={phoneNumber}
-                        keyboardType="phone-pad"
+                    />
+                    <TextInput
+                        placeholder="Last Name"
+                        placeholderTextColor={theme.colors.disabledText}
+                        autoComplete='family-name'
+                        onChangeText={setLastName}
+                        value={lastName}
+                        style={styles.input}
                     />
                     {loading ?
                         <ActivityIndicator /> :
@@ -74,10 +85,11 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
+
     );
 };
 
-export default OnboardingPhone;
+export default OnboardingName;
 
 const styles = StyleSheet.create({
     container: {

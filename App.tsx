@@ -39,7 +39,7 @@ export default function App() {
                   </View>
                 } 
               </View> 
-              <StatusBar style={colorScheme == 'light' ? 'dark' : 'light'} />            
+              <StatusBar style={colorScheme == 'light' ? 'light' : 'light'} />            
             </NavigationContext>
           </CartContext>
         </WishlistContext>

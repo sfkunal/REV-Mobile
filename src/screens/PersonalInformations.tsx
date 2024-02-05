@@ -30,7 +30,7 @@ const PersonalInformations = ({navigation}: Props) => {
         <>
           { Platform.OS == 'ios' ?
             <BackArrowIcon
-              color={theme.colors.text}
+              color={'#4B2D83'}
               size={20}
               onPress={() => navigation.goBack()}
             /> :
