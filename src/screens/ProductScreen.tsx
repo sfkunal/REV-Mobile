@@ -102,7 +102,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
   const [bottomSheetModeState, setBottomSheetModeState] = useState<'add' | 'buy'>('add')
   const snapPoints = useMemo(() => [350, "80%"], [])
   const snapPoints2 = useMemo(() => [220], [])
-  const snapPoints3 = useMemo(() => [240], [])
+  const snapPoints3 = useMemo(() => [170], [])
   const sheetRef2 = useRef<BottomSheet>(null)
   const sheetRef3 = useRef<BottomSheet>(null)
   const showBuyBottomSheet = useCallback(() => {
@@ -270,6 +270,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
                           {itemQuantity > 0 ? (
                             <TouchableOpacity 
                               onPress={() => {
+                                setItemQuantity(1)
                                 bottomSheetMode = 'add'
                                 setBottomSheetModeState('add')
                                 if (!noVariants) {
@@ -410,12 +411,12 @@ const ProductScreen = ({ route, navigation }: Props) => {
       >
         <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.text}>Item was added succesfully to the cart.</Text>
-          <TouchableOpacity onPress={() => {
+          {/* <TouchableOpacity onPress={() => {
             navigation.goBack()
             navigation.push('Cart')
           }}>
             <Text style={[styles.text, { marginTop: 8, fontWeight: '600', paddingBottom: 24 }]}>Visualize</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </BottomSheetView>
       </BottomSheet>
     </View>
