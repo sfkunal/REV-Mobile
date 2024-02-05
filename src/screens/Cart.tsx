@@ -104,7 +104,7 @@ const Cart = ({ navigation }: Props) => {
 
       }
 
-      rootNavigation.push('ShippingAddress', { checkoutId: response.data.checkoutCreate.checkout.id })
+      rootNavigation.push('ShippingAddress', { checkoutId: response.data.checkoutCreate.checkout.id, totalPrice: parseFloat((totalPrice + 0.99).toFixed(2))})
 
     } catch (e) {
       if (typeof e == 'string') {
@@ -196,10 +196,10 @@ const styles = StyleSheet.create({
     letterSpacing: 1.8
   },
   screenTitle: {
-    fontWeight: '600',
+    fontWeight: '900',
     letterSpacing: 1,
-    color: theme.colors.text,
-    fontSize: 16
+    color: '#4B2D83',
+    fontSize: 20
   },
   reviewOrderContainer: {
     marginTop: 5,

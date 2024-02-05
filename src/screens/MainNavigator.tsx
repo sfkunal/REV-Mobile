@@ -76,7 +76,7 @@ const MainNavigator = () => {
             headerStyle:{backgroundColor: theme.colors.background}, 
             headerShadowVisible: false,
             headerTitle: () => (
-              <Text style={styles.screenTitle}>Shipping Address</Text>
+              <Text style={styles.screenTitle}>Checkout</Text>
             ),
             headerLeft: () => (
               <>
@@ -183,9 +183,9 @@ export default MainNavigator
 
 const styles = StyleSheet.create({
   screenTitle: {
-    fontWeight: '600', 
-    letterSpacing: 1, 
-    color: theme.colors.text, 
-    fontSize: 16
-  }
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#4B2D83',
+    fontSize: 20
+  },
 })

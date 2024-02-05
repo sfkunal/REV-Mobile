@@ -36,7 +36,8 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     }
   }, [])
 
-  const { checkoutId } = route.params
+  const { checkoutId, totalPrice } = route.params
+  // console.log(totalPrice)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -46,7 +47,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
   const [email, setEmail] = useState(userToken ? userToken.customer.email : '')
   const [firstName, setFirstName] = useState(userToken ? userToken.customer.firstName : '')
   const [lastName, setLastName] = useState(userToken ? userToken.customer.lastName : '')
-  const [phone, setPhone] = useState(userToken && userToken.customer.phone ? userToken.customer.phone : '')
+  const [phone, setPhone] = useState(userToken.customer?.phone || '')
   const [province, setProvince] = useState<{ code: string, province: string } | null>(null)
   const [zip, setZip] = useState('')
   const [selectedRateHandle, setSelectedRateHandle] = useState<string | null>(null);
@@ -459,6 +460,10 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           contentContainerStyle={styles.container}
           ref={scrollViewRef}
         >
+          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 6, borderWidth: 1, marginBottom: 15}}> 
+            <Text style={{textAlign: 'left'}}>Order Total:</Text>
+            <Text style={{textAlign: 'right', paddingRight: 10}}>{totalPrice}</Text>
+          </View>
           <TouchableOpacity style={{}} onPress={() => bottomSheetRef.current?.expand()}>
             {defaultAddress ? (
               <View>
