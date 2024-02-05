@@ -14,7 +14,7 @@ const ForgotPasswordEmailSent = ({ navigation }: Props) => {
       <View style={styles.container} >
         <Image source={theme.dark == true ? logoDark : logo} style={styles.image}/>
         
-        <Text style={styles.text}>Check your email inbox to reset your password. Beware to check the spam or junk folder too, if you cannot found the email in inbox. </Text>
+        <Text style={styles.text}>Check your email inbox to reset your password. Make sure to check the spam or junk folder too! </Text>
 
         <Text 
           style={{color:theme.colors.primary, fontWeight:'500', marginLeft:4, marginTop:64, fontSize:16}} 
