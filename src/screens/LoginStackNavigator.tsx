@@ -9,6 +9,10 @@ import ForgotPassword from './ForgotPassword'
 import VerifyEmail from './VerifyEmail'
 import ForgotPasswordEmailSent from './ForgotPasswordEmailSent'
 import { useEffect, useState } from 'react'
+// import OnboardingFlow from './OnboardingFlow'
+import OnboardingName from './OnboardingName'
+import OnboardingEmail from './OnboardingEmail'
+import OnboardingPhone from './OnboardingPhone'
 
 type Props = NativeStackScreenProps<StackParamList, 'LoginStackNavigator'>
 
@@ -60,6 +64,40 @@ const LoginStackNavigator = ({route}: Props) => {
             headerShown: false
           }} 
           initialParams={{message: ''}}
+        />
+        {/* <LoginStack.Screen 
+          name='OnboardingFlow' 
+          component={OnboardingFlow}
+          options={{
+            headerShown: false, // Hide the header for the onboarding flow
+            // ... other options
+          }} 
+        /> */}
+        <LoginStack.Screen 
+          name='OnboardingName' 
+          component={OnboardingName}
+          options={{
+            headerShown: false, // Hide the header for the onboarding flow
+            // ... other options
+          }} 
+        />
+        <LoginStack.Screen 
+          name='OnboardingPhone' 
+          component={OnboardingPhone}
+          options={{
+            headerShown: false, // Hide the header for the onboarding flow
+            // ... other options
+          }} 
+          initialParams={{firstName: '', lastName: ''}}
+        />
+        <LoginStack.Screen 
+          name='OnboardingEmail' 
+          component={OnboardingEmail}
+          options={{
+            headerShown: false, // Hide the header for the onboarding flow
+            // ... other options
+          }} 
+          initialParams={{firstName: '', lastName: '', phoneNumber: ''}}
         />
       </LoginStack.Navigator>
     </NavigationContainer>

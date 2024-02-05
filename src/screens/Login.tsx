@@ -69,7 +69,7 @@ const Login = ({ navigation }: Props) => {
             style={[styles.input, { marginBottom: 56 }]}
             onChangeText={(text: string) => setPassword(text)}
             autoCapitalize='none'
-            autoComplete="password"
+            autoComplete="current-password"
             value={password}
             secureTextEntry={true}
             onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 100, animated: true })}
@@ -90,7 +90,7 @@ const Login = ({ navigation }: Props) => {
             Don't have an account?
             <Text
               style={{ color: theme.colors.primary, fontWeight: '500', marginLeft: 4 }}
-              onPress={() => { navigation.push('Register') }}
+              onPress={() => { navigation.push('OnboardingName') }}
             >
               {' '}Register
             </Text>
