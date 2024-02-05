@@ -67,6 +67,8 @@ const Profile = ({ navigation }: Props) => {
           <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
         </TouchableOpacity> */}
 
+        <Text style={{fontSize: 25, marginVertical: 15, fontWeight: 'bold', color: '#4B2D83'}}>Welcome back, {userToken.customer.firstName}!</Text>
+
         <TouchableOpacity
           style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
           onPress={() => {

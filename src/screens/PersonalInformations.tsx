@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TextInput, ActivityIndicator, Platform } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TextInput, ActivityIndicator, Platform, TouchableOpacity } from 'react-native'
 import { useEffect, useState } from 'react'
 import { theme } from '../constants/theme'
 import * as SecureStore from 'expo-secure-store'
@@ -24,7 +24,7 @@ const PersonalInformations = ({navigation}: Props) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.screenTitle}>Personal Informations</Text>
+        <Text style={styles.screenTitle}>Personal Information</Text>
       ),
       headerLeft: () => (
         <>
@@ -125,7 +125,7 @@ const PersonalInformations = ({navigation}: Props) => {
       dispatch({ type: 'RESTORE_TOKEN', token: newToken });
 
 
-      setSuccesMessage('Your personal informations has been updated successfully.')
+      setSuccesMessage('Your personal information has been updated successfully.')
     } catch (error: any) {
       typeof error == 'string' && setErrorMessage(error)
     }
@@ -192,10 +192,13 @@ const PersonalInformations = ({navigation}: Props) => {
             {
               succesMessage ?
               <Text style={styles.succesMessage}>{succesMessage}</Text> :
-              <FillButton 
-                title='CHANGE PERSONAL INFORMATIONS'
-                onPress={changeInfo}
-              />
+              // <FillButton 
+              //   title='CHANGE PERSONAL INFORMATIONS'
+              //   onPress={changeInfo}
+              // />
+              <TouchableOpacity style={styles.buttonContainer} onPress={changeInfo}>
+                <Text style={styles.buttonText}>Change Personal Information</Text>
+              </TouchableOpacity>
             } 
           </>
         }
@@ -225,7 +228,7 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   subtitle: {
-    color: theme.colors.infoText,
+    color: '#4B2D83',
     alignSelf: 'flex-start',
     fontSize: 14,
     marginTop: 24
@@ -248,24 +251,41 @@ const styles = StyleSheet.create({
   input: {
     fontSize:16,
     width: '100%',
-    borderBottomWidth:0.5,
-    borderColor: theme.colors.text, 
+    borderBottomWidth:1.5,
+    borderColor: '#4B2D83', 
     padding:8,
     paddingHorizontal:4,
     color: theme.colors.text
   },
   succesMessage: {
     marginTop:6,
-    color: theme.colors.primary,
-    fontSize: 16,
+    color: '#4B2D83',
+    fontSize: 18,
+    fontWeight: 'bold',
     textAlign: 'center',
   },
   screenTitle: {
-    fontWeight: '600', 
-    letterSpacing: 1, 
-    color: theme.colors.text, 
-    fontSize: 16
-  }
+    fontWeight: '900',
+    letterSpacing: 1,
+    color: '#4B2D83',
+    fontSize: 20
+  },
+  buttonContainer: {
+    paddingVertical: 6,
+    paddingHorizontal: 20,
+    width: '80%',
+    backgroundColor: '#4B2D83',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop: '10%',
+    alignSelf: 'center'
+  },
+  buttonText: {
+    color: theme.colors.background,
+    fontSize: 14,
+    letterSpacing: 1,
+    fontWeight: '500'
+  },
 })
 
 export default PersonalInformations

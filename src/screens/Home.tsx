@@ -516,12 +516,12 @@ const Home = ({ navigation }: Props) => {
             const country = addressComponents.find(c => c.types.includes('country'))?.short_name;
             const zip = addressComponents.find(c => c.types.includes('postal_code'))?.long_name;
             const addressDict = {
-              address1: address1 ? address1 : '',
-              address2: address2 ? address2 : '',
-              city: city ? city : '',
-              state: state ? state : '',
-              country: country ? country : '',
-              zip: zip ? zip : '',
+              address1: address1,
+              address2: address2,
+              city: city,
+              state: state,
+              country: country,
+              zip: zip
             };
 
             setSelectedAddress(addressDict);
@@ -537,11 +537,9 @@ const Home = ({ navigation }: Props) => {
         styles={{
           textInput: {
             height: 38,
-            color: '#4B2D83',
+            color: '#FFFFFF',
             fontSize: 16,
-            backgroundColor: '#FFFFFF',
-            borderWidth: 2,
-            borderColor: '#4B2D83',
+            backgroundColor: '#4B2D83',
           },
           predefinedPlacesDescription: {
             color: '#1faadb',
@@ -568,7 +566,7 @@ const Home = ({ navigation }: Props) => {
                       <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                         Delivering to:
                       </Text>
-                      <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
+                      <Text numberOfLines={1} ellipsizeMode='tail' style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
                         {formatAddress(selectedAddress)}
                       </Text>
                     </View>
@@ -635,7 +633,7 @@ const Home = ({ navigation }: Props) => {
               }}
             >
               <GooglePlacesInput />
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 45 }}>
                 <View style={{ width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83', marginBottom: 40 }}>
                   <Text style={styles.textDescription}>{textDescription}</Text>
                 </View>

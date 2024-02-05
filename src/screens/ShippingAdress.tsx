@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, Dimensions, NativeModules, StatusBar } from 'react-native'
+import { View, Text, Image, StyleSheet, ActivityIndicator, KeyboardAvoidingView, Platform, Dimensions, NativeModules, StatusBar } from 'react-native'
 import { useEffect, useRef, useState } from 'react'
 import { CartStackParamList } from '../types/navigation'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -13,9 +13,13 @@ import { AvailableShippingRatesType } from '../types/dataTypes'
 import { useAuthContext } from '../context/AuthContext'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import logoDark from '../../assets/logo-dark.png'
+import logo from '../../assets/logo.png'
 
 
 const screenHeight = Dimensions.get('screen').height
+const textDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel semper nisl. Morbi id diam et eros aliquet mollis. Sed cursus, justo ut pellentesque posuere, tortor turpis bibendum ante, eu fringilla mi arcu ac purus.';
+
 
 type Props = NativeStackScreenProps<CartStackParamList, 'ShippingAddress'>
 
@@ -53,8 +57,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
   const [selectedRateHandle, setSelectedRateHandle] = useState<string | null>(null);
   const [shippingOptionError, setShippingOptionError] = useState('');
   const [availableShippingRates, setAvailableShippingRates] = useState<AvailableShippingRatesType | null>(null);
-
-
+  const [orderNotes, setOrderNotes] = useState('')
   const [defaultAddress, setDefaultAddress] = useState(null);
 
   const updateShippingOption = async () => {
@@ -282,9 +285,9 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           createCustomerAddress()
         } else {
 
-        const defaultAddressId = response.data.customer.defaultAddress.id
+          const defaultAddressId = response.data.customer.defaultAddress.id
 
-        const mutation = `mutation {
+          const mutation = `mutation {
           customerAddressUpdate(
             customerAccessToken: "${userToken.accessToken}"
             id: "${defaultAddressId}"
@@ -303,14 +306,14 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           }
         }`
 
-        const mutationResponse: any = await storefrontApiClient(mutation)
+          const mutationResponse: any = await storefrontApiClient(mutation)
 
-        if (response.errors && response.errors.length != 0) {
+          if (response.errors && response.errors.length != 0) {
+            setIsLoading(false)
+            throw response.errors[0].message
+          }
           setIsLoading(false)
-          throw response.errors[0].message
         }
-        setIsLoading(false)
-      }
 
         setIsLoading(false)
       } catch (e) {
@@ -460,17 +463,17 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           contentContainerStyle={styles.container}
           ref={scrollViewRef}
         >
-          <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 6, borderWidth: 1, marginBottom: 15}}> 
-            <Text style={{textAlign: 'left'}}>Order Total:</Text>
-            <Text style={{textAlign: 'right', paddingRight: 10}}>{totalPrice}</Text>
+          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 0, marginBottom: 15, paddingBottom: 5 }}>
+            <Text style={{ textAlign: 'left', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>Order Total</Text>
+            <Text style={{ textAlign: 'right', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>${totalPrice}</Text>
           </View>
-          <TouchableOpacity style={{}} onPress={() => bottomSheetRef.current?.expand()}>
+          <TouchableOpacity style={{ borderWidth: 1, padding: 5, borderRadius: 10, backgroundColor: '#D9D9D9' }} onPress={() => bottomSheetRef.current?.expand()}>
             {defaultAddress ? (
               <View>
                 <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                   Delivering to:
                 </Text>
-                <Text style={{ paddingLeft: 6, fontSize: 14, width: '80%' }}>
+                <Text numberOfLines={1} ellipsizeMode='tail' style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
                   {formatAddress(defaultAddress)}
                 </Text>
                 {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} /> */}
@@ -489,16 +492,26 @@ const ShippingAddress = ({ route, navigation }: Props) => {
             placeholder='Phone'
             placeholderTextColor={theme.colors.disabledText}
             keyboardType='phone-pad'
-            style={styles.input}
+            style={[styles.input, { marginBottom: 16 }]}
             onChangeText={(text) => setPhone(text)}
             autoCapitalize='none'
+            autoComplete='tel'
             value={phone}
           />
           <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'position' : 'height'}
             keyboardVerticalOffset={44 + sbHeight}
           >
-            <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50 }]}>
+            <Text style={{ color: '#727272', fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Leave a message!</Text>
+            <TextInput
+              placeholder='Apt #, door code, etc.'
+              placeholderTextColor={'black'}
+              keyboardType='default'
+              style={{ width: '100%', height: 60, borderRadius: 15, backgroundColor: '#D9D9D9', padding: 10, textAlign: 'left' }}
+              onChangeText={(text) => setOrderNotes(text)}
+              value={orderNotes}
+            />
+            <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50, marginBottom: 10 }]}>
               {isLoading ?
                 <View style={{ width: 100, alignItems: 'center' }}>
                   <ActivityIndicator size='small' />
@@ -507,15 +520,14 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                   {errorMessage.length != 0 &&
                     <Text style={styles.error}>{errorMessage}</Text>
                   }
-                  <FillButton
-                    title='Looks Good!'
-                    onPress={updateShippingAdress}
-                  />
+                  <TouchableOpacity style={styles.updateContainer} onPress={updateShippingAdress}>
+                    <Text style={styles.updateText}>Looks Good!</Text>
+                  </TouchableOpacity>
                 </View>
               }
             </View>
           </KeyboardAvoidingView>
-          <View style={{ marginTop: 20 }}>
+          <View style={{ marginTop: 5 }}>
             {availableShippingRates && <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Select a shipping option:</Text>}
             {availableShippingRates && availableShippingRates.shippingRates.map((shippingRate) => (
               <TouchableOpacity
@@ -524,7 +536,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                 style={{
                   padding: 10,
                   borderWidth: 1,
-                  borderColor: selectedRateHandle === shippingRate.handle ? 'blue' : 'grey',
+                  borderColor: selectedRateHandle === shippingRate.handle ? '#4B2D83' : 'grey',
                   marginBottom: 10,
                 }}
               >
@@ -551,6 +563,12 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           }}
         >
           <GooglePlacesInput />
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 45 }}>
+            <View style={{ width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83', marginBottom: 40 }}>
+              <Text style={styles.textDescription}>{textDescription}</Text>
+            </View>
+            <Image source={theme.dark == true ? logoDark : logo} style={styles.image} />
+          </View>
         </View>
       </BottomSheet>
     </>
@@ -569,7 +587,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     borderBottomWidth: 0.5,
     borderColor: theme.colors.text,
-    padding: 8,
+    padding: 5,
     paddingHorizontal: 4,
     color: theme.colors.text
   },
@@ -597,7 +615,6 @@ const styles = StyleSheet.create({
   checkoutContainer: {
     backgroundColor: theme.colors.background,
     borderColor: theme.colors.infoText,
-    borderTopWidth: 0.5,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -613,4 +630,30 @@ const styles = StyleSheet.create({
     marginBottom: 4,
     letterSpacing: 1.8
   },
+  textDescription: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: 'black',
+    letterSpacing: 1,
+    paddingBottom: 8,
+  },
+  image: {
+    width: '50%',
+    height: '50%',
+    resizeMode: 'contain',
+  },
+  updateContainer: {
+    paddingVertical: 6,
+    paddingHorizontal: 20,
+    width: '100%',
+    backgroundColor: '#4B2D83',
+    alignItems: 'center',
+    borderRadius: 10,
+  },
+  updateText: {
+    color: theme.colors.background,
+    fontSize: 14,
+    letterSpacing: 1,
+    fontWeight: '500'
+  }
 })
