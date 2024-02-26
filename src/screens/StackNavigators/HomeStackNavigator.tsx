@@ -32,9 +32,9 @@ const HomeStackNavigator = () => {
             headerShown: true,
             headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
-            headerTitle: () => '',
+            headerTitle: () => <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />,
             headerLeft: () => (
-              <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
+              ''
             ),
             headerRight: () => (
               <TouchableOpacity onPress={() => rootNavigation.navigate('Cart')} style={{ paddingRight: 20, paddingTop: 5 }}>

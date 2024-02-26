@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Import the Icon com
 // import GooglePlacesInput from './AddressAutocomplete'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
+import { ChevronDownIcon, HangerIcon, PinIcon } from '../components/shared/Icons'
 
 // import { useNavigationContext } from '../context/NavigationContext'
 
@@ -560,50 +561,93 @@ const Home = ({ navigation }: Props) => {
             <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
 
               <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
-                
-                  {selectedAddress ? (
-                    <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
-                      <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-                        Delivering to:
-                      </Text>
-                      <Text numberOfLines={1} ellipsizeMode='tail' style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
-                        {formatAddress(selectedAddress)}
-                      </Text>
+
+                {selectedAddress ?
+                  // if address selected
+                  (
+
+                    <View style={{
+                      width: '100%',
+                      backgroundColor: '#D9D9D9',
+                      // backgroundColor: 'yellow',
+                      borderTopRightRadius: 25, borderBottomRightRadius: 25, paddingTop: 5,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      marginTop: 10,
+                    }}>
+                      <View style={{ marginLeft: 20, marginBottom: 4 }}>
+                        <PinIcon size={24} color='#4B2D83' />
+                      </View>
+
+                      <View style={{ width: '75%' }}>
+                        <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                          Delivering to:
+                        </Text>
+                        <Text numberOfLines={1} ellipsizeMode='tail' style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '100%' }}>
+                          {formatAddress(selectedAddress)}
+                        </Text>
+
+                      </View>
+                      <View style={{ display: 'flex', marginRight: 12, marginTop: 12, }}>
+                        <ChevronDownIcon color='#4B2D83' size={25} />
+                      </View>
                     </View>
-                  ) : (
-                    <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
-                      <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-                        Where are we delivering?
-                      </Text>
-                      <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
-                        Enter your address here...
-                      </Text>
-                    </View>
-                  )}
+                  )
+
+                  // address not selected
+                  : (
+                    <>
+                      <View style={{
+                        width: '100%',
+                        backgroundColor: '#D9D9D9',
+                        // backgroundColor: 'yellow',
+                        borderTopRightRadius: 25, borderBottomRightRadius: 25, paddingTop: 5,
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        marginTop: 10,
+                      }}>
+                        <View style={{ marginLeft: 20, marginBottom: 4 }}>
+                          <PinIcon size={24} color='#4B2D83' />
+                        </View>
+
+                        <View style={{ width: '75%' }}>
+                          <Text style={{ fontSize: 18, color: 'black' }}>
+                            Select Delivery Address
+                          </Text>
+                        </View>
+
+                        <View style={{ display: 'flex', marginRight: 12, marginTop: 12, }}>
+                          <ChevronDownIcon color='#4B2D83' size={25} />
+                        </View>
+                      </View>
+
+                      <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
+                        <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                          Where are we delivering?
+                        </Text>
+                        <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
+                          Enter your address here...
+                        </Text>
+                      </View>
+                    </>
+                  )
+                }
               </TouchableOpacity>
 
-              <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
+              <View style={{ flexDirection: 'row', marginTop: 6, justifyContent: 'center' }}>
                 <View style={{ borderWidth: 2, flexDirection: 'row', alignItems: 'center', borderRadius: 20, borderColor: '#4B2D83' }}>
-                  <TouchableOpacity
-                    onPress={() => setSelectedMode('forYou')}
-                    style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
-                    <Text style={{
-                      color: selectedMode === 'forYou' ? 'white' : '#4B2D83',
-                      fontSize: 22,
-                      letterSpacing: 1,
-                      fontWeight: 'bold',
-                      paddingLeft: 10,
-                      paddingRight: 10
-                    }}>
-                      {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
-                    </Text>
-                  </TouchableOpacity>
+
+
                   <TouchableOpacity
                     onPress={() => setSelectedMode('explore')}
                     style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
                     <Text style={{
                       color: selectedMode === 'explore' ? 'white' : '#4B2D83',
-                      fontSize: 22,
+                      fontSize: 18,
                       letterSpacing: 1,
                       fontWeight: 'bold',
                       paddingLeft: 10,
@@ -612,6 +656,21 @@ const Home = ({ navigation }: Props) => {
                       Explore
                     </Text>
                   </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setSelectedMode('forYou')}
+                    style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
+                    <Text style={{
+                      color: selectedMode === 'forYou' ? 'white' : '#4B2D83',
+                      fontSize: 18,
+                      letterSpacing: 1,
+                      fontWeight: 'bold',
+                      paddingLeft: 10,
+                      paddingRight: 10
+                    }}>
+                      {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
+                    </Text>
+                  </TouchableOpacity>
+
                 </View>
               </View>
             </View>
@@ -681,11 +740,12 @@ const styles = StyleSheet.create({
     // height: 40,
     borderColor: 'black',
     // borderWidth: 1,
-    // borderRadius: 7,
+    borderRadius: 20,
+    marginBottom: 4,
     flexDirection: 'row',
     marginTop: '2%',
     alignSelf: 'flex-start',
-    width: '85%',
+    width: '95%',
     justifyContent: 'flex-start', // Add this line to center content vertically
     // borderBottomWidth: 2,
     // borderBottomColor: '#4B2D83',
