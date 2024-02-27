@@ -24,63 +24,64 @@ const MainNavigator = () => {
   return (
     <NavigationContainer theme={theme}>
       <Stack.Navigator screenOptions={{}}>
-        <Stack.Screen name='TabNavigator' component={TabNavigator} options={{headerShown: false}} />
-        <Stack.Screen 
-          name='ProductScreen' 
+        <Stack.Screen name='TabNavigator' component={TabNavigator} options={{ headerShown: false }} />
+        <Stack.Screen
+          name='ProductScreen'
           component={ProductScreen}
           options={{
             headerShadowVisible: false,
             headerTransparent: true,
-            title: '', 
+            title: '',
             presentation: 'fullScreenModal',
             headerLeft: () => (
-              <TouchableOpacity 
-                onPress={() => rootNavigation.goBack() } 
-                hitSlop={{bottom: 10, left: 10, right: 10, top: 10}}
+              <TouchableOpacity
+                onPress={() => rootNavigation.goBack()}
+                hitSlop={{ bottom: 10, left: 10, right: 10, top: 10 }}
               >
                 <AntDesign
-                  name='close' 
+                  name='close'
                   size={22}
                   color='black'
                 />
               </TouchableOpacity>
+              // null
             )
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name='LoginStackNavigator' 
+        <Stack.Screen
+          name='LoginStackNavigator'
           component={LoginStackNavigator}
           options={{
-            headerStyle: {backgroundColor: theme.colors.background}, 
+            headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
-            title: '', 
+            title: '',
             presentation: 'fullScreenModal',
             headerLeft: () => (
-              // <TouchableOpacity 
-              //   onPress={() => rootNavigation.goBack() } 
+              // <TouchableOpacity
+              //   onPress={() => rootNavigation.goBack()}
               // >
               //   <AntDesign
-              //     name='close' 
-              //     size={22} 
-              //     color={theme.colors.text} 
+              //     name='close'
+              //     size={22}
+              //     color={theme.colors.text}
               //   />
               // </TouchableOpacity>
               null
             ),
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name='ShippingAddress' 
+        <Stack.Screen
+          name='ShippingAddress'
           component={ShippingAddress}
           options={{
-            headerStyle:{backgroundColor: theme.colors.background}, 
+            headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
             headerTitle: () => (
               <Text style={styles.screenTitle}>Checkout</Text>
             ),
             headerLeft: () => (
               <>
-                { Platform.OS == 'ios' ?
+                {Platform.OS == 'ios' ?
                   <BackArrowIcon
                     color={theme.colors.text}
                     size={20}
@@ -90,20 +91,20 @@ const MainNavigator = () => {
                 }
               </>
             ),
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name='ShippingOptions' 
+        <Stack.Screen
+          name='ShippingOptions'
           component={ShippingOptions}
           options={{
-            headerStyle:{backgroundColor: theme.colors.background}, 
+            headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
             headerTitle: () => (
               <Text style={styles.screenTitle}>Shipping Options</Text>
             ),
             headerLeft: () => (
               <>
-                { Platform.OS == 'ios' ?
+                {Platform.OS == 'ios' ?
                   <BackArrowIcon
                     color={theme.colors.text}
                     size={20}
@@ -113,36 +114,36 @@ const MainNavigator = () => {
                 }
               </>
             ),
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name='DiscountCode' 
+        <Stack.Screen
+          name='DiscountCode'
           component={DiscountCode}
           options={{
-            headerStyle:{backgroundColor: theme.colors.background}, 
+            headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
             headerTitle: () => (
               <Text style={styles.screenTitle}>Use Promo Code</Text>
             ),
             headerLeft: () => (
-              <BackArrowIcon 
+              <BackArrowIcon
                 color={theme.colors.text}
                 size={20}
                 onPress={() => rootNavigation.goBack()}
               />
             ),
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name='Payment' 
+        <Stack.Screen
+          name='Payment'
           component={Payment}
           options={{
-            headerStyle:{backgroundColor: theme.colors.background}, 
+            headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
             title: '',
             headerLeft: () => (
               <>
-                { Platform.OS == 'ios' ?
+                {Platform.OS == 'ios' ?
                   <BackArrowIcon
                     color={theme.colors.text}
                     size={20}
@@ -152,17 +153,17 @@ const MainNavigator = () => {
                 }
               </>
             ),
-          }} 
+          }}
         />
-        <Stack.Screen 
-          name='Cart' 
+        <Stack.Screen
+          name='Cart'
           component={Cart}
           options={{
-            headerStyle:{backgroundColor: theme.colors.background}, 
+            headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
             headerLeft: () => (
               <>
-                { Platform.OS == 'ios' ?
+                {Platform.OS == 'ios' ?
                   <BackArrowIcon
                     color={theme.colors.text}
                     size={20}
@@ -172,7 +173,7 @@ const MainNavigator = () => {
                 }
               </>
             ),
-          }} 
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>

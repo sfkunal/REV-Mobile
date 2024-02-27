@@ -9,6 +9,7 @@ import { useNavigationContext } from '../context/NavigationContext'
 import { useAuthContext } from '../context/AuthContext'
 import * as WebBrowser from 'expo-web-browser'
 import { config } from '../../config'
+import { RightArrowIcon } from '../components/shared/Icons'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>
 
@@ -16,61 +17,109 @@ const Profile = ({ navigation }: Props) => {
   const { userToken, signOut } = useAuthContext()
   const { rootNavigation } = useNavigationContext()
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => (
-        <>
-          {userToken ?
-            <TouchableOpacity onPress={() => signOut()}>
-              <Text style={styles.textButton}>LOG OUT</Text>
-            </TouchableOpacity> :
-            <TouchableOpacity onPress={() => rootNavigation.push('LoginStackNavigator', { screen: 'Login' })}>
-              <Text style={styles.textButton}>LOG IN</Text>
-            </TouchableOpacity>
-          }
-        </>
-      )
-    })
-  }, [userToken])
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <>
+  //         {userToken ?
+  //           <TouchableOpacity onPress={() => signOut()}>
+  //             <Text style={styles.textButton}>LOG OUT</Text>
+  //           </TouchableOpacity> :
+  //           <TouchableOpacity onPress={() => rootNavigation.push('LoginStackNavigator', { screen: 'Login' })}>
+  //             <Text style={styles.textButton}>LOG IN</Text>
+  //           </TouchableOpacity>
+  //         }
+  //       </>
+  //     )
+  //   })
+  // }, [userToken])
 
-  const deleteAccount = () => {
-    Alert.alert(
-      'Delete Account',
-      'Are you sure that you want to delete your account? Please note that there is no option to restore your account or its data. You would still be able to check your order status using its order number.',
-      [
-        {
-          text: 'Delete Account',
-          style: 'destructive',
-          onPress: () => signOut()
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel'
-        }
-      ]
-    )
-  }
+  // const deleteAccount = () => {
+  //   Alert.alert(
+  //     'Delete Account',
+  //     'Are you sure that you want to delete your account? Please note that there is no option to restore your account or its data. You would still be able to check your order status using its order number.',
+  //     [
+  //       {
+  //         text: 'Delete Account',
+  //         style: 'destructive',
+  //         onPress: () => signOut()
+  //       },
+  //       {
+  //         text: 'Cancel',
+  //         style: 'cancel'
+  //       }
+  //     ]
+  //   )
+  // }
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* <Text style={styles.greeting}>Welcome back{userToken && `, ${userToken.customer.firstName}`}!</Text> */}
+    <View style={styles.container}>
+      {/* upper */}
+      <View>
+        {/* Hi, Username */}
+        <Text style={{
+          fontSize: 20,
+          marginVertical: 8,
+          fontWeight: 'bold', color: '#4B2D83'
+        }}>Hi, {userToken.customer.firstName}</Text>
 
-      <View style={{ marginBottom: 16 }}>
-        {/* <TouchableOpacity
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-          onPress={() => navigation.push('Wishlist')}
-        >
-          <Text style={styles.settingTitle}>Wishlist</Text>
-          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
-        </TouchableOpacity> */}
 
-        <Text style={{fontSize: 25, marginVertical: 15, fontWeight: 'bold', color: '#4B2D83'}}>Welcome back, {userToken.customer.firstName}!</Text>
 
+        {/* FEATURES COMING SOON */}
+        <Text style={{ marginBottom: 20 }}>
+          You saved {0} hours shopping and prevented {0.00} kg of carbon emissions!
+        </Text>
+
+        {/* REVPASS COMING SOON */}
+        <TouchableOpacity style={{
+          backgroundColor: '#FFFFFF', borderRadius: 8, height: 50, display: 'flex', justifyContent: 'center',
+          marginBottom: 18,
+          shadowColor: 'black', shadowRadius: 2,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.6
+        }}>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            <Text style={{ fontWeight: 'bold', color: '#4B2D83', fontSize: 18, marginLeft: 10 }}>
+              REV Pass{" "}
+            </Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
+              Coming Soon!
+            </Text>
+          </View>
+        </TouchableOpacity >
+
+        {/* REV REWARDS Coming Soon! */}
+        <TouchableOpacity style={{
+          backgroundColor: '#FFFFFF', borderRadius: 8, height: 100, display: 'flex', justifyContent: 'space-between',
+          shadowColor: 'black', shadowRadius: 2,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.6,
+          marginBottom: 18
+        }}>
+          <View style={{}}>
+            <Text style={{ fontWeight: '700', color: '#4B2D83', fontSize: 18, marginLeft: 16, marginTop: 24, }}>
+              Invite friends, earn $$$
+            </Text>
+            <Text style={{ fontWeight: '300', color: 'black', fontSize: 18, marginLeft: 16, marginTop: 6 }}>
+              REV Rewards coming soon!
+            </Text>
+          </View>
+          <View style={{ display: 'flex', flexDirection: 'row' }}>
+            {/* <Text style={{ fontWeight: 'bold', color: '#4B2D83', fontSize: 18, marginLeft: 16, marginBottom: 20, }}>
+              REV Rewards{" "}
+            </Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
+              Coming Soon!
+            </Text> */}
+          </View>
+        </TouchableOpacity >
+      </View>
+
+      {/* Lower */}
+      <View>
+        {/* CONTACT US */}
         <TouchableOpacity
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
+          style={styles.cardContainer}
           onPress={() => {
             if (userToken) {
               navigation.push('Orders')
@@ -79,99 +128,45 @@ const Profile = ({ navigation }: Props) => {
             }
           }}
         >
-          <Text style={styles.settingTitle}>My orders</Text>
-          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
+          <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 26 }}>Contact Us</Text>
+          {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
+          <RightArrowIcon size={40} color={'#4B2D83'} />
         </TouchableOpacity>
 
-      </View>
 
-      <Text style={styles.subTitle}>Social Media</Text>
-      <View style={{ marginBottom: 16 }}>
+        {/* JOIN THE TEAM */}
         <TouchableOpacity
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-          onPress={() => Linking.openURL(`instagram://user?username=${config.instagramUsername}`)}
+          style={styles.cardContainer}
+          onPress={() => {
+            if (userToken) {
+              navigation.push('Orders')
+            } else {
+              rootNavigation.push('LoginStackNavigator', { screen: 'Login' })
+            }
+          }}
         >
-          <Text style={styles.settingTitle}>Instagram</Text>
-          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
+          <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 26 }}>Join the Team</Text>
+          {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
+          <RightArrowIcon size={40} color={'#4B2D83'} />
         </TouchableOpacity>
-        {/* <TouchableOpacity 
-          style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}
-          onPress={() => {}}
-        >
-          <Text style={styles.settingTitle}>Facebook</Text>
-          <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} />
-        </TouchableOpacity> */}
-      </View>
 
-      {userToken &&
-        <>
-          <Text style={styles.subTitle}>Account Settings</Text>
-          <View style={{ marginBottom: 16 }}>
-            <TouchableOpacity
-              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-              onPress={() => navigation.push('PersonalInformations')}
-            >
-              <Text style={styles.settingTitle}>Personal Information</Text>
-              <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-              onPress={() => navigation.push('ResetPassword')}
-            >
-              <Text style={styles.settingTitle}>Change Password</Text>
-              <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
-            </TouchableOpacity>
-          </View>
-        </>
-      }
-
-      <Text style={styles.subTitle}>Customer Support</Text>
-      <View style={{ marginBottom: 16 }}>
-        <View
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-
-        >
-          <View style={{ flexDirection: 'column', justifyContent: 'space-between' }}>
-            <TouchableOpacity onPress={() => Linking.openURL('mailto:griffin@rev.delivery')}>
-              <Text style={{ color: '#4B2D83', fontWeight: 'bold', paddingBottom: 5, paddingTop: 5 }}>griffin@rev.delivery</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => Linking.openURL('tel:(206) 552-0730')}>
-              <Text style={{ color: '#4B2D83', fontWeight: 'bold', paddingBottom: 10 }}>(206) 552-0730</Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* <Entypo name={`chevron-small-right`} size={24} color={theme.colors.infoText} /> */}
-        </View>
+        {/* REV HOURS */}
         <TouchableOpacity
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-          onPress={() => WebBrowser.openBrowserAsync('https://rev.delivery/policies/terms-of-service')}
+          style={styles.cardContainer}
+          onPress={() => {
+            if (userToken) {
+              navigation.push('Orders')
+            } else {
+              rootNavigation.push('LoginStackNavigator', { screen: 'Login' })
+            }
+          }}
         >
-          <Text style={styles.settingTitle}>Terms of Service</Text>
-          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-          onPress={() => WebBrowser.openBrowserAsync('https://rev.delivery/policies/privacy-policy')}
-        >
-          <Text style={styles.settingTitle}>Privacy Policy</Text>
-          <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
+          <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 26 }}>REV Hours</Text>
+          {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
+          <RightArrowIcon size={40} color={'#4B2D83'} />
         </TouchableOpacity>
       </View>
-
-      {userToken &&
-        <>
-          <Text style={styles.subTitle}>Delete Account</Text>
-          <TouchableOpacity
-            style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}
-            onPress={deleteAccount}
-          >
-            <Text style={styles.settingTitle}>Delete Account</Text>
-            <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} />
-          </TouchableOpacity>
-        </>
-      }
-
-    </ScrollView>
+    </View >
   )
 }
 
@@ -179,7 +174,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 14,
-    paddingTop: 16
+    paddingTop: 8,
+    width: '100%',
+    alignSelf: 'center',
+    marginTop: 12,
+    backgroundColor: '#f2f2f2',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   greeting: {
     color: theme.colors.text,
@@ -203,9 +204,22 @@ const styles = StyleSheet.create({
   settingTitle: {
     color: '#000000',
     letterSpacing: 1,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     paddingVertical: 8
+  },
+  cardContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: 50,
+    marginBottom: 24,
+    // borderWidth: 1,
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+    shadowColor: 'black', shadowRadius: 1,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6
   }
 })
 

@@ -545,6 +545,11 @@ const Home = ({ navigation }: Props) => {
           predefinedPlacesDescription: {
             color: '#1faadb',
           },
+          textInputPlaceholder: { // This is the style property for the placeholder text
+            color: '#FFFFFF', // Placeholder text color
+            fontSize: 16, // Placeholder text font size
+            // Add any additional styling here
+          },
         }}
 
       />
@@ -676,6 +681,8 @@ const Home = ({ navigation }: Props) => {
             </View>
             <HomeList data={selectedMode === 'explore' ? exploreProducts : (userOrders > 4 ? forYou : popularProducts)} />
           </View>
+
+          {/* this is what  */}
           <BottomSheet
             ref={bottomSheetRef}
             index={-1} // Start closed
@@ -685,18 +692,23 @@ const Home = ({ navigation }: Props) => {
             <View
               style={{
                 margin: 12,
-                backgroundColor: "transparent",
+                // backgroundColor: "transparent",
+                backgroundColor: 'yellow',
                 zIndex: 10,
                 height: 400,
                 paddingTop: 20
               }}
             >
+              <Text style={{ fontSize: 20, marginLeft: 12 }}>Where to?</Text>
               <GooglePlacesInput />
               <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 45 }}>
-                <View style={{ width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83', marginBottom: 40 }}>
+                <View style={{
+                  width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83',
+                  // marginBottom: 40 
+                }}>
                   <Text style={styles.textDescription}>{textDescription}</Text>
                 </View>
-                <Image source={theme.dark == true ? logoDark : logo} style={styles.image} />
+                {/* <Image source={theme.dark == true ? logoDark : logo} style={styles.image} /> */}
               </View>
             </View>
           </BottomSheet>

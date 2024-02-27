@@ -7,7 +7,7 @@ import logo from '../../../assets/logo.png'
 import Home from '../Home'
 import Collection from '../Collection'
 import { TouchableOpacity, Image, View, Text } from 'react-native'
-import { CartIcon } from '../../components/shared/Icons'
+import { CartIcon, GearIcon } from '../../components/shared/Icons'
 import Cart from '../Cart'
 import { useNavigationContext } from '../../context/NavigationContext';
 import { useCartContext } from '../../context/CartContext'

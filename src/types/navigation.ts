@@ -3,7 +3,7 @@ import { AvailableShippingRatesType, Product } from "./dataTypes";
 export type StackParamList = {
   TabNavigator: undefined
   ProductScreen: { data: Product }
-  ShippingAddress: { checkoutId: string, totalPrice: number}
+  ShippingAddress: { checkoutId: string, totalPrice: number }
   ShippingOptions: { checkoutId: string }
   Payment: { webUrl: string, checkoutId: string, selectedRateHandle: string }
   DiscountCode: { checkoutId: string }
@@ -39,7 +39,7 @@ export type SearchStackParamList = {
 
 export type CartStackParamList = {
   Cart: undefined;
-  ShippingAddress: { checkoutId: string, totalPrice: number}
+  ShippingAddress: { checkoutId: string, totalPrice: number }
   ShippingOptions: { checkoutId: string, availableShippingRates: AvailableShippingRatesType }
   Payment: { webUrl: string, checkoutId: string, selectedRateHandle: string }
   DiscountCode: { checkoutId: string }
@@ -51,13 +51,14 @@ export type ProfileStackParamList = {
   ResetPassword: undefined
   Wishlist: undefined
   Orders: undefined
+  SettingsPage: undefined
 }
 
 export type LoginStackParamList = {
   Login: undefined
   Register: undefined
   ForgotPassword: undefined
-  VerifyEmail: { message: string } 
+  VerifyEmail: { message: string }
   ForgotPasswordEmailSent: undefined
   OnboardingName: undefined;
   OnboardingPhone: { firstName: string; lastName: string };
