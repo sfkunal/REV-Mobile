@@ -13,7 +13,7 @@ import { useCartContext } from '../context/CartContext'
 import { FontAwesome } from '@expo/vector-icons'
 import { useWishlistContext } from '../context/WishlistContext'
 import { useNavigationContext } from '../context/NavigationContext'
-import { CartIcon } from '../components/shared/Icons'
+import { CartIcon, DownArrowIcon, UpArrowIcon } from '../components/shared/Icons'
 
 const screenWidth = Dimensions.get('screen').width
 const windowHeight = Dimensions.get('window').height
@@ -43,14 +43,16 @@ const ProductScreen = ({ route, navigation }: Props) => {
             {cartItemCount > 0 && (
               <View style={{
                 position: 'absolute',
-                right: -1,
-                bottom: -5,
+                right: 18,
+                bottom: -7,
                 backgroundColor: '#4a307e',
                 borderRadius: 10,
-                width: 18,
-                height: 18,
+                width: 20,
+                height: 20,
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                borderWidth: 1,
+                borderColor: 'white'
               }}>
                 <Text style={{
                   color: 'white',
@@ -251,13 +253,21 @@ const ProductScreen = ({ route, navigation }: Props) => {
           contentContainerStyle={{ backgroundColor: theme.colors.background }}
         >
           <View style={{ width: '100%' }}>
-            <Text style={styles.title}>{data.title}</Text>
-            <Text style={styles.price}>
-                  ${data.priceRange.minVariantPrice.amount.toString().split('.')[0]}.
-                  <Text style={styles.smallPrice}>
-                    {data.priceRange.minVariantPrice.amount.toString().split('.')[1]}
-                  </Text>
-                </Text>
+            {/* Title */}
+            <Text numberOfLines={1}
+              ellipsizeMode='tail' style={styles.title}>{data.title}</Text>
+
+            {/* Price. is split so that dollar and cents are diff sizes */}
+            <Text style={styles.smallPrice}>
+              {data.priceRange.minVariantPrice.amount + " USD"}
+            </Text>
+            {/* This is the code for when they are different sizes */}
+            {/* <Text style={styles.price}>
+              {data.priceRange.minVariantPrice.amount.toString().split('.')[0]}.
+              <Text style={styles.smallPrice}>
+                {data.priceRange.minVariantPrice.amount.toString().split('.')[1] + ' USD'}
+              </Text>
+            </Text> */}
             {data.availableForSale ?
               <>
                 {isLoading ?
@@ -265,10 +275,10 @@ const ProductScreen = ({ route, navigation }: Props) => {
                   <>
                     {noVariants && errorMessage != '' ?
                       <Text style={{ color: 'red', alignSelf: 'center', marginTop: 24 }}>{errorMessage}</Text> :
-                      <View style={{ flexDirection: 'row', width: '100%' }}>
+                      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', marginBottom: 0 }}>
                         <View style={styles.buttonsContainer}>
                           {itemQuantity > 0 ? (
-                            <TouchableOpacity 
+                            <TouchableOpacity
                               onPress={() => {
                                 setItemQuantity(1)
                                 bottomSheetMode = 'add'
@@ -280,49 +290,46 @@ const ProductScreen = ({ route, navigation }: Props) => {
                                 }
                               }}>
                               <View style={styles.addCartContainer}>
-                                <Text style={styles.addCartText}>Add to Cart</Text>
+                                <Text style={styles.addCartText}>Add to Bag</Text>
                               </View>
                             </TouchableOpacity>
                           ) : (
-                            <TouchableOpacity 
+                            // NOTE: Removed the onPress function so that it can't be pressed if disabled. If this is wrong, just put it back
+                            <TouchableOpacity
                               disabled={true}
-                              onPress={() => {
-                                bottomSheetMode = 'add'
-                                setBottomSheetModeState('add')
-                                if (!noVariants) {
-                                  setTimeout(() => showBuyBottomSheet(), 1)
-                                } else {
-                                  addToCart()
-                                }
-                              }}>
+                            >
                               <View style={styles.addCartDisabledContainer}>
-                                <Text style={styles.addCartDisabledText}>Add to Cart</Text>
+                                <Text style={styles.addCartDisabledText}>Add to Bag</Text>
                               </View>
                             </TouchableOpacity>
                           )}
                         </View>
                         <View style={styles.quantitySelector}>
-                          <TouchableOpacity
-                              onPress={() => {
-                                if (itemQuantity < 100) {
-                                  setItemQuantity(itemQuantity + 1)
-                                }
-                              }}
-                            >
-                              {/* <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>+</Text> */}
-                              <FontAwesome name="angle-up" size={32} color='#4B2D83' />
-                            </TouchableOpacity>
-                            <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
-                            <TouchableOpacity
-                              onPress={() => {
-                                if (itemQuantity > 1) {
-                                  setItemQuantity(itemQuantity - 1)
-                                }
-                              }}
-                            >
-                              <FontAwesome name="angle-down" size={32} color='#4B2D83' />
-                            </TouchableOpacity>
-                          </View>
+                          <TouchableOpacity style={{ marginBottom: -12, marginRight: 2 }}
+                            onPress={() => {
+                              // cant go to triple digits
+                              if (itemQuantity <= 100) {
+                                setItemQuantity(itemQuantity + 1)
+                              }
+                            }}
+                          >
+                            {/* <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>+</Text> */}
+                            {/* <FontAwesome name="angle-up" size={32} color='#4B2D83' /> */}
+                            <UpArrowIcon size={32} color='#4B2D83' />
+                          </TouchableOpacity>
+                          <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 30 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
+                          <TouchableOpacity style={{ marginRight: 2, marginTop: -12 }}
+                            onPress={() => {
+                              // cant go to 0
+                              if (itemQuantity > 1) {
+                                setItemQuantity(itemQuantity - 1)
+                              }
+                            }}
+                          >
+                            {/* <FontAwesome name="angle-down" size={32} color='#4B2D83' /> */}
+                            <DownArrowIcon size={32} color='#4B2D83' />
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     }
                   </>
@@ -331,12 +338,17 @@ const ProductScreen = ({ route, navigation }: Props) => {
               <Text style={[styles.text, { marginTop: 32 }]}>Out of stock.</Text>
             }
 
-            {data.description.length != 0 && <Text style={styles.subTitle}>DESCRIPTION</Text>}
+            {/* description */}
+            {data.description.length != 0 && <Text style={{ color: 'black', fontWeight: '500', fontSize: 20 }}>Description</Text>}
             {data.description.length != 0 && <Text style={styles.subTitle}>{data.description}</Text>}
             {/* <Text style={styles.subTitle}>VENDOR: {data.vendor.toUpperCase()}</Text> */}
-            <Text style={styles.subTitle}>DISCOVER MORE</Text>
+
+            <TouchableOpacity style={{ marginLeft: 0, marginTop: 20, }}>
+              <Text style={{ color: '#4B2D83', fontWeight: '500', fontSize: 20 }}>Discover More</Text>
+            </TouchableOpacity>
           </View>
 
+          {/* Product Recommendations */}
           <FlatList
             data={productRecommendations}
             scrollEnabled={false}
@@ -354,7 +366,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
         index={-1}
         enablePanDownToClose={true}
         ref={sheetRef2}
-        style={{ backgroundColor: theme.colors.background }}
+        style={{ backgroundColor: 'orange' }}
         handleIndicatorStyle={{ backgroundColor: theme.colors.text, borderRadius: 0, height: 2 }}
         backgroundComponent={() => <View style={{ backgroundColor: theme.colors.background }}></View>}
       >
@@ -395,7 +407,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
                 </ScrollView>
               </View>
             ))}
-          </View>          
+          </View>
         </BottomSheetView>
       </BottomSheet>
 
@@ -405,9 +417,13 @@ const ProductScreen = ({ route, navigation }: Props) => {
         index={-1}
         enablePanDownToClose={true}
         ref={sheetRef3}
-        style={{ backgroundColor: theme.colors.background }}
+        style={{
+          backgroundColor: theme.colors.background
+        }}
         handleIndicatorStyle={{ backgroundColor: theme.colors.text, borderRadius: 0, height: 2 }}
-        backgroundComponent={() => <View style={{ backgroundColor: theme.colors.background }}></View>}
+        backgroundComponent={() => <View style={{
+          backgroundColor: theme.colors.background
+        }}></View>}
       >
         <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.text}>Item was added succesfully to the cart.</Text>
@@ -442,13 +458,14 @@ const styles = StyleSheet.create({
   },
   title: {
     color: 'black',
-    fontWeight: '600',
-    letterSpacing: 1.5,
-    fontSize: 18
+    fontWeight: '500',
+    letterSpacing: 0.2,
+    fontSize: 20,
+
   },
   subTitle: {
     color: 'black',
-    fontWeight: '600',
+    fontWeight: '500',
     letterSpacing: 1.5,
     fontSize: 15,
     marginTop: 16,
@@ -483,50 +500,56 @@ const styles = StyleSheet.create({
   },
   buttonsContainer: {
     flexDirection: 'row',
-    // justifyContent: 'center', // Align the 'ADD TO CART' button to the left
-    marginTop: 30,
-    bottom: -10,
-    flex: 1, 
+    justifyContent: 'space-between', // Align the 'ADD TO CART' button to the left
+    // marginTop: 30,
+    // bottom: -10,
+    flex: 1,
+    alignItems: 'center'
   },
   quantitySelector: {
     // position: 'absolute',
-    right: -30,
+    right: -65,
     // top: -35,
     flexDirection: 'column',
     alignItems: 'center',
-    alignSelf: 'flex-end', // Align the quantity selector to the right
+    justifyContent: 'center',
+    // alignSelf: 'flex-start', // Align the quantity selector to the right
     flex: 1,
+    // backgroundColor: 'pink',
   },
   addCartContainer: {
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 8,
-    backgroundColor: '#4B2D83', 
-    alignItems:'center',
-    width: 250,
+    borderRadius: 30,
+    backgroundColor: '#4B2D83',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 290,
+    height: 44
   },
   addCartText: {
-    color: '#FFFFFF', 
-    fontSize:12, 
-    letterSpacing:1,
-    fontWeight: 'bold'
+    color: '#FFFFFF',
+    fontSize: 18,
+    letterSpacing: 1,
+    fontWeight: '500',
   },
+
   addCartDisabledContainer: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
-    backgroundColor: '#D9D9D9', 
+    backgroundColor: '#D9D9D9',
     backgroundOpacity: 0.4,
-    borderColor: '#4B2D83',
+    borderColor: 'black',
     borderOpacity: 0.2,
     borderWidth: 0.5,
-    alignItems:'center',
+    alignItems: 'center',
     width: 250,
   },
   addCartDisabledText: {
-    color: theme.colors.text, 
-    fontSize:12, 
-    letterSpacing:1,
+    color: theme.colors.text,
+    fontSize: 12,
+    letterSpacing: 1,
     fontWeight: '500'
   }
 })

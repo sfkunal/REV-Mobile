@@ -30,7 +30,9 @@ const HomeStackNavigator = () => {
           options={{
             headerLargeTitle: false,
             headerShown: true,
-            headerStyle: { backgroundColor: theme.colors.background },
+            headerStyle: {
+              backgroundColor: theme.colors.background,
+            },
             headerShadowVisible: false,
             headerTitle: () => <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />,
             headerLeft: () => (
@@ -39,18 +41,20 @@ const HomeStackNavigator = () => {
             headerRight: () => (
               <TouchableOpacity onPress={() => rootNavigation.navigate('Cart')} style={{ paddingRight: 20, paddingTop: 5 }}>
                 <View>
-                  <CartIcon color="#4a307e" size={28} />
+                  <CartIcon color="#4a307e" size={24} />
                   {cartItemCount > 0 && (
                     <View style={{
                       position: 'absolute',
-                      right: -9,
-                      bottom: -3,
+                      right: 18,
+                      bottom: -7,
                       backgroundColor: '#4a307e',
                       borderRadius: 10,
-                      width: 18,
-                      height: 18,
+                      width: 20,
+                      height: 20,
                       justifyContent: 'center',
-                      alignItems: 'center'
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      borderColor: 'white'
                     }}>
                       <Text style={{
                         color: 'white',

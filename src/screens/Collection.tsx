@@ -1,18 +1,20 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useState, useEffect } from 'react'
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, Image, Dimensions, NativeModules, StatusBar, Platform } from 'react-native'
-import { BackArrowIcon } from '../components/shared/Icons'
+import { View, Text, ActivityIndicator, StyleSheet, FlatList, Image, Dimensions, NativeModules, StatusBar, Platform, TouchableOpacity } from 'react-native'
+import { BackArrow, BackArrowIcon } from '../components/shared/Icons'
 import ProductCard from '../components/shared/ProductCard'
 import { theme } from '../constants/theme'
 import { Product } from '../types/dataTypes'
 import { MenuStackParamList } from '../types/navigation'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
+import logo from '../../assets/logo.png'
+
 
 const screenWidth = Dimensions.get('screen').width
 
 type Props = NativeStackScreenProps<MenuStackParamList, 'Collection'>
 
-const Collection = ({route, navigation}: Props) => {
+const Collection = ({ route, navigation }: Props) => {
   const { collectionId } = route.params
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
@@ -22,7 +24,7 @@ const Collection = ({route, navigation}: Props) => {
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
 
   useEffect(() => {
-    if(Platform.OS === "ios") {
+    if (Platform.OS === "ios") {
       StatusBarManager.getHeight((statusBarHeight: any) => {
         setsbHeight(Number(statusBarHeight.height))
       })
@@ -90,11 +92,11 @@ const Collection = ({route, navigation}: Props) => {
 
     const response: any = await storefrontApiClient(query, variables)
 
-    if (response.errors && response.errors.length != 0 ) {
+    if (response.errors && response.errors.length != 0) {
       setIsLoading(false)
       throw response.errors[0].message
     }
-    
+
     setCollection(response.data.collection)
 
     setIsLoading(false)
@@ -103,17 +105,24 @@ const Collection = ({route, navigation}: Props) => {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <BackArrowIcon 
-          color={'#4B2D83'}
-          size={20}
-          onPress={() => navigation.goBack()}
-        />
-      ), 
+        // <BackArrowIcon
+        //   color={'#4B2D83'}
+        //   size={20}
+        //   onPress={() => navigation.goBack()}
+        // />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <BackArrow color={'#4B2D83'}
+            size={20}
+          />
+        </TouchableOpacity>
+
+      ),
       headerTitle: () => (
-        <Text style={styles.title}>{collection?.title || ''}</Text>
+        // <Text style={styles.title}>{collection?.title || ''}</Text>
+        <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
       ),
     });
-    
+
     try {
       fetchCollection()
     } catch (e) {
@@ -125,21 +134,21 @@ const Collection = ({route, navigation}: Props) => {
     }
 
   }, [collection?.title])
-  
+
 
   return (
-    <View style={{flex:1, justifyContent: 'center'}}>
-      { isLoading ?
-        <ActivityIndicator style={{alignSelf:'center'}} /> :
+    <View style={{ flex: 1, justifyContent: 'center' }}>
+      {isLoading ?
+        <ActivityIndicator style={{ alignSelf: 'center' }} /> :
         <FlatList
           data={collection.products.nodes as Product[]}
-          renderItem={({item}) => <ProductCard data={item} /> }
+          renderItem={({ item }) => <ProductCard data={item} />}
           keyboardDismissMode='on-drag'
           showsVerticalScrollIndicator={false}
           numColumns={2}
           contentContainerStyle={styles.container}
           ListHeaderComponent={() => (
-            <View style={{marginHorizontal: -14}}>
+            <View style={{ marginHorizontal: -14 }}>
               {/* <View style={[styles.titleContainer]}>
                 <Text style={styles.title}>{collection.title}</Text>
               </View>
@@ -152,16 +161,19 @@ const Collection = ({route, navigation}: Props) => {
                 numColumns={2}
                 contentContainerStyle={{marginHorizontal: 14}}
               /> */}
-              { collection.image &&
-                <Image 
-                  source={{uri: collection.image.url}} 
-                  style={{width: screenWidth, height: screenWidth*collection.image.height/collection.image.width, marginBottom: 16}}
+
+
+              {/* This is what the preview picture is */}
+              {/* {collection && collection.image &&
+                <Image
+                  source={{ uri: collection.image.url }}
+                  style={{ width: screenWidth, height: screenWidth * collection.image.height / collection.image.width, marginBottom: 16 }}
                 />
-              }
+              } */}
             </View>
-          )}  
+          )}
         />
-      } 
+      }
     </View>
   )
 }
@@ -175,7 +187,7 @@ const styles = StyleSheet.create({
   titleContainer: {
     backgroundColor: theme.colors.text,
     paddingVertical: 16,
-    alignItems:'center',
+    alignItems: 'center',
     marginBottom: 16,
   },
   title: {

@@ -99,7 +99,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={handlePressProduct}
         disabled={selectedItem?.availableForSale ? false : true}
       >
@@ -109,7 +109,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
             style={styles.image}
           />
           <View>
-          <Text style={styles.text} numberOfLines={1} ellipsizeMode='tail'>{data.title}</Text>
+            <Text style={styles.text} numberOfLines={1} ellipsizeMode='tail'>{data.title}</Text>
             <View style={styles.priceContainer}>
               {data.compareAtPriceRange.minVariantPrice.amount >
                 data.priceRange.minVariantPrice.amount && (
@@ -124,16 +124,18 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                     {data.priceRange.minVariantPrice.amount.toString().split('.')[1]}
                   </Text>
                 </Text>
-              
+
               ) : (
-                <Text style={{marginTop: 3,
+                <Text style={{
+                  marginTop: 3,
                   fontSize: 16.2,
                   fontWeight: '500',
-                  color: '#ccc',}}>
+                  color: '#ccc',
+                }}>
                   Out of Stock
                 </Text>
               )}
-              
+
             </View>
           </View>
         </View>
