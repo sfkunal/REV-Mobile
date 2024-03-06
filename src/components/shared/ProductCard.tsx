@@ -102,6 +102,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       <TouchableOpacity
         onPress={handlePressProduct}
         disabled={selectedItem?.availableForSale ? false : true}
+        style={{}}
       >
         <View>
           <Image

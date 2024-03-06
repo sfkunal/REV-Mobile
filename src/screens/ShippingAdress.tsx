@@ -7,7 +7,7 @@ import { storefrontApiClient } from '../utils/storefrontApiClient'
 import { ScrollView, TextInput } from 'react-native-gesture-handler'
 import FillButton from '../components/shared/FillButton'
 import { Entypo } from '@expo/vector-icons'
-import BottomSheet, { TouchableOpacity } from '@gorhom/bottom-sheet'
+import BottomSheet, { TouchableHighlight, TouchableOpacity } from '@gorhom/bottom-sheet'
 import { provinces } from '../constants/provinces'
 import { AvailableShippingRatesType } from '../types/dataTypes'
 import { useAuthContext } from '../context/AuthContext'
@@ -15,6 +15,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import logoDark from '../../assets/logo-dark.png'
 import logo from '../../assets/logo.png'
+import { RightArrowIcon } from '../components/shared/Icons'
+import * as WebBrowser from 'expo-web-browser'
+
 
 
 const screenHeight = Dimensions.get('screen').height
@@ -38,6 +41,13 @@ const ShippingAddress = ({ route, navigation }: Props) => {
         setsbHeight(Number(statusBarHeight.height))
       })
     }
+    navigation.setOptions({
+      headerTitle: () => (
+        // <Text style={styles.screenTitle}>Cart ({getItemsCount()})</Text>
+        <Image source={require('../../assets/CHECKOUT.png')} style={{ height: 25, width: 175, marginTop: 0 }} resizeMode='contain' />
+      )
+    })
+
   }, [])
 
   const { checkoutId, totalPrice } = route.params
@@ -59,6 +69,136 @@ const ShippingAddress = ({ route, navigation }: Props) => {
   const [availableShippingRates, setAvailableShippingRates] = useState<AvailableShippingRatesType | null>(null);
   const [orderNotes, setOrderNotes] = useState('')
   const [defaultAddress, setDefaultAddress] = useState(null);
+
+  // just to see sum
+  // useEffect(() => {
+  //   console.log(userToken)
+  // })
+
+
+  const sendToCheckout = async () => {
+    setIsLoading(true);
+    // Ensure selectedRateHandle is defined and not null
+    // if (!selectedRateHandle) {
+    //   setShippingOptionError('Please select a shipping option.');
+    //   setIsLoading(false);
+    //   return;
+    // }
+
+
+    // get the shipping rates:
+    const query2 = `mutation checkoutShippingAddressUpdateV2($checkoutId: ID!, $shippingAddress: MailingAddressInput!) {
+      checkoutShippingAddressUpdateV2(checkoutId: $checkoutId, shippingAddress: $shippingAddress) {
+        checkout {
+          id
+          availableShippingRates {
+            ready
+            shippingRates {
+              handle
+              title
+              price {
+                amount
+                currencyCode
+              }
+            }
+          }
+        }
+        checkoutUserErrors {
+          code
+          field
+          message
+        }
+      }
+    }`
+
+    if (province == null) {
+      throw 'Please select a State.'
+    }
+
+    const variables2 = {
+      checkoutId,
+      allowPartialAddresses: true,
+      shippingAddress: {
+        address1: address1,
+        address2: address2,
+        city: city,
+        company: "",
+        country: "US",
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        province: province.code,
+        zip: zip
+      }
+    }
+
+    const response: any = await storefrontApiClient(query2, variables2)
+    if (response.errors && response.errors.length != 0) {
+      throw response.errors[0].message
+    }
+
+    if (response.data.checkoutShippingAddressUpdateV2.checkoutUserErrors && response.data.checkoutShippingAddressUpdateV2.checkoutUserErrors.length != 0) {
+      throw response.data.checkoutShippingAddressUpdateV2.checkoutUserErrors[0].message
+    }
+
+    const availableShippingRates: AvailableShippingRatesType = response.data.checkoutShippingAddressUpdateV2.checkout.availableShippingRates as AvailableShippingRatesType
+    setAvailableShippingRates(availableShippingRates)
+    const shippingRate = availableShippingRates?.shippingRates[0].handle;
+
+    // this grabs the webURL that we need for checkout
+    try {
+      const query = `mutation checkoutShippingLineUpdate($checkoutId: ID!, $shippingRateHandle: String!) {
+        checkoutShippingLineUpdate(checkoutId: $checkoutId, shippingRateHandle: $shippingRateHandle) {
+          checkout {
+            id
+            webUrl
+          }
+          checkoutUserErrors {
+            code
+            field
+            message
+          }
+        }
+      }`;
+
+      const variables = {
+        checkoutId,
+        shippingRateHandle: "shopify-Delivery%20Fee%20-%20UW-0.99",
+        // shippingRateHandle: selectedRateHandle
+      };
+
+      const response: any = await storefrontApiClient(query, variables);
+
+      if (response.errors && response.errors.length != 0) {
+        throw response.errors[0].message;
+      }
+
+      if (response.data.checkoutShippingLineUpdate.checkoutUserErrors && response.data.checkoutShippingLineUpdate.checkoutUserErrors.length != 0) {
+        throw response.data.checkoutShippingLineUpdate.checkoutUserErrors[0].message;
+      }
+
+      const webUrl = response.data.checkoutShippingLineUpdate.checkout.webUrl;
+      console.log(webUrl);
+      // then, we navigate to that webURL (this is the popup)
+      await WebBrowser.openBrowserAsync(webUrl)
+
+
+      // Here you can navigate to the payment screen or handle the webUrl as needed
+      // For example: navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle });
+      // navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle })
+
+    } catch (e) {
+      console.log(e);
+      if (typeof e === 'string') {
+        setShippingOptionError(e);
+      } else {
+        setShippingOptionError('An error occurred while updating the shipping option.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+    setIsLoading(false);
+  }
 
   const updateShippingOption = async () => {
     if (!selectedRateHandle) {
@@ -85,7 +225,8 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
       const variables = {
         checkoutId,
-        shippingRateHandle: selectedRateHandle
+        shippingRateHandle: "shopify-Delivery%20Fee%20-%20UW-0.99",
+        // shippingRateHandle: selectedRateHandle
       };
 
       const response: any = await storefrontApiClient(query, variables);
@@ -102,7 +243,8 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
       // Here you can navigate to the payment screen or handle the webUrl as needed
       // For example: navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle });
-      navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle })
+      // navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle })
+
 
     } catch (e) {
       console.log(e);
@@ -120,11 +262,11 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     setIsLoading(true)
     setErrorMessage('')
 
-    if (!phone) {
-      setErrorMessage('Please add your phone number.')
-      setIsLoading(false)
-      return
-    }
+    // if (!phone) {
+    //   setErrorMessage('Please add your phone number.')
+    //   setIsLoading(false)
+    //   return
+    // }
 
     try {
       const query = `mutation checkoutEmailUpdateV2($checkoutId: ID!, $email: String!) {
@@ -211,6 +353,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
       const availableShippingRates: AvailableShippingRatesType = response.data.checkoutShippingAddressUpdateV2.checkout.availableShippingRates as AvailableShippingRatesType
       setAvailableShippingRates(availableShippingRates)
+      console.log(availableShippingRates);
       // navigation.push('ShippingOptions', { checkoutId, availableShippingRates })
 
     } catch (e) {
@@ -295,7 +438,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
               address1: "${defaultAddress.address1}"
               address2: "${defaultAddress.address2}"
               city: "${defaultAddress.city}"
-              province: "${defaultAddress.state}"
+              province: "${defaultAddress.province}"
               country: "${defaultAddress.country}"
               zip: "${defaultAddress.zip}"
             }
@@ -336,7 +479,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
               address1: "${defaultAddress.address1}"
               address2: "${defaultAddress.address2}"
               city: "${defaultAddress.city}"
-              province: "${defaultAddress.state}"
+              province: "${defaultAddress.province}"
               country: "${defaultAddress.country}"
               zip: "${defaultAddress.zip}"
             }
@@ -424,9 +567,20 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     zip?: string;
   }
 
+  // figure out the diff in the province/state issue bt pages
   const formatAddress = (address: Address) => {
     const { address1, address2, city, state, country, zip } = address;
-    return `${address1 ? `${address1}` : ''}${address2 ? `, ${address2}` : ''}${city ? `, ${city}` : ''}${state ? `, ${state}` : ''}${country ? `, ${country}` : ''}${zip ? `, ${zip}` : ''}`;
+    // console.log(address)
+    // console.log(address);
+    const parts = [
+      address1 && address1.length !== 0 ? address1 : '',
+      address2 && address2.length !== 0 && address2 !== 'undefined' ? `, ${address2}` : '',
+      city && city.length !== 0 ? `, ${city}` : '',
+      province && province.code ? `, ${province.code}` : '',
+      zip && zip.length !== 0 ? `, ${zip}` : '',
+    ];
+    // console.log(parts)
+    return parts.join('');
   };
 
   useEffect(() => {
@@ -449,105 +603,100 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     }
   }, [defaultAddress]);
 
-  const sendToCheckOut = (shippingRate: { handle: any; title?: string; price?: { amount: number; currencyCode: string } }) => {
-    setSelectedRateHandle(shippingRate.handle)
-    updateShippingOption()
-  }
+  // const sendToCheckOut = (shippingRate: { handle: any; title?: string; price?: { amount: number; currencyCode: string } }) => {
+  //   setSelectedRateHandle(shippingRate.handle)
+  //   updateShippingOption()
+  // }
 
 
   return (
     <>
-      <View style={{ flex: 1 }} >
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.container}
-          ref={scrollViewRef}
-        >
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 0, marginBottom: 15, paddingBottom: 5 }}>
-            <Text style={{ textAlign: 'left', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>Order Total</Text>
-            <Text style={{ textAlign: 'right', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>${totalPrice}</Text>
-          </View>
-          <TouchableOpacity style={{ borderWidth: 1, padding: 5, borderRadius: 10, backgroundColor: '#D9D9D9' }} onPress={() => bottomSheetRef.current?.expand()}>
-            {defaultAddress ? (
-              <View>
-                <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-                  Delivering to:
-                </Text>
-                <Text numberOfLines={1} ellipsizeMode='tail' style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
-                  {formatAddress(defaultAddress)}
-                </Text>
-                {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 10, bottom: 7 }} /> */}
-              </View>
-            ) : (
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-                  Where are we delivering?
-                </Text>
-                {/* <Icon name="edit" size={20} color="#4B2D83" style={{ position: 'absolute', right: 20, bottom: -2 }} /> */}
-              </View>
-            )}
+      <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'position' : 'height'} style={{ flex: 1 }}>
+        <View style={{
+          display: 'flex',
+          height: '100%',
 
-          </TouchableOpacity>
-          <TextInput
-            placeholder='Phone'
-            placeholderTextColor={theme.colors.disabledText}
-            keyboardType='phone-pad'
-            style={[styles.input, { marginBottom: 16 }]}
-            onChangeText={(text) => setPhone(text)}
-            autoCapitalize='none'
-            autoComplete='tel'
-            value={phone}
-          />
-          <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'position' : 'height'}
-            keyboardVerticalOffset={44 + sbHeight}
-          >
-            <Text style={{ color: '#727272', fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Leave a message!</Text>
-            <TextInput
-              placeholder='Apt #, door code, etc.'
-              placeholderTextColor={'black'}
-              keyboardType='default'
-              style={{ width: '100%', height: 60, borderRadius: 15, backgroundColor: '#D9D9D9', padding: 10, textAlign: 'left' }}
-              onChangeText={(text) => setOrderNotes(text)}
-              value={orderNotes}
-            />
-            <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50, marginBottom: 10 }]}>
-              {isLoading ?
-                <View style={{ width: 100, alignItems: 'center' }}>
-                  <ActivityIndicator size='small' />
-                </View> :
-                <View>
-                  {errorMessage.length != 0 &&
-                    <Text style={styles.error}>{errorMessage}</Text>
-                  }
-                  <TouchableOpacity style={styles.updateContainer} onPress={updateShippingAdress}>
-                    <Text style={styles.updateText}>Looks Good!</Text>
-                  </TouchableOpacity>
-                </View>
-              }
+        }}>
+
+          {/* top section */}
+          <View style={{ display: 'flex', height: 130, marginBottom: 30, alignItems: 'center' }}>
+            {/* review order and price component */}
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 0, marginBottom: 15, paddingBottom: 5, paddingTop: 20, width: '90%' }}>
+              <Text style={{ textAlign: 'left', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>Review order</Text>
+              <Text style={{ textAlign: 'right', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>${totalPrice}</Text>
             </View>
-          </KeyboardAvoidingView>
-          <View style={{ marginTop: 5 }}>
-            {availableShippingRates && <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 10 }}>Select a shipping option:</Text>}
-            {availableShippingRates && availableShippingRates.shippingRates.map((shippingRate) => (
-              <TouchableOpacity
-                key={shippingRate.handle}
-                onPress={() => sendToCheckOut(shippingRate)}
-                style={{
-                  padding: 10,
-                  borderWidth: 1,
-                  borderColor: selectedRateHandle === shippingRate.handle ? '#4B2D83' : 'grey',
-                  marginBottom: 10,
-                }}
-              >
-                <Text>{shippingRate.title} - {shippingRate.price.amount} {shippingRate.price.currencyCode}</Text>
-              </TouchableOpacity>
-            ))}
+
+            {/* address field */}
+            <TouchableOpacity style={{
+              borderWidth: 1, padding: 5, height: 50, borderRadius: 30, backgroundColor: '#D9D9D9', borderColor: '#4B2D83', flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%'
+            }} onPress={() => bottomSheetRef.current?.expand()}>
+
+              {defaultAddress ?
+                (<View style={{ flex: 1, marginLeft: 12, justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                    Delivering to:
+                  </Text>
+                  <Text numberOfLines={1} ellipsizeMode='tail' style={{ fontSize: 14, width: '90%' }}>
+                    {formatAddress(defaultAddress)}
+                  </Text>
+                </View>)
+                : (<Text style={{ fontSize: 15, fontWeight: '500', marginLeft: 24, marginTop: 2 }}>
+                  Please select an address
+                </Text>)}
+              <RightArrowIcon color='#4B2D83' size={38} />
+            </TouchableOpacity>
           </View>
-        </ScrollView>
+
+          {/* bottom section */}
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
+            {/* notes */}
+            <View style={{ backgroundColor: 'white', width: '90%' }}>
+              <Text style={{ color: '#727272', fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>Leave a message!</Text>
+              <TextInput
+                placeholder='Apt #, door code, etc.'
+                placeholderTextColor={'#9d9da1'}
+                keyboardType='default'
+
+                style={{
+                  width: '100%', display: 'flex', flexDirection: 'column', height: 100, borderRadius: 15, backgroundColor: '#FFFFFF',
+                  padding: 10,
+                  // paddingVertical: 10,
+                  borderWidth: 1, borderColor: '#D9D9D9', textAlign: 'left',
+                  textAlignVertical: 'top',
+                }}
+                onChangeText={(text) => setOrderNotes(text)}
+                value={orderNotes}
+                multiline={true}
+              />
+            </View>
+            <View style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+              <View style={{ width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 6 }}>
+                <Text style={{ color: '#aaaaaa', fontSize: 11, textAlign: 'center', lineHeight: 15, letterSpacing: 0.2 }}>
+                  By submitting your order, you agree to REV’s Terms of Service and Privacy Policy, including all terms related to the purchase of alcohol and vape products. If your order includes alcohol or vape products, you certify that you are of lawful age to purchase and consume such products and that you will produce a valid ID at delivery. If we are unable to verify your age, you may be charged at NON-REFUNDABLE restocking fee.
+                </Text>
+              </View>
+
+              <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50, marginBottom: 10 }]}>
+
+                {errorMessage.length != 0 &&
+                  <Text style={styles.error}>{errorMessage}</Text>
+                }
+                {isLoading ? (<TouchableOpacity style={styles.checkoutButton} >
+                  <ActivityIndicator size='small' />
+                </TouchableOpacity>)
+                  // TODO CHANGE THIS ONPRESS TO PULL UP WEBURL
+                  : (<TouchableOpacity style={styles.checkoutButton} onPress={sendToCheckout}>
+                    <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Checkout</Text>
+                  </TouchableOpacity>)}
+              </View>
+            </View>
+            {/* checkout button */}
 
 
-      </View>
+          </View>
+        </View>
+      </KeyboardAvoidingView >
+
       <BottomSheet
         ref={bottomSheetRef}
         index={-1} // Start closed
@@ -563,6 +712,11 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           }}
         >
           <GooglePlacesInput />
+          <TouchableOpacity onPress={updateShippingAdress} style={{ backgroundColor: '#4B2D83', width: '90%', height: 50 }}>
+            <Text>
+              Update Shipping Address
+            </Text>
+          </TouchableOpacity>
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 45 }}>
             <View style={{ width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83', marginBottom: 40 }}>
               <Text style={styles.textDescription}>{textDescription}</Text>
@@ -583,13 +737,13 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS == 'ios' ? 280 : 20,
   },
   input: {
-    marginTop: 16,
-    fontSize: 16,
-    borderBottomWidth: 0.5,
-    borderColor: theme.colors.text,
-    padding: 5,
-    paddingHorizontal: 4,
-    color: theme.colors.text
+    // marginTop: 16,
+    // fontSize: 16,
+    // borderBottomWidth: 0.5,
+    // borderColor: theme.colors.text,
+    // padding: 5,
+    // paddingHorizontal: 4,
+    // color: theme.colors.text
   },
   countyPickerView: {
     marginTop: 16,
@@ -613,12 +767,14 @@ const styles = StyleSheet.create({
     paddingVertical: 3
   },
   checkoutContainer: {
-    backgroundColor: theme.colors.background,
+    // backgroundColor: theme.colors.background,
     borderColor: theme.colors.infoText,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 14
+    paddingHorizontal: 14,
+
+    width: '100%'
   },
   provinceOptionsContainer: {
     alignItems: 'center',
@@ -642,18 +798,14 @@ const styles = StyleSheet.create({
     height: '50%',
     resizeMode: 'contain',
   },
-  updateContainer: {
-    paddingVertical: 6,
+  checkoutButton: {
+    marginTop: 5,
+    paddingVertical: 10,
     paddingHorizontal: 20,
-    width: '100%',
+    borderRadius: 20,
     backgroundColor: '#4B2D83',
     alignItems: 'center',
-    borderRadius: 10,
+    width: '100%',
+    alignSelf: 'center',
   },
-  updateText: {
-    color: theme.colors.background,
-    fontSize: 14,
-    letterSpacing: 1,
-    fontWeight: '500'
-  }
 })

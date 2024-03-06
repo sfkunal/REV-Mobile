@@ -3,27 +3,27 @@ import { theme } from '../../constants/theme'
 import { Order } from '../../types/dataTypes'
 import * as WebBrowser from 'expo-web-browser'
 
-const OrderCard = ({data}: {data: Order}) => {
+const OrderCard = ({ data }: { data: Order }) => {
   return (
-    <TouchableOpacity 
+    <TouchableOpacity
       onPress={() => WebBrowser.openBrowserAsync(data.customerUrl)}
-      style={{paddingVertical: 6}}
+      style={{ paddingVertical: 6 }}
     >
       <View style={styles.container}>
         <Text style={styles.title}>Order</Text>
-        <Text style={[styles.title, {color: theme.colors.infoText}]}>{data.name}</Text>
+        <Text style={[styles.title, { color: theme.colors.infoText }]}>{data.name}</Text>
       </View>
       <View style={styles.container}>
         <Text style={styles.title}>Status</Text>
-        <Text style={[styles.title, {color: theme.colors.infoText}]}>{data.fulfillmentStatus}</Text>
+        <Text style={[styles.title, { color: theme.colors.infoText }]}>{data.fulfillmentStatus}</Text>
       </View>
       <View style={styles.container}>
         <Text style={styles.title}>Date</Text>
-        <Text style={[styles.title, {color: theme.colors.infoText}]}>{data.processedAt.replace('T', ' ').replace('Z', '').replaceAll('-', '/')}</Text>
+        <Text style={[styles.title, { color: theme.colors.infoText }]}>{data.processedAt.replace('T', ' ').replace('Z', '').replaceAll('-', '/')}</Text>
       </View>
       <View style={styles.container}>
         <Text style={styles.title}>Total Price</Text>
-        <Text style={[styles.title, {color: theme.colors.infoText}]}>{data.totalPrice.amount} USD</Text>
+        <Text style={[styles.title, { color: theme.colors.infoText }]}>{(data.totalPrice.amount)} USD</Text>
       </View>
     </TouchableOpacity>
   )

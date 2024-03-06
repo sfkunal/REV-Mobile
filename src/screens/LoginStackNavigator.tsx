@@ -12,15 +12,16 @@ import { useEffect, useState } from 'react'
 import OnboardingName from './OnboardingName'
 import OnboardingEmail from './OnboardingEmail'
 import OnboardingPhone from './OnboardingPhone'
+import { Text } from 'react-native'
 
 type Props = NativeStackScreenProps<StackParamList, 'LoginStackNavigator'>
 
 const LoginStack = createNativeStackNavigator<LoginStackParamList>()
 
-const LoginStackNavigator = ({route}: Props) => {
+const LoginStackNavigator = ({ route }: Props) => {
   const { screen } = route.params
   const [initialRouteName, setInitialRouteName] = useState<'Login' | 'Register'>(screen)
-  
+
   useEffect(() => {
     setInitialRouteName(screen)
   }, [screen])
@@ -28,70 +29,73 @@ const LoginStackNavigator = ({route}: Props) => {
   return (
     <NavigationContainer theme={theme} independent={true}>
       <LoginStack.Navigator initialRouteName={initialRouteName}>
-        <LoginStack.Screen 
-          name='Login' 
+        <LoginStack.Screen
+          name='Login'
           component={Login}
-          options={{ 
+          options={{
             headerShown: false
-          }} 
+          }}
         />
-        <LoginStack.Screen 
-          name='Register' 
+        <LoginStack.Screen
+          name='Register'
           component={Register}
-          options={{ 
-            headerShown: false
-          }} 
+          options={{
+            headerShown: true,
+            headerTitle: () => (
+              <Text>Checkout</Text>
+            ),
+          }}
         />
-        <LoginStack.Screen 
-          name='ForgotPassword' 
+        <LoginStack.Screen
+          name='ForgotPassword'
           component={ForgotPassword}
-          options={{ 
-            headerShown: false
-          }} 
+          options={{
+            headerShown: true
+          }}
         />
-        <LoginStack.Screen 
-          name='ForgotPasswordEmailSent' 
+        <LoginStack.Screen
+          name='ForgotPasswordEmailSent'
           component={ForgotPasswordEmailSent}
-          options={{ 
-            headerShown: false
-          }} 
+          options={{
+            headerShown: true
+          }}
         />
-        <LoginStack.Screen 
-          name='VerifyEmail' 
+        <LoginStack.Screen
+          name='VerifyEmail'
           component={VerifyEmail}
-          options={{ 
-            headerShown: false
-          }} 
-          initialParams={{message: ''}}
+          options={{
+            headerShown: true
+          }}
+          initialParams={{ message: '' }}
         />
-        <LoginStack.Screen 
-          name='OnboardingName' 
+        <LoginStack.Screen
+          name='OnboardingName'
           component={OnboardingName}
           options={{
-            headerShown: true, // Hide the header for the onboarding flow
+            headerShown: true,
             headerTitle: '',
             // ... other options
-          }} 
+          }}
         />
-        <LoginStack.Screen 
-          name='OnboardingPhone' 
+        <LoginStack.Screen
+          name='OnboardingPhone'
           component={OnboardingPhone}
           options={{
-            headerShown: true, // Hide the header for the onboarding flow
+            headerShown: true,
             headerTitle: '',
             // ... other options
-          }} 
-          initialParams={{firstName: '', lastName: ''}}
+          }}
+          initialParams={{ firstName: '', lastName: '' }}
         />
-        <LoginStack.Screen 
-          name='OnboardingEmail' 
+        <LoginStack.Screen
+          name='OnboardingEmail'
           component={OnboardingEmail}
           options={{
-            headerShown: true, // Hide the header for the onboarding flow
+            headerShown: true,
             headerTitle: '',
             // ... other options
-          }} 
-          initialParams={{firstName: '', lastName: '', phoneNumber: ''}}
+          }}
+          initialParams={{ firstName: '', lastName: '', phoneNumber: '' }}
         />
       </LoginStack.Navigator>
     </NavigationContainer>

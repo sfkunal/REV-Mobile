@@ -10,12 +10,14 @@ import { useAuthContext } from '../context/AuthContext'
 import * as WebBrowser from 'expo-web-browser'
 import { config } from '../../config'
 import { RightArrowIcon } from '../components/shared/Icons'
+import { useCartContext } from '../context/CartContext'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>
 
 const Profile = ({ navigation }: Props) => {
   const { userToken, signOut } = useAuthContext()
   const { rootNavigation } = useNavigationContext()
+  const { getItemsCount, getTotalPrice, cartItems } = useCartContext()
 
   // useEffect(() => {
   //   navigation.setOptions({
@@ -61,13 +63,15 @@ const Profile = ({ navigation }: Props) => {
           fontSize: 20,
           marginVertical: 8,
           fontWeight: 'bold', color: '#4B2D83'
-        }}>Hi, {userToken.customer.firstName}</Text>
+        }}>Hi, {userToken?.customer.firstName}</Text>
 
 
 
         {/* FEATURES COMING SOON */}
+        {/* using 0.5 hours per order? */}
+        {/* using 0.8 because 400g (0.4kg) of co2 emitted per mile of driving */}
         <Text style={{ marginBottom: 20 }}>
-          You saved {0} hours shopping and prevented {0.00} kg of carbon emissions!
+          You saved {getItemsCount() * 0.5} hours shopping and prevented {Math.round((getItemsCount() * 0.8) * 100) / 100} kg of carbon emissions!
         </Text>
 
         {/* REVPASS COMING SOON */}

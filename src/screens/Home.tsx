@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, Modal, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, Touchable } from 'react-native'
+import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, Modal, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, TouchableOpacity } from 'react-native'
 import { useEffect, useState, useRef } from 'react'
 import { hasHomeIndicator, theme } from '../constants/theme'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
@@ -13,13 +13,14 @@ import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext'
 import ProductCard from '../components/shared/ProductCard'
 import { getProductInfoQuery } from '../queries/PopularProductsStaticQuery'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+// import { TouchableOpacity } from 'react-native-gesture-handler'
 import BottomSheet from '@gorhom/bottom-sheet';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import the Icon component
 // import GooglePlacesInput from './AddressAutocomplete'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 import { ChevronDownIcon, HangerIcon, PinIcon } from '../components/shared/Icons'
+import { Product } from '../types/dataTypes'
 
 // import { useNavigationContext } from '../context/NavigationContext'
 
@@ -40,10 +41,11 @@ const Home = ({ navigation }: Props) => {
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [userOrders, setUserOrders] = useState(0);
-  const [selectedMode, setSelectedMode] = useState('forYou'); // 'forYou' or 'explore'
+  const [selectedMode, setSelectedMode] = useState('explore'); // 'forYou' or 'explore'
   const bottomSheetRef = useRef<BottomSheet>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address>({});
-
+  const [catsLoading, setCatsLoading] = useState<Boolean>(false);
+  const [sectionData, setSectionData] = useState<any[]>([]);
 
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
@@ -123,7 +125,6 @@ const Home = ({ navigation }: Props) => {
       const queries = productIds.map(id => getProductInfoQuery(id));
       const responses = await Promise.all(queries.map(query => storefrontApiClient(query)));
       const products = responses.map((response: { data: any }) => response.data.product);
-
       // if (responses.errors && responses.errors.length != 0) {
       //   setIsLoading(false)
       //   throw response.errors[0].message
@@ -131,7 +132,6 @@ const Home = ({ navigation }: Props) => {
 
       setPopularProducts(products)
       setIsLoading(false)
-
     } catch (e) {
       console.log(e)
     }
@@ -169,7 +169,7 @@ const Home = ({ navigation }: Props) => {
                            currencyCode
                          }
                        }
-                       images(first: 10) {
+                       images(first: 1) {
                          nodes {
                            url
                            width
@@ -300,7 +300,6 @@ const Home = ({ navigation }: Props) => {
       const products = response.data.collection.products.nodes
       setExploreProducts(products)
       setIsLoading(false)
-
     } catch (e) {
       console.log(e)
     }
@@ -454,14 +453,17 @@ const Home = ({ navigation }: Props) => {
     }
   }, [selectedAddress]);
 
+  // THIS IS WHERE ALL OF THE PRODUCTS ARE FETCHED
   useEffect(() => {
     fetchUserOrders()
     fetchPopularProducts()
     fetchForYou()
     fetchExploreProducts()
     getCustomerAddress()
+    createSectionData();
   }, [userToken, userOrders])
 
+  // this is what gives the space between the items
   const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
 
   interface Address {
@@ -486,11 +488,11 @@ const Home = ({ navigation }: Props) => {
   };
 
   const HomeList = ({ data }) => (
-    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 260 }}>
+    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
       <FlatList
         data={data.filter(item => item != null)}
         renderItem={({ item }) => <ProductCard data={item} />}
-        keyExtractor={item => item.id.toString()} // Make sure to have a keyExtractor for unique keys
+        keyExtractor={item => item.id.toString()}// Make sure to have a keyExtractor for unique keys
         ItemSeparatorComponent={ItemSeparator} // Add this line
         keyboardDismissMode='on-drag'
         showsVerticalScrollIndicator={true}
@@ -500,8 +502,96 @@ const Home = ({ navigation }: Props) => {
     </View>
   );
 
+  const HorizontalList = ({ title, data }) => {
+
+    return (
+      <View style={{ flex: 1, marginTop: 10, }}>
+        <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 120, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 3, backgroundColor: 'white', }}>
+          <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{title}</Text>
+        </View>
+
+        <FlatList
+          data={data.filter(item => item != null)}
+          // data={data}
+          renderItem={({ item }) => (<ProductCard data={item} />)}
+          // <ProductCard data={item} />}
+          horizontal={true}
+          keyboardDismissMode='on-drag'
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 14 }}
+          style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
+          keyExtractor={item => item.id.toString()}
+
+        // keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
+    )
+  }
+
+  const FullList = ({ sections }) => {
+    // console.log(sections)
+    // console.log(sectionData[0].data[0].id)
+    // console.log(sectionData[0].data[0].options[0].id)
+    return (
+      // <View>
+
+      // </View>
+      <View style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
+        {sections ? (<FlatList
+          data={sections}
+          renderItem={({ item }) => (
+            <HorizontalList
+              title={item.title}
+              data={item.data}
+            />
+          )}
+          keyExtractor={(item, index) => {
+            return item.title
+          }}
+          ItemSeparatorComponent={() => (<View style={{ height: 30, marginBottom: 10, width: '100%', }} ></View>)
+          }
+          showsVerticalScrollIndicator={false}
+        />) : (<Text>Whoa</Text>)
+        }
+      </View >
+    )
+  }
+
+
+
+  {/* <FlatList
+        data={data.filter(item => item != null)}
+        renderItem={({ item }) => <ProductCard data={item} />}
+        keyExtractor={item => item.id.toString()} // Make sure to have a keyExtractor for unique keys
+        ItemSeparatorComponent={ItemSeparator} // Add this line
+        keyboardDismissMode='on-drag'
+        showsVerticalScrollIndicator={true}
+        numColumns={2}
+        contentContainerStyle={{ paddingHorizontal: 14 }}
+      /> */}
+
+  // where we create the data to make the sections (horizontal scrolls)
+  const createSectionData = () => {
+    // if things are still loading, just return
+    if (isLoading) {
+      return;
+    }
+    // array of arrays of products
+    const sections = [
+      { title: 'Popular', data: popularProducts },
+      { title: 'Sweets', data: popularProducts },
+      { title: 'Energy', data: popularProducts },
+      { title: 'Babytron', data: popularProducts },
+    ];
+
+    setSectionData(sections);
+    // return sections
+  }
+
+
   const GooglePlacesInput = () => {
     return (
+      // in here is apartment/suite missing?
       <GooglePlacesAutocomplete
         placeholder='Where To?'
         fetchDetails={true}
@@ -511,7 +601,7 @@ const Home = ({ navigation }: Props) => {
           if (details) {
             const addressComponents = details.address_components;
             const address1 = `${addressComponents.find(c => c.types.includes('street_number'))?.long_name} ${addressComponents.find(c => c.types.includes('route'))?.long_name}`;
-            const address2 = addressComponents.find(c => c.types.includes('subpremise'))?.long_name; // This line is new
+            const address2 = addressComponents.find(c => c.types.includes('subpremise'))?.long_name || ''; // This line is new
             const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
             const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
             const country = addressComponents.find(c => c.types.includes('country'))?.short_name;
@@ -570,7 +660,6 @@ const Home = ({ navigation }: Props) => {
                 {selectedAddress ?
                   // if address selected
                   (
-
                     <View style={{
                       width: '100%',
                       backgroundColor: '#D9D9D9',
@@ -583,7 +672,7 @@ const Home = ({ navigation }: Props) => {
                       marginTop: 10,
                     }}>
                       <View style={{ marginLeft: 20, marginBottom: 4 }}>
-                        <PinIcon size={24} color='#4B2D83' />
+                        <PinIcon size={24} color='black' />
                       </View>
 
                       <View style={{ width: '75%' }}>
@@ -600,7 +689,6 @@ const Home = ({ navigation }: Props) => {
                       </View>
                     </View>
                   )
-
                   // address not selected
                   : (
                     <>
@@ -616,11 +704,11 @@ const Home = ({ navigation }: Props) => {
                         marginTop: 10,
                       }}>
                         <View style={{ marginLeft: 20, marginBottom: 4 }}>
-                          <PinIcon size={24} color='#4B2D83' />
+                          <PinIcon size={24} color='black' />
                         </View>
 
-                        <View style={{ width: '75%' }}>
-                          <Text style={{ fontSize: 18, color: 'black' }}>
+                        <View style={{ width: '75%', }}>
+                          <Text style={{ fontSize: 18, color: 'black', fontWeight: '500', marginBottom: 4, marginLeft: 10 }}>
                             Select Delivery Address
                           </Text>
                         </View>
@@ -630,56 +718,68 @@ const Home = ({ navigation }: Props) => {
                         </View>
                       </View>
 
-                      <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
+                      {/* <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
                         <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
                           Where are we delivering?
                         </Text>
                         <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
                           Enter your address here...
                         </Text>
-                      </View>
+                      </View> */}
                     </>
                   )
                 }
               </TouchableOpacity>
 
-              <View style={{ flexDirection: 'row', marginTop: 6, justifyContent: 'center' }}>
-                <View style={{ borderWidth: 2, flexDirection: 'row', alignItems: 'center', borderRadius: 20, borderColor: '#4B2D83' }}>
 
+              {/* 2nd main menu item */}
+              <View style={{ width: 245, height: 40, flexDirection: 'row', alignSelf: 'center', zIndex: 1, marginTop: 6, marginBottom: 10 }} >
+                {selectedMode === 'explore' ?
+                  (<>
+                    <TouchableOpacity onPress={() => setSelectedMode('forYou')} style={{ backgroundColor: 'white', height: 40, width: 162, position: 'absolute', right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1, borderColor: '#4B2D83' }}
+                    //  activeOpacity={1}
+                    >
+                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83', marginLeft: 24 }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
+                    </TouchableOpacity>
+                    {/* <View style={{ backgroundColor: 'pink', height: 100, width: 145, position: 'absolute', right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, }}> */}
 
-                  <TouchableOpacity
-                    onPress={() => setSelectedMode('explore')}
-                    style={selectedMode === 'explore' ? styles.selectedMode : styles.notSelectedMode}>
-                    <Text style={{
-                      color: selectedMode === 'explore' ? 'white' : '#4B2D83',
-                      fontSize: 18,
-                      letterSpacing: 1,
-                      fontWeight: 'bold',
-                      paddingLeft: 10,
-                      paddingRight: 10
-                    }}>
-                      Explore
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => setSelectedMode('forYou')}
-                    style={selectedMode === 'forYou' ? styles.selectedMode : styles.notSelectedMode}>
-                    <Text style={{
-                      color: selectedMode === 'forYou' ? 'white' : '#4B2D83',
-                      fontSize: 18,
-                      letterSpacing: 1,
-                      fontWeight: 'bold',
-                      paddingLeft: 10,
-                      paddingRight: 10
-                    }}>
-                      {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
-                    </Text>
-                  </TouchableOpacity>
+                    {/* <TouchableOpacity style={{ height: '100%', width: '100%', backgroundColor: 'white', }}>
+                      <Text>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
+                    </TouchableOpacity> */}
 
-                </View>
+                    {/* </View> */}
+                    <TouchableOpacity onPress={() => setSelectedMode('explore')}
+                      // activeOpacity={1} 
+                      style={{ backgroundColor: '#4B2D83', height: 40, width: 120, position: 'absolute', left: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1, borderColor: '#4B2D83' }}>
+                      <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }} >
+                        Explore
+                      </Text>
+                    </TouchableOpacity>
+                  </>) :
+                  (<>
+                    {/* </View> */}
+                    <TouchableOpacity onPress={() => setSelectedMode('forYou')} style={{ backgroundColor: '#4B2D83', height: 40, width: 162, position: 'absolute', right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1 }}
+                    //  activeOpacity={1}
+                    >
+                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: selectedMode === 'forYou' ? 'white' : '#4B2D83', marginLeft: 24 }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setSelectedMode('explore')}
+                      // activeOpacity={1} 
+                      style={{ backgroundColor: 'white', height: 40, width: 120, position: 'absolute', left: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1 }}>
+                      <Text style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83' }} >
+                        Explore
+                      </Text>
+                    </TouchableOpacity>
+                  </>)
+                  // (<Text style={{ color: 'black' }}>Not selected</Text>)}
+                }
               </View>
+
             </View>
-            <HomeList data={selectedMode === 'explore' ? exploreProducts : (userOrders > 4 ? forYou : popularProducts)} />
+            {selectedMode === 'explore' ? <FullList sections={sectionData} /> : <HomeList data={(userOrders > 4 ? forYou : popularProducts)} />}
+            {/* <HomeList data={selectedMode === 'explore' ? exploreProducts : (userOrders > 4 ? forYou : popularProducts)} /> */}
+
+
           </View>
 
           {/* this is what  */}
@@ -713,8 +813,9 @@ const Home = ({ navigation }: Props) => {
             </View>
           </BottomSheet>
         </>
-      )}
-    </View>
+      )
+      }
+    </View >
   )
 }
 

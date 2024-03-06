@@ -60,7 +60,7 @@ export type LoginStackParamList = {
   ForgotPassword: undefined
   VerifyEmail: { message: string }
   ForgotPasswordEmailSent: undefined
-  OnboardingName: undefined;
   OnboardingPhone: { firstName: string; lastName: string };
+  OnboardingName: { phoneNumber: string };
   OnboardingEmail: { firstName: string; lastName: string, phoneNumber: string };
 }

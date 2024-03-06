@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { theme } from '../constants/theme'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
@@ -26,7 +26,8 @@ const Cart = ({ navigation }: Props) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.screenTitle}>Cart ({getItemsCount()})</Text>
+        // <Text style={styles.screenTitle}>Cart ({getItemsCount()})</Text>
+        <Image source={require('../../assets/BAG.png')} style={{ height: 25, width: 100, marginTop: 8 }} resizeMode='contain' />
       )
     })
   }, [getItemsCount])
@@ -101,10 +102,9 @@ const Cart = ({ navigation }: Props) => {
           console.log('Associate customer failed.')
           console.log(response2.errors[0].message)
         }
-
       }
 
-      rootNavigation.push('ShippingAddress', { checkoutId: response.data.checkoutCreate.checkout.id, totalPrice: parseFloat((totalPrice + 0.99).toFixed(2))})
+      rootNavigation.push('ShippingAddress', { checkoutId: response.data.checkoutCreate.checkout.id, totalPrice: parseFloat((totalPrice + 0.99).toFixed(2)) })
 
     } catch (e) {
       if (typeof e == 'string') {
@@ -123,46 +123,61 @@ const Cart = ({ navigation }: Props) => {
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={styles.empty}>Cart is empty.</Text>
         </View> :
-        <LinearGradient colors={['#FFFFFF', '#D9D9D9', '#FFFFFF']} style={{ flex: 1 }}>
+        <LinearGradient colors={['#FFFFFF', '#D9D9D9', '#FFFFFF']} style={{ flex: 1, marginTop: 8 }}>
           <FlatList
             data={cartItems}
             renderItem={({ item }) => <CartCard cartItem={item} />}
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           />
-          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 130}]}>
-            {isLoading ?
-              <View style={{ width: 100, alignItems: 'center' }}>
-                <ActivityIndicator size='small' />
-              </View> :
-              <View style={{}}>
-                {errorMessage.length != 0 &&
-                  <Text style={styles.error}>{errorMessage}</Text>
-                }
-                <View style={{ flexDirection: 'column', width: '100%', alignSelf: 'center', paddingTop: 5 }}>
-                  <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
-                    <Text style={{ flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#3C3C43' }}>Subtotal:</Text>
-                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#3C3C43' }}>{parseFloat(totalPrice.toFixed(2))} USD</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
-                    <Text style={{ flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#3C3C43' }}>Tax: </Text>
-                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#3C3C43' }}>0.99 USD</Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
-                    <Text style={{ flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#3C3C43' }}>Total: </Text>
-                    <Text style={{ flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#3C3C43' }}>{parseFloat((totalPrice + 0.99).toFixed(2))} USD</Text>
-                  </View>
+          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 160 }]}>
+
+            {/* // this is the container for the bottom */}
+            <View style={{ width: '100%' }}>
+              {errorMessage.length != 0 &&
+                <Text style={styles.error}>{errorMessage}</Text>
+              }
+
+
+              <View style={{ flexDirection: 'column', width: '100%', alignSelf: 'center', paddingTop: 5 }}>
+
+                {/* subtotal */}
+                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
+                  <Text style={styles.grayTextLeft}>Subtotal</Text>
+                  <Text style={styles.grayTextRight}>{parseFloat(totalPrice.toFixed(2))} USD</Text>
                 </View>
-                {/* <FillButton
+
+                {/* tax */}
+                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
+                  <Text style={styles.grayTextLeft}>Tax </Text>
+                  <Text style={styles.grayTextRight}>{(totalPrice * 0.1).toFixed(2) + " "}USD</Text>
+                </View>
+
+                {/* delivery */}
+                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
+                  <Text style={styles.grayTextLeft}>Delivery </Text>
+                  <Text style={styles.grayTextRight}>{0.99} USD</Text>
+                </View>
+
+                {/* total */}
+                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
+                  <Text style={styles.blackTextLeft}>Total </Text>
+                  <Text style={styles.blackTextRight}>{parseFloat((totalPrice + (totalPrice * 0.1)).toFixed(2))} USD</Text>
+                </View>
+
+
+              </View>
+              {/* <FillButton
                   title='CHECKOUT'
                   onPress={createCheckout}
                 /> */}
-                <TouchableOpacity onPress={createCheckout} style={styles.reviewOrderContainer}>
-                  <Text style={{fontSize: 18, fontWeight: 'bold', color: 'white'}}>Review Order</Text>
-                </TouchableOpacity>
-              </View>
-            }
-
+              {isLoading ? (<TouchableOpacity style={styles.reviewOrderContainer}>
+                <ActivityIndicator size='small' />
+              </TouchableOpacity>)
+                : (<TouchableOpacity onPress={createCheckout} style={styles.reviewOrderContainer}>
+                  <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Review Order</Text>
+                </TouchableOpacity>)}
+            </View>
           </View>
         </LinearGradient>
       }
@@ -187,7 +202,7 @@ const styles = StyleSheet.create({
     // borderColor: '#4B2D83',
     // borderTopWidth: 3,
     alignItems: 'center',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   error: {
     alignSelf: 'center',
@@ -205,11 +220,23 @@ const styles = StyleSheet.create({
     marginTop: 5,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 8,
-    backgroundColor: '#4B2D83', 
-    alignItems:'center',
-    width: 250,
+    borderRadius: 20,
+    backgroundColor: '#4B2D83',
+    alignItems: 'center',
+    width: '100%',
     alignSelf: 'center',
+  },
+  grayTextLeft: {
+    flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#8a8a8e', fontSize: 15
+  },
+  grayTextRight: {
+    flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#8a8a8e', fontSize: 15
+  },
+  blackTextLeft: {
+    flex: 1, textAlign: 'left', fontWeight: 'bold', color: '#000000', fontSize: 15
+  },
+  blackTextRight: {
+    flex: 1, textAlign: 'right', fontWeight: 'bold', color: '#000000', fontSize: 15
   },
 })
 

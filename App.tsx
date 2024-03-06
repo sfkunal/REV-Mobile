@@ -19,27 +19,27 @@ export default function App() {
         setIsConnected(state.isConnected)
       }
     })
-    
+
     return () => unsubscribe()
   }, [])
 
   return (
-    <GestureHandlerRootView style={{flex:1}}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthContext>
         <WishlistContext>
           <CartContext>
             <NavigationContext>
-              <View style={{backgroundColor: theme.colors.background,flex: 1, paddingBottom: hasHomeIndicator ? 30 : 0 }}>
-                { isConnected ?
+              <View style={{ backgroundColor: theme.colors.background, flex: 1, paddingBottom: hasHomeIndicator ? 30 : 0 }}>
+                {isConnected ?
                   <MainNavigator /> :
                   <View style={styles.container}>
                     <Image source={noNetworkCloud} style={styles.image} />
                     <Text style={styles.title}>Oops!</Text>
                     <Text style={styles.text}>No internet connection found. Check your internet connection and try again.</Text>
                   </View>
-                } 
-              </View> 
-              <StatusBar style={colorScheme == 'light' ? 'light' : 'light'} />            
+                }
+              </View>
+              <StatusBar style={colorScheme == 'light' ? 'light' : 'light'} />
             </NavigationContext>
           </CartContext>
         </WishlistContext>
@@ -47,6 +47,8 @@ export default function App() {
     </GestureHandlerRootView>
   )
 }
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -72,6 +74,6 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 120,
-    height: 120*0.974
+    height: 120 * 0.974
   }
 })

@@ -8,9 +8,10 @@ import { Product } from '../types/dataTypes'
 import { MenuStackParamList } from '../types/navigation'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
 import logo from '../../assets/logo.png'
-
+import splash from '../../assets/splash.png'
 
 const screenWidth = Dimensions.get('screen').width
+
 
 type Props = NativeStackScreenProps<MenuStackParamList, 'Collection'>
 

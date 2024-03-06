@@ -16,16 +16,16 @@ type CartContextType = {
 
 const Context = createContext<CartContextType | null>(null)
 
-type Props = { children: React.ReactNode } 
+type Props = { children: React.ReactNode }
 
-export const CartContext = ({children}: Props) => { 
+export const CartContext = ({ children }: Props) => {
   const [cartItems, setcartItems] = useState<CartItem[]>([])
 
   const restoreCartItems = async () => {
     try {
       const restoredCartItems: { id: string, quantity: number }[] = JSON.parse(await AsyncStorage.getItem('cart'))
       var cartItems: CartItem[] = []
-      
+
       for await (const restoredCartItem of restoredCartItems) {
         try {
           const query = `query {
@@ -56,13 +56,13 @@ export const CartContext = ({children}: Props) => {
                 }
               }
             }
-          }`  
-          
-          const variables = { id: restoredCartItem.id}
-      
+          }`
+
+          const variables = { id: restoredCartItem.id }
+
           const response: any = await storefrontApiClient(query, variables)
 
-          if (response.errors && response.errors.length != 0 ) {
+          if (response.errors && response.errors.length != 0) {
             throw response.errors[0].message
           }
 
@@ -73,17 +73,17 @@ export const CartContext = ({children}: Props) => {
           if (!cartItem.availableForSale) {
             throw 'Variant out of stock.'
           }
-          
+
           if (notTrackingStock) {
             cartItem.quantity = restoredCartItem.quantity
           } else {
-            if ( restoredCartItem.quantity <= cartItem.quantityAvailable ) {
+            if (restoredCartItem.quantity <= cartItem.quantityAvailable) {
               cartItem.quantity = restoredCartItem.quantity
             } else {
               cartItem.quantity = cartItem.quantityAvailable
             }
           }
-          
+
           cartItems.push(cartItem)
 
         } catch (e) {
@@ -102,31 +102,31 @@ export const CartContext = ({children}: Props) => {
   }, [])
 
   useEffect(() => {
-    const cartItemsToBeStored = cartItems.map((cartItem) => ({ id: cartItem.id, quantity: cartItem.quantity}) )
+    const cartItemsToBeStored = cartItems.map((cartItem) => ({ id: cartItem.id, quantity: cartItem.quantity }))
     AsyncStorage.setItem('cart', JSON.stringify(cartItemsToBeStored))
   }, [cartItems])
 
   const resetCart = () => {
     setcartItems([])
   }
-  
+
   const getItemsCount = () => {
     var count = 0
     cartItems.forEach(item => count = count + item.quantity)
-    
+
     return count
   }
 
   const getTotalPrice = () => {
     var totalPrice = 0
-    cartItems.forEach(item => totalPrice = totalPrice + item.price.amount*item.quantity )
-    
+    cartItems.forEach(item => totalPrice = totalPrice + item.price.amount * item.quantity)
+
     return totalPrice
   }
 
   const addItemToCart = (item: CartItem, quantity: number = 1) => {
     const index = cartItems.findIndex((arrayItem) => arrayItem.id == item.id);
-  
+
     if (index == -1) {
       item.quantity = quantity;
       setcartItems(cartItems => [item, ...cartItems]);
@@ -138,13 +138,13 @@ export const CartContext = ({children}: Props) => {
           if (cartItem.id === item.id) {
             const notTrackingStock = cartItem.quantityAvailable <= 0 && cartItem.availableForSale;
             var newQuantity: number;
-  
+
             if (notTrackingStock) {
               newQuantity = cartItem.quantity + quantity;
             } else {
               newQuantity = cartItem.quantityAvailable < cartItem.quantity + quantity ? cartItem.quantityAvailable : cartItem.quantity + quantity;
             }
-  
+
             return { ...cartItem, quantity: newQuantity };
           }
           return cartItem;
@@ -166,13 +166,13 @@ export const CartContext = ({children}: Props) => {
         var newQuantity: number
 
         if (notTrackingStock) {
-          newQuantity = item.quantity+1
+          newQuantity = item.quantity + 1
         } else {
-          newQuantity = item.quantityAvailable <= item.quantity ? item.quantityAvailable : item.quantity+1
+          newQuantity = item.quantityAvailable <= item.quantity ? item.quantityAvailable : item.quantity + 1
         }
-        
-        return ( 
-          item.id==itemId ? {...item, quantity: newQuantity } as CartItem : item 
+
+        return (
+          item.id == itemId ? { ...item, quantity: newQuantity } as CartItem : item
         )
       })
     ))
@@ -180,25 +180,25 @@ export const CartContext = ({children}: Props) => {
 
   const substractQuantityOfItem = (itemId: string) => {
     const item = cartItems.find((item) => item.id == itemId)
-    
-    if(item.quantity == 1) {
-      removeItemFromCart(itemId)
+
+    if (item.quantity == 1) {
+      // removeItemFromCart(itemId)
       return
     }
 
     setcartItems(cartItems => (
       cartItems.map((item) => {
-        const newQuantity: number = item.quantity-1
-        return ( 
-          item.id==itemId ? {...item, quantity: newQuantity } as CartItem : item 
+        const newQuantity: number = item.quantity - 1
+        return (
+          item.id == itemId ? { ...item, quantity: newQuantity } as CartItem : item
         )
       })
     ))
   }
 
-  return(
+  return (
     <Context.Provider value={{ resetCart, getItemsCount, getTotalPrice, cartItems, addItemToCart, addQuantityOfItem, removeItemFromCart, substractQuantityOfItem }}>
-      {children}       
+      {children}
     </Context.Provider>
   )
 }

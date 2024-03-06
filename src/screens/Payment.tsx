@@ -13,7 +13,7 @@ import { useCartContext } from '../context/CartContext'
 
 type Props = NativeStackScreenProps<StackParamList, 'Payment'>
 
-const Payment = ({route, navigation}: Props) => {
+const Payment = ({ route, navigation }: Props) => {
   const { webUrl, checkoutId, selectedRateHandle } = route.params
   const { resetCart } = useCartContext()
   const [isCompleted, setIsCompleted] = useState(false)
@@ -24,13 +24,13 @@ const Payment = ({route, navigation}: Props) => {
     navigation.setOptions({
       headerLeft: () => (
         <>
-          { isCompleted ?
+          {isCompleted ?
             null :
-            <BackArrowIcon 
-                color={'#4B2D83'}
-                size={20}
-                onPress={() => navigation.goBack()}
-              />
+            <BackArrowIcon
+              color={'#4B2D83'}
+              size={20}
+              onPress={() => navigation.goBack()}
+            />
           }
         </>
       )
@@ -42,7 +42,7 @@ const Payment = ({route, navigation}: Props) => {
     setError(false)
 
     await WebBrowser.openBrowserAsync(webUrl)
-    
+
     // use this mutation to check if the checkout is completed
     // if the checkout is completed "Checkout is already completed." error message will occur
     // otherwise the checkout is not completed
@@ -59,7 +59,7 @@ const Payment = ({route, navigation}: Props) => {
         }
       }
     }`
-    
+
     const variables = {
       checkoutId,
       shippingRateHandle: selectedRateHandle
@@ -67,9 +67,9 @@ const Payment = ({route, navigation}: Props) => {
 
     try {
       const response: any = await storefrontApiClient(query, variables)
-      
+
       // if the checkout is completed "Checkout is already completed." error message will occur
-      if (response.errors && response.errors.length != 0 ) {
+      if (response.errors && response.errors.length != 0) {
         if (response.errors[0].message == "Checkout is already completed.") {
           setIsCompleted(true)
 
@@ -85,36 +85,36 @@ const Payment = ({route, navigation}: Props) => {
       console.log(e)
       setError(true)
     }
-    
+
     setIsLoading(false)
   }
 
   useEffect(() => {
     completeCheckout()
   }, [])
-  
+
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      { isLoading ? 
-        <ActivityIndicator size='small' /> : 
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {isLoading ?
+        <ActivityIndicator size='small' /> :
         <>
-          { error ?
+          {error ?
             <View>
               <Text style={styles.error}>Something went wrong. Try again.</Text>
-              <FillButton 
+              <FillButton
                 title='TRY PAYMENT AGAIN'
-                onPress={() => completeCheckout() }
+                onPress={() => completeCheckout()}
               />
             </View> :
             <>
-              { isCompleted &&
+              {isCompleted &&
                 <View style={styles.thankYouContainer}>
                   <View style={styles.subContainer}>
                     <AntDesign name="checkcircleo" size={42} color={theme.colors.text} />
                     <Text style={styles.text}>Thank you for your order!</Text>
                   </View>
-                  <FillButton 
+                  <FillButton
                     title='CONTINUE SHOPPING'
                     onPress={() => { resetCart(); navigation.push('TabNavigator') }}
                   />
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 16
   },
   thankYouContainer: {
-    
+
   },
   subContainer: {
     flexDirection: 'row',

@@ -343,7 +343,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
             {data.description.length != 0 && <Text style={styles.subTitle}>{data.description}</Text>}
             {/* <Text style={styles.subTitle}>VENDOR: {data.vendor.toUpperCase()}</Text> */}
 
-            <TouchableOpacity style={{ marginLeft: 0, marginTop: 20, }}>
+            <TouchableOpacity style={{ marginLeft: 0, marginTop: 20, }} onPress={() => sheetRef3.current?.expand()}>
               <Text style={{ color: '#4B2D83', fontWeight: '500', fontSize: 20 }}>Discover More</Text>
             </TouchableOpacity>
           </View>
@@ -366,7 +366,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
         index={-1}
         enablePanDownToClose={true}
         ref={sheetRef2}
-        style={{ backgroundColor: 'orange' }}
+        style={{}}
         handleIndicatorStyle={{ backgroundColor: theme.colors.text, borderRadius: 0, height: 2 }}
         backgroundComponent={() => <View style={{ backgroundColor: theme.colors.background }}></View>}
       >
@@ -426,7 +426,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
         }}></View>}
       >
         <BottomSheetView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={styles.text}>Item was added succesfully to the cart.</Text>
+          <Text style={styles.text}>Item added succesfully!</Text>
           {/* <TouchableOpacity onPress={() => {
             navigation.goBack()
             navigation.push('Cart')
@@ -442,7 +442,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
 const styles = StyleSheet.create({
   text: {
     color: theme.colors.text,
-    letterSpacing: 1.5,
+    letterSpacing: 0,
     alignSelf: 'center'
   },
   image: {

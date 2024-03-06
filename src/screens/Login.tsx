@@ -86,7 +86,7 @@ const Login = ({ navigation }: Props) => {
             Don't have an account?
             <Text
               style={{ color: theme.colors.primary, fontWeight: '500', marginLeft: 4 }}
-              onPress={() => { navigation.push('OnboardingName') }}
+              onPress={() => { navigation.push('OnboardingPhone') }}
             >
               {' '}Register
             </Text>

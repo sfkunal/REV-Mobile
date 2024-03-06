@@ -9,7 +9,7 @@ import { AntDesign } from '@expo/vector-icons'
 import { useNavigationContext } from '../context/NavigationContext'
 import ShippingAddress from './ShippingAdress'
 import ShippingOptions from './ShippingOptions'
-import { BackArrowIcon } from '../components/shared/Icons'
+import { BackArrow, BackArrowIcon } from '../components/shared/Icons'
 import Payment from './Payment'
 import LoginStackNavigator from './LoginStackNavigator'
 import DiscountCode from './DiscountCode'
@@ -60,11 +60,13 @@ const MainNavigator = () => {
               // <TouchableOpacity
               //   onPress={() => rootNavigation.goBack()}
               // >
-              //   <AntDesign
+              //   <BackArrow size={22}
+              //     color={theme.colors.text} />
+              //   {/* <AntDesign
               //     name='close'
               //     size={22}
               //     color={theme.colors.text}
-              //   />
+              //   /> */}
               // </TouchableOpacity>
               null
             ),
@@ -82,11 +84,23 @@ const MainNavigator = () => {
             headerLeft: () => (
               <>
                 {Platform.OS == 'ios' ?
-                  <BackArrowIcon
-                    color={theme.colors.text}
-                    size={20}
+                  // <BackArrowIcon
+                  //   color={theme.colors.text}
+                  //   size={20}
+                  //   onPress={() => rootNavigation.goBack()}
+                  // /> :
+                  <TouchableOpacity
+                    style={{ marginTop: -12 }}
                     onPress={() => rootNavigation.goBack()}
-                  /> :
+                  >
+                    <BackArrow size={22}
+                      color={'#4B2D83'} />
+                    {/* <AntDesign
+                  name='close'
+                  size={22}
+                  color={theme.colors.text}
+                /> */}
+                  </TouchableOpacity> :
                   null
                 }
               </>
@@ -164,14 +178,26 @@ const MainNavigator = () => {
             headerLeft: () => (
               <>
                 {Platform.OS == 'ios' ?
-                  <BackArrowIcon
-                    color={theme.colors.text}
-                    size={20}
-                    onPress={() => rootNavigation.goBack()}
-                  /> :
+                  // <BackArrowIcon
+                  //   color={theme.colors.text}
+                  //   size={20}
+                  //   onPress={() => rootNavigation.goBack()}
+                  // /> 
+                  <TouchableOpacity onPress={() => rootNavigation.goBack()}>
+                    <BackArrow
+                      color={'#4B2D83'}
+                      size={35}
+
+                    />
+                  </TouchableOpacity>
+
+
+                  :
                   null
                 }
               </>
+
+
             ),
           }}
         />
