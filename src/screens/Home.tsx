@@ -243,14 +243,14 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
-  const fetchExploreProducts = async () => {
+  const fetchCollection = async (collectionID: string) => {
     setIsLoading(true)
     setErrorMessage('')
-    const exploreID = 'gid://shopify/Collection/469310570784'
+
 
     try {
       const query = `query {
-        collection(id: ${exploreID}) {
+        collection(id: "${collectionID}") {
           id
           title
           products(first: 100) {
@@ -309,6 +309,78 @@ const Home = ({ navigation }: Props) => {
       return products;
       // console.log(products);
       setIsLoading(false)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  const fetchExploreProducts = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+    const exploreID = 'gid://shopify/Collection/469310570784'
+
+    try {
+      const query = `query {
+        collection(id: "${exploreID}") {
+          id
+          title
+          products(first: 100) {
+            nodes {
+              id
+              title
+              description
+              vendor
+              availableForSale
+              compareAtPriceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              images(first: 10) {
+                nodes {
+                  url
+                  width
+                  height
+                }
+              }
+              options {
+                id
+                name
+                values
+              }
+              variants(first: 200) {
+                nodes {
+                  availableForSale
+                  selectedOptions {
+                    value
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`
+
+      const response: any = await storefrontApiClient(query)
+
+      if (response.errors && response.errors.length != 0) {
+        setIsLoading(false)
+        throw response.errors[0].message
+      }
+
+      const products = response.data.collection.products.nodes
+      setExploreProducts(products)
+      setIsLoading(false)
+
+      return products;
+      // console.log(products);
     } catch (e) {
       console.log(e)
     }
@@ -616,13 +688,15 @@ const Home = ({ navigation }: Props) => {
   const createSectionData = async () => {
     // if things are still loading, just return
     // const products = await fetchExploreProducts('gid://shopify/Collection/456011710752');
+    const products = await fetchExploreProducts();
+    console.log(products)
     if (isLoading) {
       return;
     }
     // array of arrays of products
     const sections = [
       { title: 'Popular', data: popularProducts, nav: 'gid://shopify/Collection/456011481376' },
-      { title: 'Sweets', data: popularProducts, nav: 'gid://shopify/Collection/456011710752' },
+      { title: 'Sweets', data: exploreProducts, nav: 'gid://shopify/Collection/456011710752' },
       { title: 'Energy', data: popularProducts, nav: 'gid://shopify/Collection/456011776288' },
       { title: 'Drinks', data: popularProducts, nav: 'gid://shopify/Collection/456011514144' },
       { title: 'Nicotine', data: popularProducts, nav: 'gid://shopify/Collection/459750572320' },

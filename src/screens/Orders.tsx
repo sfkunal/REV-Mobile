@@ -2,16 +2,17 @@ import { View, Text, StyleSheet, FlatList, ActivityIndicator, Platform, ScrollVi
 import React, { useEffect, useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ProfileStackParamList } from '../types/navigation'
-import { BackArrowIcon } from '../components/shared/Icons'
+import { BackArrow, BackArrowIcon } from '../components/shared/Icons'
 import { theme } from '../constants/theme'
 import { useAuthContext } from '../context/AuthContext'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
 import { Order } from '../types/dataTypes'
 import OrderCard from '../components/profile/OrderCard'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Orders'>
 
-const Orders = ({navigation}: Props) => {
+const Orders = ({ navigation }: Props) => {
   const { userToken } = useAuthContext()
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -20,19 +21,15 @@ const Orders = ({navigation}: Props) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.screenTitle}>My Orders</Text>
+        <Text style={styles.screenTitle}>Order History</Text>
       ),
       headerLeft: () => (
-        <>
-          { Platform.OS == 'ios' ?
-            <BackArrowIcon
-              color={'#4B2D83'}
-              size={20}
-              onPress={() => navigation.goBack()}
-            /> :
-            null
-          }
-        </>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -16 }}>
+          <BackArrow
+            color={'#4B2D83'}
+            size={20}
+          />
+        </TouchableOpacity>
       ),
     })
   }, [])
@@ -82,7 +79,7 @@ const Orders = ({navigation}: Props) => {
         setErrorMessage('Something went wrong. Try again.')
       }
     }
-    
+
     setIsLoading(false)
   }
 
@@ -92,23 +89,23 @@ const Orders = ({navigation}: Props) => {
 
   return (
     <>
-      { isLoading ?
-        <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      {isLoading ?
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <ActivityIndicator size='small' />
         </View> :
         <>
-          { orders.length != 0 ?
-            <FlatList 
+          {orders.length != 0 ?
+            <FlatList
               data={orders}
-              renderItem={({item}) => <OrderCard data={item} />}
+              renderItem={({ item }) => <OrderCard data={item} />}
               contentContainerStyle={styles.container}
               ItemSeparatorComponent={() => (
-                <View style={{borderBottomWidth: 0.5, borderColor: theme.colors.disabledText, marginHorizontal: -20}}></View>
+                <View style={{ borderBottomWidth: 0.5, borderColor: theme.colors.disabledText, marginHorizontal: -20 }}></View>
               )}
               showsVerticalScrollIndicator={false}
             /> :
             <ScrollView
-              contentContainerStyle={{flex:1, justifyContent: 'center', alignItems: 'center'}}
+              contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
               scrollEnabled={false}
               keyboardDismissMode='on-drag'
             >
@@ -128,15 +125,14 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 28,
     paddingTop: 16,
-  }, 
+  },
   screenTitle: {
-    fontWeight: '600', 
-    letterSpacing: 1, 
-    color: theme.colors.text, 
-    fontSize: 16
+    fontWeight: '600',
+    color: theme.colors.text,
+    fontSize: 20
   },
   text: {
     color: theme.colors.text,
-    letterSpacing: 1.8
+    // letterSpacing: 1.8
   },
 })

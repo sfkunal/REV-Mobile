@@ -4,9 +4,15 @@ import { Order } from '../../types/dataTypes'
 import * as WebBrowser from 'expo-web-browser'
 
 const OrderCard = ({ data }: { data: Order }) => {
+  console.log(data)
+
+  // const priceString = ;
+  const price = parseFloat(data.totalPrice.amount + "").toFixed(2)
   return (
+
+    // this could be a touchable, but the link doesnt pull anything up
     <TouchableOpacity
-      onPress={() => WebBrowser.openBrowserAsync(data.customerUrl)}
+      // onPress={() => WebBrowser.openBrowserAsync(data.customerUrl)}
       style={{ paddingVertical: 6 }}
     >
       <View style={styles.container}>
@@ -23,7 +29,7 @@ const OrderCard = ({ data }: { data: Order }) => {
       </View>
       <View style={styles.container}>
         <Text style={styles.title}>Total Price</Text>
-        <Text style={[styles.title, { color: theme.colors.infoText }]}>{(data.totalPrice.amount)} USD</Text>
+        <Text style={[styles.title, { color: theme.colors.infoText }]}>{(price)} USD</Text>
       </View>
     </TouchableOpacity>
   )
@@ -40,7 +46,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: theme.colors.text,
-    letterSpacing: 1.8,
-    paddingVertical: 4
+    // letterSpacing: 1.8,
+    paddingVertical: 3
   }
 })

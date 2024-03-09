@@ -14,6 +14,7 @@ import { useNavigationContext } from '../context/NavigationContext';
 import { useEffect } from 'react';
 import MenuStackNavigator from './StackNavigators/MenuStackNavigator';
 import { SafeAreaView } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 
 const Tab = createBottomTabNavigator<BottomTabParamList>()

@@ -407,8 +407,13 @@ const Search = ({ navigation }: Props) => {
           placeholderTextColor={theme.colors.disabledText}
           style={{ backgroundColor: '#D9D9D9', width: windowWidth - 100, marginLeft: 6, fontSize: 18, fontWeight: '500', padding: 10 }}
           onChangeText={(text) => setSearchInput(text)}
+          value={searchInput}
           autoCapitalize='none'
         />
+        {searchInput && searchInput.length !== 0 ? (<TouchableOpacity onPress={() => setSearchInput('')}
+          style={{ width: 25, height: 25, borderRadius: 20, backgroundColor: 'gray', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+          <Text style={{ color: 'white', fontWeight: '900' }}>X</Text>
+        </TouchableOpacity>) : (null)}
       </View>
 
       {isLoading ? (

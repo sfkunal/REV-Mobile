@@ -44,10 +44,11 @@ const Login = ({ navigation }: Props) => {
   }
 
   // this will toss the user in if they have a userToken
-  // BUG: won't render
+  // there is an error if there is no path to go back to tho. Something to look into
   useEffect(() => {
     if (userToken) {
       rootNavigation.goBack();
+      // navigation.navigate('Home')
     }
     console.log(userToken)
   })
@@ -135,7 +136,7 @@ const Login = ({ navigation }: Props) => {
               {secureTextEntry ? (<EyeOffIcon size={30} color={'black'} />) : (<EyeIcon size={30} color={'black'} />)}
             </TouchableOpacity>
             <Text
-              style={{ color: theme.colors.primary, fontWeight: '500', marginLeft: 4, marginTop: -8, marginBottom: 12 }}
+              style={{ color: '#4B2D83', fontWeight: '500', marginLeft: 4, marginTop: -4, marginBottom: 12 }}
               onPress={() => { navigation.push('ForgotPassword') }}
             >
               Forgot Password?
