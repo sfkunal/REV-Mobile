@@ -568,33 +568,39 @@ const Home = ({ navigation }: Props) => {
     return parts.join('');
   };
 
-  const HomeList = React.memo(({ data }: { data: any }) => (
-    <ScrollView style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
-      <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, }}>
-        <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Your past orders</Text>
-      </View>
-      {data ? (<FlatList
-        data={forYou.filter(item => item != null)}
-        // data={data}
-        renderItem={({ item }) => (<View style={{ height: '30%', marginTop: 25 }}><ProductCard data={item} />
-        </View>)}
-        // <ProductCard data={item} />}
-        horizontal={true}
-        keyboardDismissMode='on-drag'
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingHorizontal: 10 }}
-        style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
-        keyExtractor={item => item.id.toString()}
+  const HomeList = React.memo(({ data }: { data: any }) => {
+    const ForYouHorizontalList = function () {
+      return (
+        <>
+          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Your past orders</Text>
+          </View>
+          {data ? (<FlatList
+            data={forYou.filter(item => item != null)}
+            // data={data}
+            renderItem={({ item }) => (<View style={{ height: '30%', marginTop: 25 }}><ProductCard data={item} />
+            </View>)}
+            // <ProductCard data={item} />}
+            horizontal={true}
+            keyboardDismissMode='on-drag'
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 10 }}
+            style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
+            keyExtractor={item => item.id.toString()}
 
-      // keyExtractor={(item) => item.id.toString()}
-      />) : (<View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: '110%', marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, backgroundColor: 'white', height: 250, zIndex: -1, marginTop: 10, }}>
-        <Text style={{ width: '60%', marginRight: '10%', textAlign: 'center', fontWeight: '300' }}>
-          Products from your previous orders will show up here!
-        </Text>
-      </View>)}
-
-      <View>
+          // keyExtractor={(item) => item.id.toString()}
+          />) : (<View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: '110%', marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, backgroundColor: 'white', height: 250, zIndex: -1, marginTop: 10, }}>
+            <Text style={{ width: '60%', marginRight: '10%', textAlign: 'center', fontWeight: '300' }}>
+              Products from your previous orders will show up here!
+            </Text>
+          </View>)}
+        </>
+      )
+    }
+    return (
+      < View style={{ paddingBottom: sbHeight + 320 }}>
         <FlatList
+          ListHeaderComponent={<View style={{ marginTop: 10, width: '110%' }}><ForYouHorizontalList /></View>}
           data={data.filter(item => item != null)}
           renderItem={({ item }) => <ProductCard data={item} />}
           keyExtractor={item => item.id.toString()}// Make sure to have a keyExtractor for unique keys
@@ -604,10 +610,18 @@ const Home = ({ navigation }: Props) => {
           numColumns={2}
           contentContainerStyle={{ paddingHorizontal: 14 }}
         />
-      </View>
+      </View >
+    )
 
-    </ScrollView>
-  ))
+  })
+  // <ScrollView style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
+
+
+
+
+
+
+  // </ScrollView>
 
   const HorizontalList = React.memo(({ title, data, nav }: { title: string, data: any, nav: string }) => {
 
