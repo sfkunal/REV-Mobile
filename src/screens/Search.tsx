@@ -360,9 +360,12 @@ const Search = ({ navigation }: Props) => {
     } else {
       return;
     }
-    // console.log(item)
+
     return (
-      <TouchableOpacity style={styles.collectionContainer} onPress={() => navigation.navigate('Collection', { collectionId: item.id })}>
+      <TouchableOpacity style={styles.collectionContainer} onPress={() => {
+        console.log(item)
+        navigation.navigate('Collection', { collectionId: item.id })
+      }}>
         {/* <Text style={styles.text}>{item.title}</Text> */}
         {thumbnail}
       </TouchableOpacity>
@@ -449,7 +452,7 @@ const Search = ({ navigation }: Props) => {
                     renderItem={renderCollectionItem}
                     keyExtractor={(item) => item.id}
                     numColumns={2}
-                    contentContainerStyle={{ paddingHorizontal: 14, justifyContent: 'center', flexGrow: 1, paddingBottom: 50 }}
+                    contentContainerStyle={{ paddingHorizontal: 14, justifyContent: 'center', flexGrow: 1, paddingBottom: 50, }}
                   />
                 </View>
               )}
@@ -504,12 +507,14 @@ const styles = StyleSheet.create({
     flex: 1,
     // paddingBottom: 16,
     justifyContent: 'center',
+    // alignItems: 'flex-start',
     alignItems: 'center',
     // maxHeight: (((screenWidth - 28 - 14) / 2) * 1.5 + 130) * 0.2,
     // borderColor: '#4B2D83',
     // borderWidth: 2,
     // padding: 5,
     borderRadius: 15,
+    // backgroundColor: 'orange'
     // height: '95%'
     // margin: 5,
     // marginTop: 12,

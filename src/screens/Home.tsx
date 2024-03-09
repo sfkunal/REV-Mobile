@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, Modal, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, TouchableOpacity } from 'react-native'
-import { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { hasHomeIndicator, theme } from '../constants/theme'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
 import logoDark from '../../assets/logo-dark.png'
@@ -21,6 +21,7 @@ import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplet
 import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 import { ChevronDownIcon, HangerIcon, PinIcon } from '../components/shared/Icons'
 import { Product } from '../types/dataTypes'
+import { ScrollView } from 'react-native-gesture-handler'
 
 // import { useNavigationContext } from '../context/NavigationContext'
 
@@ -90,6 +91,9 @@ const Home = ({ navigation }: Props) => {
         }
 
         const userOrders = response.data.customer.orders.nodes.length
+        // console.log('userOrders thooooo');
+        console.log(response.data.customer.orders.nodes)
+        // // console.log(userOrders);
         setUserOrders(userOrders);
         setIsLoading(false)
       }
@@ -102,6 +106,7 @@ const Home = ({ navigation }: Props) => {
     setIsLoading(true)
     setErrorMessage('')
 
+    // popular products is currently hardcoded!!!!!!!!
     try {
       const productIds = [
         "8626723258656",
@@ -131,6 +136,7 @@ const Home = ({ navigation }: Props) => {
       // }
 
       setPopularProducts(products)
+      // console.log(products)
       setIsLoading(false)
     } catch (e) {
       console.log(e)
@@ -240,10 +246,11 @@ const Home = ({ navigation }: Props) => {
   const fetchExploreProducts = async () => {
     setIsLoading(true)
     setErrorMessage('')
+    const exploreID = 'gid://shopify/Collection/469310570784'
 
     try {
       const query = `query {
-        collection(id: "gid://shopify/Collection/469310570784") {
+        collection(id: ${exploreID}) {
           id
           title
           products(first: 100) {
@@ -298,7 +305,9 @@ const Home = ({ navigation }: Props) => {
       }
 
       const products = response.data.collection.products.nodes
-      setExploreProducts(products)
+      // setExploreProducts(products)
+      return products;
+      // console.log(products);
       setIsLoading(false)
     } catch (e) {
       console.log(e)
@@ -487,33 +496,64 @@ const Home = ({ navigation }: Props) => {
     return parts.join('');
   };
 
-  const HomeList = ({ data }) => (
-    <View style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
-      <FlatList
-        data={data.filter(item => item != null)}
-        renderItem={({ item }) => <ProductCard data={item} />}
-        keyExtractor={item => item.id.toString()}// Make sure to have a keyExtractor for unique keys
-        ItemSeparatorComponent={ItemSeparator} // Add this line
+  const HomeList = React.memo(({ data }: { data: any }) => (
+    <ScrollView style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
+      <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, }}>
+        <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Your past orders</Text>
+      </View>
+      {data ? (<FlatList
+        data={forYou.filter(item => item != null)}
+        // data={data}
+        renderItem={({ item }) => (<View style={{ height: '30%', marginTop: 25 }}><ProductCard data={item} />
+        </View>)}
+        // <ProductCard data={item} />}
+        horizontal={true}
         keyboardDismissMode='on-drag'
-        showsVerticalScrollIndicator={true}
-        numColumns={2}
-        contentContainerStyle={{ paddingHorizontal: 14 }}
-      />
-    </View>
-  );
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+        style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
+        keyExtractor={item => item.id.toString()}
 
-  const HorizontalList = ({ title, data }) => {
+      // keyExtractor={(item) => item.id.toString()}
+      />) : (<View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: '110%', marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, backgroundColor: 'white', height: 250, zIndex: -1, marginTop: 10, }}>
+        <Text style={{ width: '60%', marginRight: '10%', textAlign: 'center', fontWeight: '300' }}>
+          Products from your previous orders will show up here!
+        </Text>
+      </View>)}
+
+      <View>
+        <FlatList
+          data={data.filter(item => item != null)}
+          renderItem={({ item }) => <ProductCard data={item} />}
+          keyExtractor={item => item.id.toString()}// Make sure to have a keyExtractor for unique keys
+          ItemSeparatorComponent={ItemSeparator} // Add this line
+          keyboardDismissMode='on-drag'
+          showsVerticalScrollIndicator={true}
+          numColumns={2}
+          contentContainerStyle={{ paddingHorizontal: 14 }}
+        />
+      </View>
+
+    </ScrollView>
+  ))
+
+  const HorizontalList = React.memo(({ title, data, nav }: { title: string, data: any, nav: string }) => {
 
     return (
       <View style={{ flex: 1, marginTop: 10, }}>
-        <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 120, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 3, backgroundColor: 'white', }}>
-          <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{title}</Text>
-        </View>
+        <TouchableOpacity style={{ zIndex: 10 }}
+          onPress={() => {
+            navigation.navigate('Collection', { collectionId: nav })
+          }}>
+          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 120, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 3, backgroundColor: 'white', }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{title}</Text>
+          </View></TouchableOpacity>
 
         <FlatList
           data={data.filter(item => item != null)}
           // data={data}
-          renderItem={({ item }) => (<ProductCard data={item} />)}
+          renderItem={({ item }) => (<View style={{ height: '90%', marginTop: 25 }}><ProductCard data={item} />
+          </View>)}
           // <ProductCard data={item} />}
           horizontal={true}
           keyboardDismissMode='on-drag'
@@ -526,12 +566,22 @@ const Home = ({ navigation }: Props) => {
         />
       </View>
     )
-  }
+  })
 
-  const FullList = ({ sections }) => {
+  const MemoizedHorizontalList = React.memo(HorizontalList);
+
+  const FullList = ({ sections }: { sections: any }) => {
     // console.log(sections)
     // console.log(sectionData[0].data[0].id)
     // console.log(sectionData[0].data[0].options[0].id)
+
+    const renderItem = useCallback(({ item }) => (
+      <MemoizedHorizontalList
+        title={item.title}
+        data={item.data}
+        nav={item.nav}
+      />
+    ), [])
     return (
       // <View>
 
@@ -539,19 +589,11 @@ const Home = ({ navigation }: Props) => {
       <View style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
         {sections ? (<FlatList
           data={sections}
-          renderItem={({ item }) => (
-            <HorizontalList
-              title={item.title}
-              data={item.data}
-            />
-          )}
-          keyExtractor={(item, index) => {
-            return item.title
-          }}
-          ItemSeparatorComponent={() => (<View style={{ height: 30, marginBottom: 10, width: '100%', }} ></View>)
-          }
+          renderItem={renderItem}
+          keyExtractor={(item, index) => item.title}
+          ItemSeparatorComponent={() => (<View style={{ height: 30, marginBottom: 10, width: '100%', }} ></View>)}
           showsVerticalScrollIndicator={false}
-        />) : (<Text>Whoa</Text>)
+        />) : (<ActivityIndicator />)
         }
       </View >
     )
@@ -571,17 +613,31 @@ const Home = ({ navigation }: Props) => {
       /> */}
 
   // where we create the data to make the sections (horizontal scrolls)
-  const createSectionData = () => {
+  const createSectionData = async () => {
     // if things are still loading, just return
+    // const products = await fetchExploreProducts('gid://shopify/Collection/456011710752');
     if (isLoading) {
       return;
     }
     // array of arrays of products
     const sections = [
-      { title: 'Popular', data: popularProducts },
-      { title: 'Sweets', data: popularProducts },
-      { title: 'Energy', data: popularProducts },
-      { title: 'Babytron', data: popularProducts },
+      { title: 'Popular', data: popularProducts, nav: 'gid://shopify/Collection/456011481376' },
+      { title: 'Sweets', data: popularProducts, nav: 'gid://shopify/Collection/456011710752' },
+      { title: 'Energy', data: popularProducts, nav: 'gid://shopify/Collection/456011776288' },
+      { title: 'Drinks', data: popularProducts, nav: 'gid://shopify/Collection/456011514144' },
+      { title: 'Nicotine', data: popularProducts, nav: 'gid://shopify/Collection/459750572320' },
+      { title: 'International', data: popularProducts, nav: 'gid://shopify/Collection/458202546464' },
+      { title: 'Ready To Eat', data: popularProducts, nav: 'gid://shopify/Collection/456011940128' },
+      { title: 'Sweet Treats', data: popularProducts, nav: 'gid://shopify/Collection/456011710752' },
+      { title: 'Snacks', data: popularProducts, nav: '"gid://shopify/Collection/456011546912' },
+      { title: 'Chips', data: popularProducts, nav: 'gid://shopify/Collection/456011612448' },
+      { title: 'Healthy', data: popularProducts, nav: 'gid://shopify/Collection/458202448160' },
+      { title: 'Candy', data: popularProducts, nav: 'gid://shopify/Collection/456011677984' },
+      { title: 'Ice Cream', data: popularProducts, nav: 'gid://shopify/Collection/456011841824' },
+      { title: 'Beer & Wine', data: popularProducts, nav: 'gid://shopify/Collection/463924003104' },
+      { title: 'Booze', data: popularProducts, nav: 'gid://shopify/Collection/463924134176' },
+      { title: 'Student Essentials', data: popularProducts, nav: 'gid://shopify/Collection/456012038432' },
+      { title: 'Personal Care', data: popularProducts, nav: 'gid://shopify/Collection/456011972896' },
     ];
 
     setSectionData(sections);
@@ -776,7 +832,7 @@ const Home = ({ navigation }: Props) => {
               </View>
 
             </View>
-            {selectedMode === 'explore' ? <FullList sections={sectionData} /> : <HomeList data={(userOrders > 4 ? forYou : popularProducts)} />}
+            {selectedMode === 'explore' ? <FullList sections={sectionData} /> : <HomeList data={(userOrders > 4 ? forYou : exploreProducts)} />}
             {/* <HomeList data={selectedMode === 'explore' ? exploreProducts : (userOrders > 4 ? forYou : popularProducts)} /> */}
 
 

@@ -35,7 +35,7 @@ const TabNavigator = ({ navigation }: Props) => {
           tabBarStyle: { height: 40 },
           headerShown: false,
           tabBarActiveTintColor: '#4B2D83',
-          tabBarInactiveTintColor: '#191921',
+          tabBarInactiveTintColor: '#59595F',
           tabBarShowLabel: false,
           tabBarActiveBackgroundColor: 'white',
           tabBarInactiveBackgroundColor: 'white',

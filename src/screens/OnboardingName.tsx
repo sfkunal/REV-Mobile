@@ -55,7 +55,7 @@ const OnboardingName = ({ navigation, route }: Props) => {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-            keyboardVerticalOffset={Platform.OS === 'ios' ? 120 : 0}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
             style={{ flex: 1, }}
 
         >
@@ -289,7 +289,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#4B2D83',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginTop: -5
     },
     nextCircleEmpty: {
         width: 60,
@@ -298,6 +299,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#D9D9D9',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginTop: -5
     }
 })

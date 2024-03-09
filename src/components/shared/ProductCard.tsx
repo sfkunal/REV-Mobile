@@ -10,10 +10,11 @@ import { storefrontApiClient } from '../../utils/storefrontApiClient';
 
 const ProductCard = memo(({ data }: { data: Product }) => {
   const { rootNavigation } = useNavigationContext();
-  const { addItemToCart } = useCartContext();
+  const { addItemToCart, substractQuantityOfItem } = useCartContext();
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [showCheckmark, setShowCheckmark] = useState(false);
+  const [showCheckmark, setShowCheckmark] = useState<boolean>(false);
+  const [numInCart, setNumInCart] = useState(0);
 
 
   const [selectedOptions, setSelectedOptions] = useState<{ name: string; value: string | null }[]>(
@@ -44,6 +45,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
     setErrorMessage('')
 
     try {
+      // do we need this query?
       const query = `query getProductById($id: ID!) {
         product(id: $id) {
           variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
@@ -84,7 +86,8 @@ const ProductCard = memo(({ data }: { data: Product }) => {
 
       addItemToCart(response.data.product.variantBySelectedOptions as CartItem, 1)
       setShowCheckmark(true);
-      setTimeout(() => setShowCheckmark(false), 2000);
+      setNumInCart(numInCart + 1);
+      // setTimeout(() => setShowCheckmark(false), 2000);
 
     } catch (e) {
       if (typeof e == 'string') {
@@ -93,10 +96,71 @@ const ProductCard = memo(({ data }: { data: Product }) => {
         setErrorMessage('Something went wrong. Try again.')
       }
     }
-
     setIsLoading(false)
   }
 
+  const subtractFromCart = async () => {
+    setIsLoading(true)
+    try {
+      const query = `query getProductById($id: ID!) {
+        product(id: $id) {
+          variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
+            id
+            title
+            image {
+              url
+              width
+              height
+            }
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            product {
+              title
+            }
+            availableForSale
+            quantityAvailable
+            selectedOptions {
+              value
+            }
+          }
+        }
+      }`
+
+      const variables = { id: data.id }
+
+      const response: any = await storefrontApiClient(query, variables)
+
+      if (response.errors && response.errors.length != 0) {
+        throw response.errors[0].message
+      }
+      // console.log(response)
+      const id = response.data.product.variantBySelectedOptions.id
+      substractQuantityOfItem(id)
+      setNumInCart(numInCart - 1);
+      if (numInCart <= 1) {
+        setShowCheckmark(false)
+      }
+      console.log(showCheckmark)
+      console.log(numInCart)
+    } catch (e) {
+      console.log(e)
+    }
+
+    setIsLoading(false)
+
+
+    // gid://shopify/ProductVariant/46573933658400
+
+    // setIsLoading(true);
+    // substractQuantityOfItem(data.id)
+    // setIsLoading(false);
+  }
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -147,11 +211,42 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       >
         {isLoading ? (
           <ActivityIndicator style={{ alignSelf: 'center' }} color='#4B2D83' />
-        ) : showCheckmark ? ( // Show checkmark if showCheckmark is true
-          <Icon name="check" size={23} color="green" style={styles.checkIcon} />
-        ) : selectedItem?.availableForSale ? ( // Check if the selected item is available for sale
-          <Icon name="plus" size={30} color="#4B2D83" style={styles.plusIcon} />
-        ) : null}
+        ) :
+          // showCheckmark
+          showCheckmark ? ( // Show checkmark if showCheckmark is true
+            <View style={{
+              width: 100,
+              // backgroundColor: 'gray',
+              height: 36, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: 26
+            }}>
+              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: '100%', width: '85%' }}>
+                {numInCart === 1 ? (<TouchableOpacity onPress={subtractFromCart} style={{}}>
+                  <Image source={require('../../..//assets/TrashCan.png')} style={{ height: 32, width: 32, marginLeft: 2 }} resizeMode='contain' />
+                </TouchableOpacity>) :
+                  (<TouchableOpacity onPress={subtractFromCart}><Text style={{
+                    color: '#4B2D83', fontWeight: '800', fontSize: 30, marginTop: -4
+                    //  fontSize: Platform.OS == 'ios' ? 22 : 17, 
+                  }}>-</Text></TouchableOpacity>)}
+                <Text style={{
+                  color: '#4B2D83',
+                  fontSize: 25,
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  minWidth: 38,
+                  // backgroundColor: 'green', 
+                  marginLeft: 2
+                }}>{numInCart}</Text>
+                <TouchableOpacity onPress={addToCart}>
+                  <Icon name="plus" size={25} color="#4B2D83" style={styles.plusIcon} />
+                </TouchableOpacity>
+              </View>
+            </View>
+            // <Icon name="check" size={23} color="green" style={styles.checkIcon} />
+          ) : selectedItem?.availableForSale ? ( // Check if the selected item is available for sale
+            <Icon name="plus" size={25} color="#4B2D83" style={styles.plusIcon} />
+            // <Text style={{ fontSize: 30, color: "#4B2D83" }}>+</Text>
+          ) : null
+        }
       </TouchableOpacity>
     </View>
   );
@@ -195,7 +290,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
     padding: 5,
     borderRadius: 15,
-    margin: 5
+    margin: 5,
   },
   priceContainer: {
     flexDirection: 'row'
@@ -209,7 +304,9 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through'
   },
   plusIcon: {
-    padding: 4
+    padding: 4,
+    marginRight: -4,
+    marginTop: 2,
   },
   checkIcon: {
     padding: 2

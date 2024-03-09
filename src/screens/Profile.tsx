@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Image } from 'react-native'
 import React, { useEffect } from 'react'
 import { theme } from '../constants/theme'
 import { ProfileStackParamList } from '../types/navigation'
@@ -9,8 +9,9 @@ import { useNavigationContext } from '../context/NavigationContext'
 import { useAuthContext } from '../context/AuthContext'
 import * as WebBrowser from 'expo-web-browser'
 import { config } from '../../config'
-import { RightArrowIcon } from '../components/shared/Icons'
+import { MailIcon, RightArrowIcon } from '../components/shared/Icons'
 import { useCartContext } from '../context/CartContext'
+import phone from '../../assets/phone.png'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>
 
@@ -70,21 +71,22 @@ const Profile = ({ navigation }: Props) => {
         {/* FEATURES COMING SOON */}
         {/* using 0.5 hours per order? */}
         {/* using 0.8 because 400g (0.4kg) of co2 emitted per mile of driving */}
-        <Text style={{ marginBottom: 20 }}>
+        {/* TODO UPDATE THIS, should not be based on items count */}
+        <Text style={{ marginBottom: 40, fontSize: 13, fontWeight: '300' }}>
           You saved {getItemsCount() * 0.5} hours shopping and prevented {Math.round((getItemsCount() * 0.8) * 100) / 100} kg of carbon emissions!
         </Text>
 
         {/* REVPASS COMING SOON */}
         <TouchableOpacity style={{
           backgroundColor: '#FFFFFF', borderRadius: 8, height: 50, display: 'flex', justifyContent: 'center',
-          marginBottom: 18,
-          shadowColor: 'black', shadowRadius: 2,
+          marginBottom: 40,
+          shadowRadius: 5,
           shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.6
+          shadowOpacity: 0.6, shadowColor: '#4B2D83'
         }}>
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <Text style={{ fontWeight: 'bold', color: '#4B2D83', fontSize: 18, marginLeft: 10 }}>
-              REV Pass{" "}
+              REV Pass & Rewards{" "}
             </Text>
             <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
               Coming Soon!
@@ -93,7 +95,7 @@ const Profile = ({ navigation }: Props) => {
         </TouchableOpacity >
 
         {/* REV REWARDS Coming Soon! */}
-        <TouchableOpacity style={{
+        {/* <TouchableOpacity style={{
           backgroundColor: '#FFFFFF', borderRadius: 8, height: 100, display: 'flex', justifyContent: 'space-between',
           shadowColor: 'black', shadowRadius: 2,
           shadowOffset: { width: 0, height: 0 },
@@ -109,65 +111,91 @@ const Profile = ({ navigation }: Props) => {
             </Text>
           </View>
           <View style={{ display: 'flex', flexDirection: 'row' }}>
-            {/* <Text style={{ fontWeight: 'bold', color: '#4B2D83', fontSize: 18, marginLeft: 16, marginBottom: 20, }}>
-              REV Rewards{" "}
-            </Text>
-            <Text style={{ fontWeight: 'bold', fontSize: 18 }}>
-              Coming Soon!
-            </Text> */}
           </View>
-        </TouchableOpacity >
+        </TouchableOpacity > */}
       </View>
 
       {/* Lower */}
-      <View>
+      <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'column' }} >
+        {/* STORE HOURS */}
+        < View style={{
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          alignItems: 'flex-start',
+          height: 130,
+          marginBottom: 24,
+          // borderWidth: 1,
+          borderRadius: 8,
+          backgroundColor: '#FFFFFF',
+          shadowColor: 'black', shadowRadius: 1,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.6
+        }}>
+          <View style={{ display: 'flex', marginLeft: 12, marginTop: 10 }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#4B2D83' }}>
+              Store Hours
+            </Text>
+            <View style={{ marginLeft: 8, marginTop: 16, flex: 1, flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20 }}>
+              <Text style={{ fontSize: 18, fontWeight: '300' }}>Sunday - Thursday: 11AM - 12AM</Text>
+              <View style={{ width: 250, height: 1, borderRadius: 2, backgroundColor: '#3C3C4333' }}></View>
+              <Text style={{ fontSize: 18, fontWeight: '300', }}>Friday - Saturday: 11AM - 1AM</Text>
+            </View>
+
+          </View>
+        </View>
+
         {/* CONTACT US */}
-        <TouchableOpacity
-          style={styles.cardContainer}
-          onPress={() => {
-            if (userToken) {
-              navigation.push('Orders')
-            } else {
-              rootNavigation.push('LoginStackNavigator', { screen: 'Login' })
-            }
-          }}
-        >
-          <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 26 }}>Contact Us</Text>
-          {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
-          <RightArrowIcon size={40} color={'#4B2D83'} />
-        </TouchableOpacity>
+        <View style={{
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          alignItems: 'flex-start',
+          height: 130,
+          marginBottom: 24,
+          // borderWidth: 1,
+          borderRadius: 8,
+          backgroundColor: '#FFFFFF',
+          shadowColor: 'black', shadowRadius: 1,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.6
+        }}>
+          <View style={{ display: 'flex', marginLeft: 12, marginTop: 10 }}>
+            <Text style={{ fontSize: 18, fontWeight: '700', color: '#4B2D83' }}>
+              Contact Us
+            </Text>
+            <View style={{ marginLeft: 8, marginTop: 16, flex: 1, flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20 }}>
+              {/* MAIL CONTAINER */}
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <View style={{ justifyContent: 'center', marginRight: 6, marginTop: 2 }}>
+                  <MailIcon color={'black'} size={20} />
+                </View>
 
+                <Text style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>team@rev.delivery</Text>
+              </View>
 
+              <View style={{ width: 250, height: 1, borderRadius: 2, backgroundColor: '#3C3C4333' }}></View>
+
+              {/* Phone container */}
+              <View style={{ display: 'flex', flexDirection: 'row' }}>
+                <Image source={phone} style={{ width: 20, height: 20, marginRight: 2 }} />
+                <Text style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>(206)833-6358</Text>
+              </View>
+
+            </View>
+
+          </View>
+        </View>
         {/* JOIN THE TEAM */}
         <TouchableOpacity
           style={styles.cardContainer}
           onPress={() => {
-            if (userToken) {
-              navigation.push('Orders')
-            } else {
-              rootNavigation.push('LoginStackNavigator', { screen: 'Login' })
-            }
+            Linking.openURL('https://form.jotform.com/240597752831060')
           }}
         >
           <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 26 }}>Join the Team</Text>
           {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
-          <RightArrowIcon size={40} color={'#4B2D83'} />
-        </TouchableOpacity>
-
-        {/* REV HOURS */}
-        <TouchableOpacity
-          style={styles.cardContainer}
-          onPress={() => {
-            if (userToken) {
-              navigation.push('Orders')
-            } else {
-              rootNavigation.push('LoginStackNavigator', { screen: 'Login' })
-            }
-          }}
-        >
-          <Text style={{ fontSize: 13, fontWeight: 'bold', marginLeft: 26 }}>REV Hours</Text>
-          {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
-          <RightArrowIcon size={40} color={'#4B2D83'} />
+          <View style={{ marginRight: 4 }}>
+            <RightArrowIcon size={40} color={'#4B2D83'} />
+          </View>
         </TouchableOpacity>
       </View>
     </View >
@@ -179,12 +207,12 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 14,
     paddingTop: 8,
-    width: '100%',
+    width: '95%',
     alignSelf: 'center',
     marginTop: 12,
-    backgroundColor: '#f2f2f2',
+    // backgroundColor: '#f2f2f2',
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
   },
   greeting: {
     color: theme.colors.text,
@@ -217,7 +245,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 50,
-    marginBottom: 24,
+    marginBottom: 8,
     // borderWidth: 1,
     borderRadius: 8,
     backgroundColor: '#FFFFFF',

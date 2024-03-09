@@ -30,7 +30,10 @@ const CartCard = ({ cartItem }: { cartItem: CartItem }) => {
           <View style={styles.quantitySelector}>
 
             <TouchableOpacity
-              onPress={() => substractQuantityOfItem(cartItem.id)}
+              onPress={() => {
+                console.log(cartItem.id)
+                substractQuantityOfItem(cartItem.id)
+              }}
             >
               <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: 20, paddingHorizontal: 8, paddingVertical: 4 }}>-</Text>
             </TouchableOpacity>
@@ -123,3 +126,4 @@ const styles = StyleSheet.create({
     // backgroundColor: 'orange'
   }
 })
+

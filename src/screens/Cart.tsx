@@ -133,13 +133,11 @@ const Cart = ({ navigation }: Props) => {
           <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 160 }]}>
 
             {/* // this is the container for the bottom */}
-            <View style={{ width: '100%' }}>
+            <View style={{ width: '95%' }}>
               {errorMessage.length != 0 &&
                 <Text style={styles.error}>{errorMessage}</Text>
               }
-
-
-              <View style={{ flexDirection: 'column', width: '100%', alignSelf: 'center', paddingTop: 5 }}>
+              <View style={{ flexDirection: 'column', width: '100%', alignSelf: 'center', paddingTop: 5, marginTop: -20, }}>
 
                 {/* subtotal */}
                 <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
@@ -154,18 +152,16 @@ const Cart = ({ navigation }: Props) => {
                 </View>
 
                 {/* delivery */}
-                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between', marginBottom: 10 }}>
                   <Text style={styles.grayTextLeft}>Delivery </Text>
                   <Text style={styles.grayTextRight}>{0.99} USD</Text>
                 </View>
 
                 {/* total */}
-                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
+                <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between', marginBottom: 10 }}>
                   <Text style={styles.blackTextLeft}>Total </Text>
                   <Text style={styles.blackTextRight}>{parseFloat((totalPrice + (totalPrice * 0.1)).toFixed(2))} USD</Text>
                 </View>
-
-
               </View>
               {/* <FillButton
                   title='CHECKOUT'

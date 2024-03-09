@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext';
 import { LoginStackParamList } from '../types/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BackArrowIcon, EyeIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
+import { BackArrowIcon, EyeIcon, EyeOffIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
 import { config } from '../../config';
 import { theme } from '../constants/theme';
 import { useAuthContext } from '../context/AuthContext';
@@ -17,24 +17,18 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
     const { firstName, lastName, phoneNumber } = route.params;
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [verifyPassword, setVerifyPassword] = useState('');
     const { rootNavigation } = useNavigationContext()
     const [loading, setLoading] = useState(false)
     const [errorMessage, setErrorMessage] = useState<string | null>()
     const scrollRef = useRef<ScrollView>()
+    const [secureTextEntry, setSecureTextEntry] = useState<boolean>(true)
 
     const handleNext = async () => {
         setLoading(true)
         setErrorMessage(null)
 
-        if (!email || !password || !verifyPassword) {
+        if (!email || !password) {
             setErrorMessage('Please enter your email and password')
-            setLoading(false)
-            return
-        }
-
-        if (password != verifyPassword) {
-            setErrorMessage('Please make sure that passwords match')
             setLoading(false)
             return
         }
@@ -65,133 +59,155 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
         });
     }, [])
 
+    const toggle = () => {
+        setSecureTextEntry(!secureTextEntry);
+    }
+
+
     return (
-        // <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-        //     keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-        //     style={{ flex: 1, }}>
-        <View style={{ display: 'flex', width: '100%', height: '100%', backgroundColor: 'pink' }}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+            style={{ flex: 1, }}
 
-
-            {/* <ScrollView
-            scrollEnabled={Platform.OS == 'ios' ? true : true}
-            showsVerticalScrollIndicator={false}
-            ref={scrollRef}
-            contentContainerStyle={{ justifyContent: 'space-between', flex: 1, paddingBottom: 120 }}
-            // style={{ display: 'flex', height: '100%', backgroundColor: 'yellow', }}
-            keyboardShouldPersistTaps='never'
-        > */}
-            {/* <View style={{ display: 'flex', height: '100%' }}> */}
-
-            {/* top section */}
-            <View style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                height: 150,
-                // backgroundColor: 'pink'
-            }}>
-                {/* little top bar things */}
-                <View style={{ width: '90%', height: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginTop: 10 }}>
-                    <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
-                    <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
-                    <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
-                </View>
-
-
-                {/* Title */}
-                <View style={{ width: '75%', marginBottom: 15, paddingTop: 32 }}>
-                    <Text style={{ fontWeight: '900', color: '#4B2D83', fontSize: 38, fontStyle: 'italic' }}>
-                        Sign up with email
-                    </Text>
-                </View>
-            </View>
-
-            {/* bottom section */}
+        >
             <ScrollView
-                scrollEnabled={Platform.OS == 'ios' ? true : true}
+                scrollEnabled={Platform.OS == 'ios' ? false : true}
                 showsVerticalScrollIndicator={false}
                 ref={scrollRef}
-                contentContainerStyle={{ justifyContent: 'space-between', flex: 1, paddingBottom: 120 }}
-                // style={{ display: 'flex', height: '100%', backgroundColor: 'yellow', }}
+                contentContainerStyle={{
+                    justifyContent: 'space-between',
+                    flex: 1,
+                    // backgroundColor: 'yellow', height: '100%', display: 'flex'
+                }}
+                // style={{ backgroundColor: 'green', height: '100%', }}
                 keyboardShouldPersistTaps='never'
             >
+
+
+                {/* flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingTop: 6,
+        backgroundColor: 'pink',
+        paddingBottom: 250,
+        height: '100%', */}
+                {/* <View style={{ display: 'flex', height: '100%' }}> */}
+
+
+
                 <View style={{
-                    flex: 1,
-                    // backgroundColor: 'orange',
-                    justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'orange', height: 4
-                }}>
+                    // backgroundColor: 'pink', 
+                    height: '100%', flex: 1
+                }}
+                // style={styles.container} 
+                >
 
-                    {/* input container */}
+                    {/* top section */}
                     <View style={{
-                        width: '75%', backgroundColor: 'yellow'
-                    }}>
-                        {errorMessage ?
-                            (<View style={{ height: 20, justifyContent: 'flex-end', marginBottom: 20, alignItems: 'center' }}>
-                                <Text numberOfLines={1}
-                                    style={{ color: 'red' }}>{errorMessage}</Text>
-                            </View>) : (<View style={{ height: 40, width: '100%' }}></View>)
-                        }
-                        <Text style={styles.inputSubTitle}>
-                            Email
-                        </Text>
-                        <TextInput
-                            onChangeText={setEmail}
-                            placeholderTextColor={theme.colors.disabledText}
-                            style={email ? (styles.input) : (styles.inputEmpty)}
-                            value={email}
-                            autoComplete='email'
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
-                        <Text style={styles.inputSubTitle}>
-                            Password
-                        </Text>
-                        <TextInput
-                            onChangeText={setPassword}
-                            placeholderTextColor={theme.colors.disabledText}
-                            style={password ? (styles.input) : (styles.inputEmpty)}
-                            value={password}
-                            autoComplete='email'
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            secureTextEntry
-                            autoCorrect={false}
-                        />
-                        <Text style={styles.inputSubTitle}>
-                            Confirm Password
-                        </Text>
-                        <TextInput
-                            onChangeText={setVerifyPassword}
-                            placeholderTextColor={theme.colors.disabledText}
-                            style={verifyPassword ? (styles.input) : (styles.inputEmpty)}
-                            value={verifyPassword}
-                            autoComplete='email'
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            secureTextEntry
-                        />
+                        // backgroundColor: 'pink', 
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        // height: 150
+                    }} >
+                        {/* little top bar things */}
+                        <View style={{ width: '90%', height: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginTop: 10 }}>
+                            <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
+                            <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
+                            <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
+                        </View>
+
+                        {/* title */}
+                        <View style={{
+                            width: '75%',
+                            marginBottom: 0,
+                            paddingTop: 30,
+                            //  backgroundColor: 'yellow'
+                        }}>
+                            <Text style={{ fontWeight: '900', color: '#4B2D83', fontSize: 38, fontStyle: 'italic' }}>
+                                Sign up with email
+                            </Text>
+                        </View>
                     </View>
 
-                    <View style={{ width: '90%', display: 'flex', justifyContent: 'flex-end', flexDirection: 'row', marginBottom: 20 }}>
-                        {loading ?
-                            <TouchableOpacity style={styles.nextCircle}>
-                                <ActivityIndicator />
-                            </TouchableOpacity>
-                            :
-                            <TouchableOpacity
-                                style={email && password ? (styles.nextCircle) : (styles.nextCircleEmpty)}
-                                // style={styles.loginContainer}
-                                onPress={handleNext}>
-                                {/* <Text style={styles.loginText}>Next</Text> */}
-                                <RightArrowIcon color='#FFFFFF' size={30} />
-                                <View style={{ marginTop: 10 }}></View>
-                            </TouchableOpacity>
-                        }
+
+                    {/* bottom section */}
+                    <View style={{
+                        // backgroundColor: 'green', 
+                        flex: 1, flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between'
+                    }}>
+                        <View style={{
+
+                            width: '75%'
+                        }}>
+                            {errorMessage ?
+                                (<View style={{ top: 0, justifyContent: 'flex-end', marginBottom: 10, alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }}>{errorMessage}</Text>
+                                </View>) : (<View style={{ marginBottom: 30, width: '100%', backgroundColor: 'red' }}></View>)
+                            }
+                            {/* Input container */}
+                            <View style={{ width: '100%', alignItems: 'flex-start', }}>
+                                <Text style={styles.inputSubTitle}>
+                                    Email
+                                </Text>
+                                <TextInput
+                                    // placeholder="First Name"
+                                    placeholderTextColor={theme.colors.disabledText}
+                                    onChangeText={setEmail}
+                                    value={email}
+                                    style={email ? (styles.input) : (styles.inputEmpty)}
+                                />
+                                <Text style={styles.inputSubTitle}>
+                                    Password
+                                </Text>
+                                <TextInput
+                                    // placeholder="Last Name"
+                                    placeholderTextColor={theme.colors.disabledText}
+                                    onChangeText={setPassword}
+                                    value={password}
+                                    style={password ? (styles.input) : (styles.inputEmpty)}
+                                    secureTextEntry={secureTextEntry}
+                                    autoCorrect={false}
+                                    numberOfLines={1}
+                                />
+                                {/* the touchable to toggle pw sight */}
+                                <TouchableOpacity onPress={toggle}
+                                    style={{ width: 40, height: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', right: 2, bottom: 15, }}>
+                                    {secureTextEntry ? (<EyeOffIcon size={30} color={'black'} />) : (<EyeIcon size={30} color={'black'} />)}
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        <View style={{
+                            width: '90%', display: 'flex', justifyContent: 'flex-end', flexDirection: 'row',
+                            // position: 'absolute',
+                            // bottom: 0
+                            marginBottom: 40,
+
+                        }}>
+
+                            {loading ?
+                                <ActivityIndicator /> :
+                                <TouchableOpacity
+                                    style={firstName && lastName ? (styles.nextCircle) : (styles.nextCircleEmpty)}
+                                    // style={styles.loginContainer}
+                                    onPress={handleNext}>
+                                    {/* <Text style={styles.loginText}>Next</Text> */}
+                                    <RightArrowIcon color='#FFFFFF' size={30} />
+                                    <View style={{ marginTop: 10 }}></View>
+                                </TouchableOpacity>
+                            }
+                        </View>
                     </View>
+
+
+
+
+
                 </View>
             </ScrollView>
-        </View>
-
-        // </KeyboardAvoidingView>
+            {/* </View> */}
+        </KeyboardAvoidingView >
     );
 };
 
@@ -209,7 +225,7 @@ const styles = StyleSheet.create({
     image: {
         width: config.logoWidth,
         height: config.logoWidth * config.logoSizeRatio,
-        marginBottom: 48,
+        // marginBottom: 48,
     },
     input: {
         // marginTop: 15,
@@ -224,7 +240,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderBottomWidth: 3,
         borderColor: '#4B2D83',
-        marginBottom: 12,
+        // marginBottom: 12,
     },
     inputEmpty: {
         fontSize: 18,
@@ -236,7 +252,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
         color: theme.colors.text,
         borderWidth: 1,
-        borderColor: '#4B2D83', marginBottom: 12,
+        borderColor: '#4B2D83',
+        // marginBottom: 12,
     },
     loginContainer: {
         paddingVertical: 6,
@@ -245,7 +262,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#4B2D83',
         alignItems: 'center',
         borderRadius: 10,
-        marginTop: '10%'
+        // marginTop: '10%'
     },
     loginText: {
         color: theme.colors.background,
@@ -257,13 +274,13 @@ const styles = StyleSheet.create({
         color: '#4B2D83',
         fontSize: 40,
         fontWeight: '900',
-        marginBottom: 24
+        // marginBottom: 24
     },
     descText: {
         color: '#3C3C43',
         fontSize: 16,
         fontWeight: '500',
-        marginBottom: 24
+        // marginBottom: 24
     },
     inputSubTitle: {
         color: '#4B2D83',
@@ -281,6 +298,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     nextCircleEmpty: {
+        // position: 'absolute',
+        // bottom: 15,
         width: 60,
         height: 60,
         borderRadius: 60,

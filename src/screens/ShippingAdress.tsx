@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import logoDark from '../../assets/logo-dark.png'
 import logo from '../../assets/logo.png'
-import { RightArrowIcon } from '../components/shared/Icons'
+import { ChevronDownIcon, PinIcon, RightArrowIcon } from '../components/shared/Icons'
 import * as WebBrowser from 'expo-web-browser'
 
 
@@ -44,7 +44,8 @@ const ShippingAddress = ({ route, navigation }: Props) => {
     navigation.setOptions({
       headerTitle: () => (
         // <Text style={styles.screenTitle}>Cart ({getItemsCount()})</Text>
-        <Image source={require('../../assets/CHECKOUT.png')} style={{ height: 25, width: 175, marginTop: 0 }} resizeMode='contain' />
+        <Text style={{ fontSize: 30, fontStyle: 'italic', fontWeight: '900', color: '#4B2D83' }}>REVIEW</Text>
+        // <Image source={require('../../assets/CHECKOUT.png')} style={{ height: 25, width: 175, marginTop: 0 }} resizeMode='contain' />
       )
     })
 
@@ -69,6 +70,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
   const [availableShippingRates, setAvailableShippingRates] = useState<AvailableShippingRatesType | null>(null);
   const [orderNotes, setOrderNotes] = useState('')
   const [defaultAddress, setDefaultAddress] = useState(null);
+
 
   // just to see sum
   // useEffect(() => {
@@ -615,54 +617,124 @@ const ShippingAddress = ({ route, navigation }: Props) => {
         <View style={{
           display: 'flex',
           height: '100%',
+          // backgroundColor: '#D9D9D9', // figure out how to get a nice graident or sum
 
         }}>
 
           {/* top section */}
-          <View style={{ display: 'flex', height: 130, marginBottom: 30, alignItems: 'center' }}>
+          <View style={{ display: 'flex', height: 110, marginBottom: 30, alignItems: 'center', }}>
             {/* review order and price component */}
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 0, marginBottom: 15, paddingBottom: 5, paddingTop: 20, width: '90%' }}>
-              <Text style={{ textAlign: 'left', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>Review order</Text>
-              <Text style={{ textAlign: 'right', color: '#4B2D83', fontSize: 18, fontWeight: 'bold' }}>${totalPrice}</Text>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 0, paddingTop: 20, width: '90%' }}>
+              <Text style={{ textAlign: 'left', color: '#4B2D83', fontSize: 18, fontWeight: '800' }}>Total</Text>
+              <Text style={{ textAlign: 'right', color: '#4B2D83', fontSize: 18, fontWeight: '800' }}>${totalPrice}</Text>
             </View>
 
             {/* address field */}
-            <TouchableOpacity style={{
-              borderWidth: 1, padding: 5, height: 50, borderRadius: 30, backgroundColor: '#D9D9D9', borderColor: '#4B2D83', flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '90%'
-            }} onPress={() => bottomSheetRef.current?.expand()}>
+            <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
 
               {defaultAddress ?
-                (<View style={{ flex: 1, marginLeft: 12, justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
-                    Delivering to:
-                  </Text>
-                  <Text numberOfLines={1} ellipsizeMode='tail' style={{ fontSize: 14, width: '90%' }}>
-                    {formatAddress(defaultAddress)}
-                  </Text>
-                </View>)
-                : (<Text style={{ fontSize: 15, fontWeight: '500', marginLeft: 24, marginTop: 2 }}>
-                  Please select an address
-                </Text>)}
-              <RightArrowIcon color='#4B2D83' size={38} />
+                // if address selected
+                (
+                  <View style={{
+                    width: '100%',
+                    backgroundColor: '#D9D9D9',
+                    // backgroundColor: 'yellow',
+                    borderTopRightRadius: 25, borderBottomRightRadius: 25, paddingTop: 5,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    flexDirection: 'row',
+                    marginTop: 10,
+                  }}>
+                    <View style={{ marginLeft: 20, marginBottom: 4 }}>
+                      <PinIcon size={24} color='black' />
+                    </View>
+
+                    <View style={{ width: '75%' }}>
+                      <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                        Delivering to:
+                      </Text>
+                      <Text numberOfLines={1} ellipsizeMode='tail' style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '100%' }}>
+                        {formatAddress(defaultAddress)}
+                      </Text>
+
+                    </View>
+                    <View style={{ display: 'flex', marginRight: 12, marginTop: 12, }}>
+                      <ChevronDownIcon color='#4B2D83' size={25} />
+                    </View>
+                  </View>
+                )
+                // address not selected
+                : (
+                  <>
+                    <View style={{
+                      width: '100%',
+                      backgroundColor: '#D9D9D9',
+                      // backgroundColor: 'yellow',
+                      borderTopRightRadius: 25, borderBottomRightRadius: 25, paddingTop: 5,
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      marginTop: 10,
+                    }}>
+                      <View style={{ marginLeft: 20, marginBottom: 4 }}>
+                        <PinIcon size={24} color='black' />
+                      </View>
+
+                      <View style={{ width: '75%', }}>
+                        <Text style={{ fontSize: 18, color: 'black', fontWeight: '500', marginBottom: 4, marginLeft: 10 }}>
+                          Select Delivery Address
+                        </Text>
+                      </View>
+
+                      <View style={{ display: 'flex', marginRight: 12, marginTop: 12, }}>
+                        <ChevronDownIcon color='#4B2D83' size={25} />
+                      </View>
+                    </View>
+
+                    {/* <View style={{ width: '100%', backgroundColor: '#D9D9D9', borderTopRightRadius: 10, borderBottomRightRadius: 10, paddingTop: 5 }}>
+                        <Text style={{ paddingLeft: 6, fontSize: 14, fontWeight: 'bold', color: '#4B2D83' }}>
+                          Where are we delivering?
+                        </Text>
+                        <Text style={{ paddingLeft: 6, paddingBottom: 7, fontSize: 14, width: '80%' }}>
+                          Enter your address here...
+                        </Text>
+                      </View> */}
+                  </>
+                )
+              }
             </TouchableOpacity>
+
           </View>
 
           {/* bottom section */}
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
             {/* notes */}
             <View style={{ backgroundColor: 'white', width: '90%' }}>
-              <Text style={{ color: '#727272', fontSize: 15, fontWeight: 'bold', marginBottom: 10 }}>Leave a message!</Text>
+              <Text style={{ color: '#4B2D83', fontSize: 15, fontWeight: '800', marginBottom: 10 }}>Leave a Message</Text>
+              {/* {!orderNotes ? (<Text style={{ color: '#9E9EA1', fontSize: 15, fontWeight: '500', position: 'absolute', bottom: 160, left: 10, zIndex: 10 }}>Apt #, door code, etc.</Text>) : ('')}
+              <Text></Text> */}
               <TextInput
                 placeholder='Apt #, door code, etc.'
                 placeholderTextColor={'#9d9da1'}
                 keyboardType='default'
-
                 style={{
-                  width: '100%', display: 'flex', flexDirection: 'column', height: 100, borderRadius: 15, backgroundColor: '#FFFFFF',
-                  padding: 10,
-                  // paddingVertical: 10,
-                  borderWidth: 1, borderColor: '#D9D9D9', textAlign: 'left',
-                  textAlignVertical: 'top',
+                  width: '100%',
+                  // display: 'flex', flexDirection: 'column', 
+                  height: 190, borderRadius: 15, backgroundColor: '#FFFFFF',
+                  // padding: 20,
+                  // paddingVertical: 100,   // Vertical padding (top and bottom)
+                  paddingLeft: 10, // Horizontal padding (left and right)
+                  // selection: {start: 1, end: 10},
+                  // paddingVertical: 50,
+                  borderWidth: 1, borderColor: '#D9D9D9',
+                  // textAlign: 'left',
+                  // textAlignVertical: 'top',
+
+
+
+
                 }}
                 onChangeText={(text) => setOrderNotes(text)}
                 value={orderNotes}
@@ -735,6 +807,7 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 14,
     paddingBottom: Platform.OS == 'ios' ? 280 : 20,
+    backgroundColor: '#D9D9D9',
   },
   input: {
     // marginTop: 16,
@@ -807,5 +880,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     alignSelf: 'center',
+  },
+  addressBox: {
+    // height: 40,
+    borderColor: 'black',
+    // borderWidth: 1,
+    borderRadius: 20,
+    marginBottom: 4,
+    flexDirection: 'row',
+    // marginTop: '2%',
+    alignSelf: 'flex-start',
+    width: '95%',
+    justifyContent: 'flex-start', // Add this line to center content vertically
+    // borderBottomWidth: 2,
+    // borderBottomColor: '#4B2D83',
   },
 })
