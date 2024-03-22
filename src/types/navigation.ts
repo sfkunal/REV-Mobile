@@ -9,6 +9,10 @@ export type StackParamList = {
   DiscountCode: { checkoutId: string }
   LoginStackNavigator: { screen: 'Login' | 'Register' }
   Cart: undefined
+  SearchStackNavigator: {
+    screen: keyof SearchStackParamList;
+    params?: SearchStackParamList[keyof SearchStackParamList];
+  };
 }
 
 export type BottomTabParamList = {

@@ -31,6 +31,8 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
             setErrorMessage('Please enter your email and password')
             setLoading(false)
             return
+        } else if (password.length < 5) {
+            setErrorMessage('Password must be at least 5 characters!')
         }
 
         try {
@@ -81,7 +83,7 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
                     // backgroundColor: 'yellow', height: '100%', display: 'flex'
                 }}
                 // style={{ backgroundColor: 'green', height: '100%', }}
-                keyboardShouldPersistTaps='never'
+                keyboardShouldPersistTaps='always'
             >
 
 

@@ -45,9 +45,11 @@ const Login = ({ navigation }: Props) => {
 
   // this will toss the user in if they have a userToken
   // there is an error if there is no path to go back to tho. Something to look into
+  // this might not really be a problem in production tho
   useEffect(() => {
     if (userToken) {
       rootNavigation.goBack();
+      // rootNavigation.navigate('Home')
       // navigation.navigate('Home')
     }
     console.log(userToken)

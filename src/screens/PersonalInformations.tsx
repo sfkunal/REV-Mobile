@@ -192,10 +192,10 @@ const PersonalInformations = ({ navigation }: Props) => {
         </View>
 
         {errorMessage ?
-          <View style={{ height: 32 }}>
+          <View style={{ height: 32, marginTop: 6 }}>
             <Text style={{ color: 'red' }}>{errorMessage}</Text>
           </View> :
-          <View style={{ height: 32 }}><Text style={{ color: theme.colors.background }}></Text></View>
+          <View style={{ height: 38 }}><Text style={{ color: theme.colors.background }}></Text></View>
         }
 
         <View style={{ width: '100%', alignItems: 'center' }}>

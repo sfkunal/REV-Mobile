@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Image } from 'react-native'
 import React, { useEffect } from 'react'
 import { theme } from '../constants/theme'
 import { ProfileStackParamList } from '../types/navigation'
@@ -9,7 +9,8 @@ import { useNavigationContext } from '../context/NavigationContext'
 import { useAuthContext } from '../context/AuthContext'
 import * as WebBrowser from 'expo-web-browser'
 import { config } from '../../config'
-import { RightArrowIcon } from '../components/shared/Icons'
+import phone from '../../assets/phone.png'
+import { MailIcon, RightArrowIcon } from '../components/shared/Icons'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>
 
@@ -59,6 +60,45 @@ const SettingsPage = ({ navigation }: Props) => {
         // contentContainerStyle={styles.container}
         // showsVerticalScrollIndicator={false}
         >
+
+            {/* CONTACT US */}
+            <View style={{
+                flexDirection: 'column',
+                justifyContent: 'flex-start',
+                alignItems: 'flex-start',
+                height: 130,
+                marginBottom: 24,
+                // borderWidth: 1,
+                borderRadius: 8,
+                backgroundColor: '#FFFFFF',
+                shadowColor: 'black', shadowRadius: 1,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.6
+            }}>
+                <View style={{ display: 'flex', marginLeft: 12, marginTop: 10 }}>
+                    <Text style={{ fontSize: 18, fontWeight: '700', color: '#4B2D83' }}>
+                        Contact Us
+                    </Text>
+                    <View style={{ marginLeft: 8, marginTop: 16, flex: 1, flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20 }}>
+                        {/* MAIL CONTAINER */}
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <View style={{ justifyContent: 'center', marginRight: 6, marginTop: 2 }}>
+                                <MailIcon color={'black'} size={20} />
+                            </View>
+
+                            <Text style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>team@rev.delivery</Text>
+                        </View>
+
+                        <View style={{ width: 250, height: 1, borderRadius: 2, backgroundColor: '#3C3C4333' }}></View>
+
+                        {/* Phone container */}
+                        <View style={{ display: 'flex', flexDirection: 'row' }}>
+                            <Image source={phone} style={{ width: 20, height: 20, marginRight: 2 }} />
+                            <Text style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>(206)833-6358</Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
             {/* ORDER HISTORY */}
             <TouchableOpacity
                 style={styles.cardContainer}
@@ -75,24 +115,6 @@ const SettingsPage = ({ navigation }: Props) => {
                 <RightArrowIcon size={40} color={'#4B2D83'} />
             </TouchableOpacity>
 
-            {/* INSTAGRAM LINK */}
-            <TouchableOpacity style={styles.cardContainer}
-                onPress={() => Linking.openURL('https://www.instagram.com/rev.delivery/')}
-            >
-                <Text style={styles.settingTitle}>Instagram</Text>
-                {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
-                <RightArrowIcon size={40} color={'#4B2D83'} />
-            </TouchableOpacity>
-
-            {/* TODO Customer Support */}
-            {/* WHERE DO I LINK? */}
-            <TouchableOpacity style={styles.cardContainer}>
-                <Text style={styles.settingTitle}>
-                    Contact (MK LINK)
-                </Text>
-                <RightArrowIcon size={40} color={'#4B2D83'} />
-            </TouchableOpacity>
-
             {/* Personal Information */}
             {userToken &&
                 <TouchableOpacity style={styles.cardContainer}
@@ -102,6 +124,31 @@ const SettingsPage = ({ navigation }: Props) => {
                     <RightArrowIcon size={40} color={'#4B2D83'} />
                 </TouchableOpacity>
             }
+
+
+
+            {/* TODO Customer Support */}
+            {/* WHERE DO I LINK? */}
+            {/* <TouchableOpacity style={styles.cardContainer}>
+                <Text style={styles.settingTitle}>
+                    Contact (MK LINK)
+                </Text>
+                <RightArrowIcon size={40} color={'#4B2D83'} />
+            </TouchableOpacity> */}
+
+
+
+
+            {/* INSTAGRAM LINK */}
+            <TouchableOpacity style={styles.cardContainer}
+                onPress={() => Linking.openURL('https://www.instagram.com/rev.delivery/')}
+            >
+                <Text style={styles.settingTitle}>Instagram</Text>
+                {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
+                <RightArrowIcon size={40} color={'#4B2D83'} />
+            </TouchableOpacity>
+
+
 
             {/* TOS */}
             <TouchableOpacity

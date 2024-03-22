@@ -59,6 +59,7 @@ const OnboardingName = ({ navigation, route }: Props) => {
             style={{ flex: 1, }}
 
         >
+
             <ScrollView
                 scrollEnabled={Platform.OS == 'ios' ? false : true}
                 showsVerticalScrollIndicator={false}
@@ -69,7 +70,7 @@ const OnboardingName = ({ navigation, route }: Props) => {
                     // backgroundColor: 'yellow', height: '100%', display: 'flex'
                 }}
                 // style={{ backgroundColor: 'green', height: '100%', }}
-                keyboardShouldPersistTaps='never'
+                keyboardShouldPersistTaps='always'
             >
 
 

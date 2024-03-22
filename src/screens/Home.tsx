@@ -22,13 +22,14 @@ import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry'
 import { ChevronDownIcon, HangerIcon, PinIcon } from '../components/shared/Icons'
 import { Product } from '../types/dataTypes'
 import { ScrollView } from 'react-native-gesture-handler'
+import HomeList from '../components/home/HomeList'
 
 // import { useNavigationContext } from '../context/NavigationContext'
 
 
 const windowHeight = Dimensions.get('window').height - 50 - (hasHomeIndicator ? 30 : 0)
 const screenWidth = Dimensions.get('screen').width;
-const textDescription = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam vel semper nisl. Morbi id diam et eros aliquet mollis. Sed cursus, justo ut pellentesque posuere, tortor turpis bibendum ante, eu fringilla mi arcu ac purus.';
+const textDescription = 'I love REv. I loev REV so much';
 
 type Props = NativeStackScreenProps<HomeStackParamList, 'Collection'>
 
@@ -92,7 +93,7 @@ const Home = ({ navigation }: Props) => {
 
         const userOrders = response.data.customer.orders.nodes.length
         // console.log('userOrders thooooo');
-        console.log(response.data.customer.orders.nodes)
+        // console.log(response.data.customer.orders.nodes)
         // // console.log(userOrders);
         setUserOrders(userOrders);
         setIsLoading(false)
@@ -243,76 +244,75 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
-  const fetchCollection = async (collectionID: string) => {
-    setIsLoading(true)
-    setErrorMessage('')
+  // const fetchCollection = async (collectionID: string) => {
+  //   setIsLoading(true)
+  //   setErrorMessage('')
 
+  //   try {
+  //     const query = `query {
+  //       collection(id: "${collectionID}") {
+  //         id
+  //         title
+  //         products(first: 100) {
+  //           nodes {
+  //             id
+  //             title
+  //             description
+  //             vendor
+  //             availableForSale
+  //             compareAtPriceRange {
+  //               minVariantPrice {
+  //                 amount
+  //                 currencyCode
+  //               }
+  //             }
+  //             priceRange {
+  //               minVariantPrice {
+  //                 amount
+  //                 currencyCode
+  //               }
+  //             }
+  //             images(first: 10) {
+  //               nodes {
+  //                 url
+  //                 width
+  //                 height
+  //               }
+  //             }
+  //             options {
+  //               id
+  //               name
+  //               values
+  //             }
+  //             variants(first: 200) {
+  //               nodes {
+  //                 availableForSale
+  //                 selectedOptions {
+  //                   value
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }`
 
-    try {
-      const query = `query {
-        collection(id: "${collectionID}") {
-          id
-          title
-          products(first: 100) {
-            nodes {
-              id
-              title
-              description
-              vendor
-              availableForSale
-              compareAtPriceRange {
-                minVariantPrice {
-                  amount
-                  currencyCode
-                }
-              }
-              priceRange {
-                minVariantPrice {
-                  amount
-                  currencyCode
-                }
-              }
-              images(first: 10) {
-                nodes {
-                  url
-                  width
-                  height
-                }
-              }
-              options {
-                id
-                name
-                values
-              }
-              variants(first: 200) {
-                nodes {
-                  availableForSale
-                  selectedOptions {
-                    value
-                  }
-                }
-              }
-            }
-          }
-        }
-      }`
+  //     const response: any = await storefrontApiClient(query)
 
-      const response: any = await storefrontApiClient(query)
+  //     if (response.errors && response.errors.length != 0) {
+  //       setIsLoading(false)
+  //       throw response.errors[0].message
+  //     }
 
-      if (response.errors && response.errors.length != 0) {
-        setIsLoading(false)
-        throw response.errors[0].message
-      }
+  //     const products = response.data.collection.products.nodes
+  //     setIsLoading(false)
+  //     return products;
+  //     // console.log(products);
 
-      const products = response.data.collection.products.nodes
-      // setExploreProducts(products)
-      return products;
-      // console.log(products);
-      setIsLoading(false)
-    } catch (e) {
-      console.log(e)
-    }
-  }
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
 
   const fetchExploreProducts = async () => {
     setIsLoading(true)
@@ -568,17 +568,19 @@ const Home = ({ navigation }: Props) => {
     return parts.join('');
   };
 
-  const HomeList = React.memo(({ data }: { data: any }) => {
+  const ForYouList = React.memo(({ data }: { data: any }) => {
     const ForYouHorizontalList = function () {
       return (
         <>
-          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, }}>
+          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, backgroundColor: 'white', }}>
             <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Your past orders</Text>
           </View>
           {data ? (<FlatList
             data={forYou.filter(item => item != null)}
             // data={data}
-            renderItem={({ item }) => (<View style={{ height: '30%', marginTop: 25 }}><ProductCard data={item} />
+            renderItem={({ item }) => (<View style={{
+              width: 180, padding: 5, marginRight: 25,
+            }}><ProductCard data={item} />
             </View>)}
             // <ProductCard data={item} />}
             horizontal={true}
@@ -597,6 +599,7 @@ const Home = ({ navigation }: Props) => {
         </>
       )
     }
+
     return (
       < View style={{ paddingBottom: sbHeight + 320 }}>
         <FlatList
@@ -624,16 +627,17 @@ const Home = ({ navigation }: Props) => {
   // </ScrollView>
 
   const HorizontalList = React.memo(({ title, data, nav }: { title: string, data: any, nav: string }) => {
-
     return (
       <View style={{ flex: 1, marginTop: 10, }}>
-        <TouchableOpacity style={{ zIndex: 10 }}
+        <TouchableOpacity style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 3, backgroundColor: 'white', paddingHorizontal: 14 }}
           onPress={() => {
             navigation.navigate('Collection', { collectionId: nav })
-          }}>
-          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 120, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 3, backgroundColor: 'white', }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{title}</Text>
-          </View></TouchableOpacity>
+          }}
+
+        >
+
+          <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{title}</Text>
+        </TouchableOpacity>
 
         <FlatList
           data={data.filter(item => item != null)}
@@ -654,36 +658,42 @@ const Home = ({ navigation }: Props) => {
     )
   })
 
-  const MemoizedHorizontalList = React.memo(HorizontalList);
+  // const MemoizedHorizontalList = React.memo(HorizontalList);
 
-  const FullList = ({ sections }: { sections: any }) => {
-    // console.log(sections)
-    // console.log(sectionData[0].data[0].id)
-    // console.log(sectionData[0].data[0].options[0].id)
 
-    const renderItem = useCallback(({ item }) => (
-      <MemoizedHorizontalList
-        title={item.title}
-        data={item.data}
-        nav={item.nav}
-      />
-    ), [])
-    return (
-      // <View>
 
-      // </View>
-      <View style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
-        {sections ? (<FlatList
-          data={sections}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => item.title}
-          ItemSeparatorComponent={() => (<View style={{ height: 30, marginBottom: 10, width: '100%', }} ></View>)}
-          showsVerticalScrollIndicator={false}
-        />) : (<ActivityIndicator />)
-        }
-      </View >
-    )
-  }
+  // const FullList = ({ sections }: { sections: any }) => {
+  //   // console.log(sections)
+  //   // console.log(sectionData[0].data[0].id)
+  //   // console.log(sectionData[0].data[0].options[0].id)
+
+  //   const renderItem = useCallback(({ item, index }) => (
+  //     <MemoizedHorizontalList
+  //       title={item.title}
+  //       data={item.data}
+  //       nav={item.nav}
+  //       onLoadMore={() => onLoadMore(index)}
+  //     />
+  //   ), [onLoadMore])
+  //   return (
+  //     // <View>
+
+  //     // </View>
+  //     <View style={{ paddingTop: 10, paddingBottom: sbHeight + 340 }}>
+  //       {sections ?
+  //         (<FlatList
+  //           data={sections}
+  //           renderItem={renderItem}
+  //           keyExtractor={(item, index) => item.title}
+  //           ItemSeparatorComponent={() => (<View style={{ height: 30, marginBottom: 10, width: '100%', }} ></View>)}
+  //           showsVerticalScrollIndicator={false}
+  //           initialNumToRender={4}
+  //         />)
+  //         : (<ActivityIndicator />)
+  //       }
+  //     </View >
+  //   )
+  // }
 
 
 
@@ -703,31 +713,30 @@ const Home = ({ navigation }: Props) => {
     // if things are still loading, just return
     // const products = await fetchExploreProducts('gid://shopify/Collection/456011710752');
     const products = await fetchExploreProducts();
-    console.log(products)
+    // console.log(products)
     if (isLoading) {
       return;
     }
     // array of arrays of products
     const sections = [
-      { title: 'Popular', data: popularProducts, nav: 'gid://shopify/Collection/456011481376' },
-      { title: 'Sweets', data: exploreProducts, nav: 'gid://shopify/Collection/456011710752' },
-      { title: 'Energy', data: popularProducts, nav: 'gid://shopify/Collection/456011776288' },
-      { title: 'Drinks', data: popularProducts, nav: 'gid://shopify/Collection/456011514144' },
-      { title: 'Nicotine', data: popularProducts, nav: 'gid://shopify/Collection/459750572320' },
-      { title: 'International', data: popularProducts, nav: 'gid://shopify/Collection/458202546464' },
-      { title: 'Ready To Eat', data: popularProducts, nav: 'gid://shopify/Collection/456011940128' },
-      { title: 'Sweet Treats', data: popularProducts, nav: 'gid://shopify/Collection/456011710752' },
-      { title: 'Snacks', data: popularProducts, nav: '"gid://shopify/Collection/456011546912' },
-      { title: 'Chips', data: popularProducts, nav: 'gid://shopify/Collection/456011612448' },
-      { title: 'Healthy', data: popularProducts, nav: 'gid://shopify/Collection/458202448160' },
-      { title: 'Candy', data: popularProducts, nav: 'gid://shopify/Collection/456011677984' },
-      { title: 'Ice Cream', data: popularProducts, nav: 'gid://shopify/Collection/456011841824' },
-      { title: 'Beer & Wine', data: popularProducts, nav: 'gid://shopify/Collection/463924003104' },
-      { title: 'Booze', data: popularProducts, nav: 'gid://shopify/Collection/463924134176' },
-      { title: 'Student Essentials', data: popularProducts, nav: 'gid://shopify/Collection/456012038432' },
-      { title: 'Personal Care', data: popularProducts, nav: 'gid://shopify/Collection/456011972896' },
+      { title: 'Popular', data: [], nav: 'gid://shopify/Collection/456011481376' },
+      { title: 'Sweets', data: [], nav: 'gid://shopify/Collection/456011710752' },
+      { title: 'Energy', data: [], nav: 'gid://shopify/Collection/456011776288' },
+      { title: 'Drinks', data: [], nav: 'gid://shopify/Collection/456011514144' },
+      { title: 'Nicotine', data: [], nav: 'gid://shopify/Collection/459750572320' },
+      { title: 'International', data: [], nav: 'gid://shopify/Collection/458202546464' },
+      { title: 'Ready To Eat', data: [], nav: 'gid://shopify/Collection/456011940128' },
+      { title: 'Sweet Treats', data: [], nav: 'gid://shopify/Collection/456011710752' },
+      { title: 'Snacks', data: [], nav: '"gid://shopify/Collection/456011546912' },
+      { title: 'Chips', data: [], nav: 'gid://shopify/Collection/456011612448' },
+      { title: 'Healthy', data: [], nav: 'gid://shopify/Collection/458202448160' },
+      { title: 'Candy', data: [], nav: 'gid://shopify/Collection/456011677984' },
+      { title: 'Ice Cream', data: [], nav: 'gid://shopify/Collection/456011841824' },
+      { title: 'Beer & Wine', data: [], nav: 'gid://shopify/Collection/463924003104' },
+      { title: 'Booze', data: [], nav: 'gid://shopify/Collection/463924134176' },
+      { title: 'Student Essentials', data: [], nav: 'gid://shopify/Collection/456012038432' },
+      { title: 'Personal Care', data: [], nav: 'gid://shopify/Collection/456011972896' },
     ];
-
     setSectionData(sections);
     // return sections
   }
@@ -920,10 +929,10 @@ const Home = ({ navigation }: Props) => {
               </View>
 
             </View>
-            {selectedMode === 'explore' ? <FullList sections={sectionData} /> : <HomeList data={(userOrders > 4 ? forYou : exploreProducts)} />}
-            {/* <HomeList data={selectedMode === 'explore' ? exploreProducts : (userOrders > 4 ? forYou : popularProducts)} /> */}
+            {selectedMode === 'explore' ?
+              <View style={{ display: 'flex', height: '100%', marginTop: 0, paddingBottom: sbHeight + 320, }}><HomeList navigation={navigation} /></View>
 
-
+              : <ForYouList data={(userOrders > 4 ? forYou : exploreProducts)} />}
           </View>
 
           {/* this is what  */}

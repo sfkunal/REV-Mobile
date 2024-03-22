@@ -10,8 +10,8 @@ type CartContextType = {
   cartItems: CartItem[]
   addItemToCart: (item: CartItem, quantity: number) => void
   removeItemFromCart: (itemId: string) => void
-  addQuantityOfItem: (itemId: string) => void
-  substractQuantityOfItem: (itemId: string) => void
+  addQuantityOfItem: (itemId: string, quantity: number) => void
+  substractQuantityOfItem: (itemId: string, quantity: number) => void
 }
 
 const Context = createContext<CartContextType | null>(null)
@@ -124,7 +124,7 @@ export const CartContext = ({ children }: Props) => {
     return totalPrice
   }
 
-  const addItemToCart = (item: CartItem, quantity: number = 1) => {
+  const addItemToCart = (item: CartItem, quantity: number) => {
     const index = cartItems.findIndex((arrayItem) => arrayItem.id == item.id);
 
     if (index == -1) {
@@ -159,16 +159,16 @@ export const CartContext = ({ children }: Props) => {
     ))
   }
 
-  const addQuantityOfItem = (itemId: string) => {
+  const addQuantityOfItem = (itemId: string, quantity: number) => {
     setcartItems(cartItems => (
       cartItems.map((item) => {
         const notTrackingStock = item.quantityAvailable <= 0 && item.availableForSale
         var newQuantity: number
 
         if (notTrackingStock) {
-          newQuantity = item.quantity + 1
+          newQuantity = item.quantity + quantity
         } else {
-          newQuantity = item.quantityAvailable <= item.quantity ? item.quantityAvailable : item.quantity + 1
+          newQuantity = item.quantityAvailable <= item.quantity ? item.quantityAvailable : item.quantity + quantity
         }
 
         return (
@@ -178,17 +178,17 @@ export const CartContext = ({ children }: Props) => {
     ))
   }
 
-  const substractQuantityOfItem = (itemId: string) => {
+  const substractQuantityOfItem = (itemId: string, quantity: number) => {
     const item = cartItems.find((item) => item.id == itemId)
 
-    if (item.quantity == 1) {
-      // removeItemFromCart(itemId)
+    if (item?.quantity <= quantity) {
+      removeItemFromCart(itemId)
       return
     }
 
     setcartItems(cartItems => (
       cartItems.map((item) => {
-        const newQuantity: number = item.quantity - 1
+        const newQuantity: number = item.quantity - quantity
         return (
           item.id == itemId ? { ...item, quantity: newQuantity } as CartItem : item
         )

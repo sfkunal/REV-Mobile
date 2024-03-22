@@ -104,7 +104,7 @@ const Cart = ({ navigation }: Props) => {
         }
       }
 
-      rootNavigation.push('ShippingAddress', { checkoutId: response.data.checkoutCreate.checkout.id, totalPrice: parseFloat((totalPrice + 0.99).toFixed(2)) })
+      rootNavigation.push('ShippingAddress', { checkoutId: response.data.checkoutCreate.checkout.id, totalPrice: (totalPrice + 0.99) })
 
     } catch (e) {
       if (typeof e == 'string') {

@@ -1,7 +1,7 @@
 import { NativeStackNavigationProp, createNativeStackNavigator } from '@react-navigation/native-stack'
 import { theme } from '../../constants/theme'
 import { HomeStackParamList, SearchStackParamList } from '../../types/navigation'
-import { NavigationContainer, useNavigation } from '@react-navigation/native'
+import { NavigationContainer, RouteProp, useNavigation } from '@react-navigation/native'
 import Collection from '../Collection';
 
 
@@ -68,7 +68,7 @@ const SearchStackNavigator = () => {
         <SearchStack.Screen
           name='Collection'
           component={Collection}
-          options={{
+          options={({ route }: { route: RouteProp<SearchStackParamList, 'Collection'> }) => ({
             headerStyle: { backgroundColor: theme.colors.background },
             headerShadowVisible: false,
             headerTitle: '',
@@ -102,7 +102,7 @@ const SearchStackNavigator = () => {
                 </View>
               </TouchableOpacity>
             ),
-          }}
+          })}
         />
       </SearchStack.Navigator>
     </NavigationContainer>

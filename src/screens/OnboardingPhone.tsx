@@ -75,146 +75,150 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
     }, [])
 
     return (
+
         <KeyboardAvoidingView
             behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 128 : 0}
             style={{ flex: 1, }}
         >
-            <ScrollView
-                scrollEnabled={Platform.OS == 'ios' ? false : true}
-                showsVerticalScrollIndicator={false}
-                ref={scrollRef}
-                contentContainerStyle={{
-                    justifyContent: 'space-between', flex: 1, alignItems: 'center',
-                }}
-                // style={{ display: 'flex', height: '100%', backgroundColor: 'yellow', }}
-                keyboardShouldPersistTaps='never'
-            >
-                {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}> */}
+            <TouchableWithoutFeedback style={{ height: '100%' }} onPress={Keyboard.dismiss}>
+                <ScrollView
+                    scrollEnabled={Platform.OS == 'ios' ? false : true}
+                    showsVerticalScrollIndicator={false}
+                    ref={scrollRef}
+                    contentContainerStyle={{
+                        justifyContent: 'space-between', flex: 1, alignItems: 'center',
+                    }}
+                    // style={{ display: 'flex', height: '100%', backgroundColor: 'yellow', }}
+                    keyboardShouldPersistTaps='always'
+                >
 
 
-                {/* <View style={{
+
+                    {/* <View style={{
                     display: 'flex', height: '100%', padding: 0, backgroundColor: 'green'
                     // backgroundColor: 'yellow' 
                 }}> */}
 
 
-                <View style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', height: 150,
-                }} >
-                    {/* little top bar things */}
-                    <View style={{ width: '90%', height: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginTop: 10 }}>
-                        <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
-                        <View style={{ backgroundColor: '#D9D9D9', width: 106, height: 8, borderRadius: 12 }}></View>
-                        <View style={{ backgroundColor: '#D9D9D9', width: 106, height: 8, borderRadius: 12 }}></View>
-                    </View>
-
-                    {/* title */}
-                    <View style={{ width: '90%', marginBottom: 15, marginLeft: 36 }}>
-                        <Text style={{ fontWeight: '900', color: '#4B2D83', fontSize: 38, fontStyle: 'italic', }}>
-                            What's your number?
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={{
-
-                    flex: 1, justifyContent: 'space-between', alignItems: 'center'
-                }}>
-                    <View>
-                        {errorMessage ?
-                            (<View style={{ height: 20, justifyContent: 'flex-end', marginBottom: 20, alignItems: 'center' }}>
-                                <Text style={{ color: 'red' }}>{errorMessage}</Text>
-                            </View>) : (<View style={{ height: 40, width: '100%' }}></View>)
-                        }
-                        <View style={{
-                            width: '75%', flexDirection: 'row', display: 'flex', justifyContent: 'space-between',
-                            // backgroundColor: 'pink' 
-                        }} >
-                            {/* country container */}
-
-                            <View >
-                                <Text style={styles.inputSubTitle}>
-                                    Country
-                                </Text>
-                                <View style={{ backgroundColor: '#D9D9D9', height: 35, width: 75, flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 8 }}>
-                                    <Text>
-                                        US +1
-                                    </Text>
-                                </View>
-                            </View>
-                            <View style={{ width: '70%' }}>
-                                <Text style={styles.inputSubTitle}>
-                                    Phone number
-                                </Text>
-                                <TextInput
-                                    // placeholder="Phone Number"
-                                    placeholderTextColor={theme.colors.disabledText}
-                                    style={phoneNumber ? (styles.input) : (styles.inputEmpty)}
-                                    autoComplete='tel'
-                                    onChangeText={setPhoneNumber}
-                                    value={phoneNumber}
-                                    keyboardType="phone-pad"
-                                />
-                            </View>
+                    <View style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', height: 150,
+                    }} >
+                        {/* little top bar things */}
+                        <View style={{ width: '90%', height: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexDirection: 'row', marginTop: 10 }}>
+                            <View style={{ backgroundColor: '#4B2D83', width: 106, height: 8, borderRadius: 12 }}></View>
+                            <View style={{ backgroundColor: '#D9D9D9', width: 106, height: 8, borderRadius: 12 }}></View>
+                            <View style={{ backgroundColor: '#D9D9D9', width: 106, height: 8, borderRadius: 12 }}></View>
                         </View>
 
+                        {/* title */}
+                        <View style={{ width: '90%', marginBottom: 15, marginLeft: 36 }}>
+                            <Text style={{ fontWeight: '900', color: '#4B2D83', fontSize: 38, fontStyle: 'italic', }}>
+                                What's your number?
+                            </Text>
+                        </View>
+                    </View>
+
+                    <View style={{
+
+                        flex: 1, justifyContent: 'space-between', alignItems: 'center'
+                    }}>
+                        <View>
+                            {errorMessage ?
+                                (<View style={{ height: 20, justifyContent: 'flex-end', marginBottom: 20, alignItems: 'center' }}>
+                                    <Text style={{ color: 'red' }}>{errorMessage}</Text>
+                                </View>) : (<View style={{ height: 40, width: '100%' }}></View>)
+                            }
+                            <View style={{
+                                width: '75%', flexDirection: 'row', display: 'flex', justifyContent: 'space-between',
+                                // backgroundColor: 'pink' 
+                            }} >
+                                {/* country container */}
+
+                                <View >
+                                    <Text style={styles.inputSubTitle}>
+                                        Country
+                                    </Text>
+                                    <View style={{ backgroundColor: '#D9D9D9', height: 35, width: 75, flex: 1, justifyContent: 'center', alignItems: 'center', borderRadius: 8 }}>
+                                        <Text>
+                                            US +1
+                                        </Text>
+                                    </View>
+                                </View>
+                                <View style={{ width: '70%' }}>
+                                    <Text style={styles.inputSubTitle}>
+                                        Phone number
+                                    </Text>
+                                    <TextInput
+                                        // placeholder="Phone Number"
+                                        placeholderTextColor={theme.colors.disabledText}
+                                        style={phoneNumber ? (styles.input) : (styles.inputEmpty)}
+                                        autoComplete='tel'
+                                        onChangeText={setPhoneNumber}
+                                        value={phoneNumber}
+                                        keyboardType="phone-pad"
+                                    />
+                                </View>
+                            </View>
+
+                        </View>
+
+
+
                     </View>
 
 
 
-                </View>
 
 
+                    {/* </View> */}
+                    <View style={{
+                        // backgroundColor: 'orange',
+                        // position: 'absolute',
+                        // bottom: Platform.OS === 'ios' ? 30 : 20,
+                        // right: 20,
+                        width: '90%',
+                        // display: 'flex',
+                        // justifyContent: 'space-between',
+                        // flexDirection: 'row',
+                        // marginBottom: 30,
+                        // backgroundColor: 'orange',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        flexDirection: 'row',
+                        // position: 'absolute',
+                        bottom: 30,
+                        // right: 10,
+                        // left: 10,
+
+                        // marginTop: 60
+                    }}>
+                        <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '70%' }}>
+                            {/* eye icon */}
+                            <LockIcon size={30} color='black' />
+                            <Text style={{ color: 'black', fontSize: 14, marginTop: 4, marginLeft: 4 }}>We never share this with anyone.</Text>
+
+                        </View>
+                        {loading ?
+                            <ActivityIndicator /> :
+                            <TouchableOpacity
+                                style={phoneNumber.length > 9 ? (styles.nextCircle) : (styles.nextCircleEmpty)}
+                                // style={styles.loginContainer}
+                                onPress={handleNext}>
+                                {/* <Text style={styles.loginText}>Next</Text> */}
+                                <RightArrowIcon color='#FFFFFF' size={30} />
+                                <View style={{ marginTop: 10 }}></View>
+                            </TouchableOpacity>
 
 
-
-                {/* </View> */}
-                <View style={{
-                    // backgroundColor: 'orange',
-                    // position: 'absolute',
-                    // bottom: Platform.OS === 'ios' ? 30 : 20,
-                    // right: 20,
-                    width: '90%',
-                    // display: 'flex',
-                    // justifyContent: 'space-between',
-                    // flexDirection: 'row',
-                    // marginBottom: 30,
-                    // backgroundColor: 'orange',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                    // position: 'absolute',
-                    bottom: 30,
-                    // right: 10,
-                    // left: 10,
-
-                    // marginTop: 60
-                }}>
-                    <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', width: '70%' }}>
-                        {/* eye icon */}
-                        <LockIcon size={30} color='black' />
-                        <Text style={{ color: 'black', fontSize: 14, marginTop: 4, marginLeft: 4 }}>We never share this with anyone.</Text>
-
+                        }
                     </View>
-                    {loading ?
-                        <ActivityIndicator /> :
-                        <TouchableOpacity
-                            style={phoneNumber.length > 9 ? (styles.nextCircle) : (styles.nextCircleEmpty)}
-                            // style={styles.loginContainer}
-                            onPress={handleNext}>
-                            {/* <Text style={styles.loginText}>Next</Text> */}
-                            <RightArrowIcon color='#FFFFFF' size={30} />
-                            <View style={{ marginTop: 10 }}></View>
-                        </TouchableOpacity>
+                    {/* </TouchableWithoutFeedback> */}
 
-
-                    }
-                </View>
-                {/* </TouchableWithoutFeedback> */}
-
-            </ScrollView>
+                </ScrollView>
+            </TouchableWithoutFeedback >
         </KeyboardAvoidingView >
+
     );
 };
 

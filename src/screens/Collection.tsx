@@ -122,6 +122,7 @@ const Collection = ({ route, navigation }: Props) => {
         // <Text style={styles.title}>{collection?.title || ''}</Text>
         <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
       ),
+
     });
 
     try {
@@ -134,11 +135,11 @@ const Collection = ({ route, navigation }: Props) => {
       }
     }
 
-  }, [collection?.title])
+  }, [route.params.collectionId])
 
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center' }}>
+    <View style={{ flex: 1, justifyContent: 'center', paddingTop: 10 }}>
       {isLoading ?
         <ActivityIndicator style={{ alignSelf: 'center' }} /> :
         <FlatList
