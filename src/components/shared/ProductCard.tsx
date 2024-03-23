@@ -167,9 +167,12 @@ const ProductCard = memo(({ data }: { data: Product }) => {
         }
 
       } else if (localChanges < 0) {
-        if (data?.id) { // just double checking so we dont hit any NaN errors or anything
-          substractQuantityOfItem(data.id, -1 * localChanges)
+        if (cartItem) {
+          substractQuantityOfItem(cartItem.id, -1 * localChanges)
         }
+        // if (data?.id) { // just double checking so we dont hit any NaN errors or anything
+        //   substractQuantityOfItem(data.id, -1 * localChanges)
+        // }
         setLocalChanges(0);
       }
     }
@@ -395,11 +398,11 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                   />
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity onPress={handleLocalSubtract} style={{ backgroundColor: 'green', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <TouchableOpacity onPress={handleLocalSubtract} style={{ width: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 0, borderRadius: 40, marginRight: -6 }}>
                   <Text style={styles.minusIcon}>-</Text>
                 </TouchableOpacity>
               )}
-              <View style={{ backgroundColor: 'yellow' }}>
+              <View style={{}}>
                 <Text style={styles.numInCartText}>{numInCart}</Text>
               </View>
 
@@ -407,8 +410,8 @@ const ProductCard = memo(({ data }: { data: Product }) => {
               {/* <TouchableOpacity onPress={handleLocalAdd}>
                 <Icon name="plus" size={25} color="#4B2D83" style={styles.plusIcon} />
               </TouchableOpacity> */}
-              <TouchableOpacity onPress={handleLocalAdd} style={{ backgroundColor: 'orange', borderRadius: 40, width: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name="plus" size={25} color="#4B2D83" style={styles.plusIcon} />
+              <TouchableOpacity onPress={handleLocalAdd} style={{ borderRadius: 40, width: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Icon name="plus" size={25} color="#4B2D83" />
               </TouchableOpacity>
 
             </View>
@@ -441,18 +444,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: 'black',
-    letterSpacing: 1,
+    // letterSpacing: 1,
     paddingBottom: 8,
   },
   price: {
     marginTop: 2,
-    fontSize: 16.2,
+    // fontSize: 16.2, v1 fontSizing
+    fontSize: 18,
     fontWeight: '800',
     color: '#4B2D83',
   },
   smallPrice: {
     marginTop: 2,
-    fontSize: 13,
+    // fontSize: 13, v1 fontSizing
+    fontSize: 15,
     fontWeight: '800',
     color: '#4B2D83',
   },
@@ -479,9 +484,19 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
   },
   plusIcon: {
-    // padding: 4,
+    padding: 4,
     // marginRight: -4,
     // marginTop: 2,
+    shadowColor: '#171717',
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+
+    // this is to move it up so that it is in the same place as other one, aka doesnt move onPress
+    // marginTop: -2,
+    marginRight: 6,
+    marginBottom: 1
+
   },
   cartContainer: {
     position: 'absolute',
@@ -499,8 +514,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 26,
-    borderWidth: 1,
-    borderColor: 'black',
+    // borderWidth: 1,
+    shadowColor: '#171717',
+    shadowOffset: { width: -2, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
   checkmarkContent: {
     display: 'flex',
@@ -514,7 +532,7 @@ const styles = StyleSheet.create({
   trashCanImage: {
     height: 30,
     width: 30,
-    marginRight: -4,
+    marginRight: -5,
     marginTop: 2,
   },
   minusIcon: {
@@ -522,14 +540,15 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 40,
     marginTop: -8,
+    marginLeft: 2
   },
   numInCartText: {
-    color: '#4B2D83',
+    color: 'black',
     fontSize: 25,
     textAlign: 'center',
     fontWeight: 'bold',
     minWidth: 38,
-    marginLeft: 2,
+    marginRight: -4
   },
 });
 

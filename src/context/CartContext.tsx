@@ -179,13 +179,21 @@ export const CartContext = ({ children }: Props) => {
   }
 
   const substractQuantityOfItem = (itemId: string, quantity: number) => {
+    // console.log(cartItems[0].id)
+    // console.log('bf bites ID: ' + itemId)
     const item = cartItems.find((item) => item.id == itemId)
 
-    if (item?.quantity <= quantity) {
-      removeItemFromCart(itemId)
+    // console.log(itemId, quantity)
+    // console.log(item?.quantity)
+
+    if (item?.quantity - quantity <= 0) {
+      removeItemFromCart(itemId);
       return
     }
-
+    // if (item?.quantity <= quantity) {
+    //   removeItemFromCart(itemId)
+    //   return
+    // }
     setcartItems(cartItems => (
       cartItems.map((item) => {
         const newQuantity: number = item.quantity - quantity

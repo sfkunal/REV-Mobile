@@ -32,7 +32,7 @@ const CartCard = ({ cartItem }: { cartItem: CartItem }) => {
             <TouchableOpacity
               onPress={() => {
                 console.log(cartItem.id)
-                substractQuantityOfItem(cartItem.id)
+                substractQuantityOfItem(cartItem.id, 1)
               }}
             >
               <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: 20, paddingHorizontal: 8, paddingVertical: 4 }}>-</Text>
@@ -44,7 +44,7 @@ const CartCard = ({ cartItem }: { cartItem: CartItem }) => {
 
 
             <TouchableOpacity
-              onPress={() => addQuantityOfItem(cartItem.id)}
+              onPress={() => addQuantityOfItem(cartItem.id, 1)}
             >
               <Text style={{
                 color: '#4B2D83', fontWeight: 'bold', fontSize: 20,
