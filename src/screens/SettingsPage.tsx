@@ -53,6 +53,28 @@ const SettingsPage = ({ navigation }: Props) => {
         )
     }
 
+    const handleEmailPress = () => {
+
+        const emailAddress = 'team@rev.delivery' // could add things like subject and message if you wanted to get spicy
+        const mailToLink = `mailto:${emailAddress}`
+        try {
+            Linking.openURL(mailToLink)
+        } catch (e) {
+            Alert.alert('Oops')
+        }
+
+    }
+
+    const handlePhonePress = () => {
+        const phoneNumber = '+12068336358'
+        const smsLink = `sms:${phoneNumber}`
+        try {
+            Linking.openURL(smsLink)
+        } catch (e) {
+            Alert.alert('Oops')
+        }
+    }
+
     return (
         <View
             style={styles.container}
@@ -86,7 +108,7 @@ const SettingsPage = ({ navigation }: Props) => {
                                 <MailIcon color={'black'} size={20} />
                             </View>
 
-                            <Text style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>team@rev.delivery</Text>
+                            <Text onPress={handleEmailPress} style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>team@rev.delivery</Text>
                         </View>
 
                         <View style={{ width: 250, height: 1, borderRadius: 2, backgroundColor: '#3C3C4333' }}></View>
@@ -94,7 +116,7 @@ const SettingsPage = ({ navigation }: Props) => {
                         {/* Phone container */}
                         <View style={{ display: 'flex', flexDirection: 'row' }}>
                             <Image source={phone} style={{ width: 20, height: 20, marginRight: 2 }} />
-                            <Text style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>(206)833-6358</Text>
+                            <Text onPress={handlePhonePress} style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>(206)833-6358</Text>
                         </View>
                     </View>
                 </View>

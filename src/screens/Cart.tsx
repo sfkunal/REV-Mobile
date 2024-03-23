@@ -121,7 +121,7 @@ const Cart = ({ navigation }: Props) => {
     <>
       {cartItems.length == 0 ?
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <Text style={styles.empty}>Cart is empty.</Text>
+          <Text style={styles.empty}>Bag is empty</Text>
         </View> :
         <LinearGradient colors={['#FFFFFF', '#D9D9D9', '#FFFFFF']} style={{ flex: 1, marginTop: 8 }}>
           <FlatList
@@ -191,8 +191,8 @@ const styles = StyleSheet.create({
   },
   empty: {
     color: theme.colors.text,
-    fontSize: 15,
-    letterSpacing: 1
+    fontSize: 16,
+    // letterSpacing: 1
   },
   checkoutContainer: {
     // borderColor: '#4B2D83',
