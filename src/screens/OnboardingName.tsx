@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, KeyboardAvoidingView, ScrollView, Platform, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { LoginStackParamList } from '../types/navigation';
-import { BackArrowIcon, EyeIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
+import { BackArrow, BackArrowIcon, EyeIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
 import { theme } from '../constants/theme';
 import { config } from '../../config';
 
@@ -28,20 +28,22 @@ const OnboardingName = ({ navigation, route }: Props) => {
         // console.log(firstName, lastName)
 
         // navigation.navigate('OnboardingPhone', { firstName, lastName });
+        console.log(`\n`)
+        console.log(phoneNumber)
         navigation.navigate('OnboardingEmail', { firstName, lastName, phoneNumber });
 
         setLoading(false)
     };
 
-
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
-                <BackArrowIcon
-                    color={'#4B2D83'}
-                    size={20}
-                    onPress={() => navigation.goBack()}
-                />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -20 }}>
+                    <BackArrow
+                        color={'#4B2D83'}
+                        size={20}
+                    />
+                </TouchableOpacity>
             ),
             headerTitle: () => (
                 <WhiteLogo />

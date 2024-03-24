@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext';
 import { LoginStackParamList } from '../types/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BackArrowIcon, EyeIcon, EyeOffIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
+import { BackArrow, BackArrowIcon, EyeIcon, EyeOffIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
 import { config } from '../../config';
 import { theme } from '../constants/theme';
 import { useAuthContext } from '../context/AuthContext';
@@ -49,11 +49,12 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
-                <BackArrowIcon
-                    color={'#4B2D83'}
-                    size={20}
-                    onPress={() => navigation.goBack()}
-                />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -20 }}>
+                    <BackArrow
+                        color={'#4B2D83'}
+                        size={20}
+                    />
+                </TouchableOpacity>
             ),
             headerTitle: () => (
                 <WhiteLogo />
@@ -158,6 +159,8 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
                                     onChangeText={setEmail}
                                     value={email}
                                     style={email ? (styles.input) : (styles.inputEmpty)}
+                                    autoCorrect={false}
+                                    autoCapitalize='none'
                                 />
                                 <Text style={styles.inputSubTitle}>
                                     Password
@@ -174,7 +177,7 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
                                 />
                                 {/* the touchable to toggle pw sight */}
                                 <TouchableOpacity onPress={toggle}
-                                    style={{ width: 40, height: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', right: 2, bottom: 15, }}>
+                                    style={{ width: 40, height: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', right: 2, bottom: 21, }}>
                                     {secureTextEntry ? (<EyeOffIcon size={30} color={'black'} />) : (<EyeIcon size={30} color={'black'} />)}
                                 </TouchableOpacity>
                             </View>
@@ -242,7 +245,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderBottomWidth: 3,
         borderColor: '#4B2D83',
-        // marginBottom: 12,
+        marginBottom: 6,
     },
     inputEmpty: {
         fontSize: 18,
@@ -255,7 +258,7 @@ const styles = StyleSheet.create({
         color: theme.colors.text,
         borderWidth: 1,
         borderColor: '#4B2D83',
-        // marginBottom: 12,
+        marginBottom: 6,
     },
     loginContainer: {
         paddingVertical: 6,

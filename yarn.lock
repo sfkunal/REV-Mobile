@@ -2218,6 +2218,42 @@
   dependencies:
     nanoid "^3.1.23"
 
+"@remote-ui/async-subscription@^2.1.12", "@remote-ui/async-subscription@^2.1.15":
+  version "2.1.15"
+  resolved "https://registry.npmjs.org/@remote-ui/async-subscription/-/async-subscription-2.1.15.tgz"
+  integrity sha512-SdPfO4ExDOVyOPAoCqT9+Tk0UeU97EMplkxlr5qiv3W7c1yRsxgtbETicoBh9l/P49bLzVjiJG6CQIu1au3Vhw==
+  dependencies:
+    "@remote-ui/rpc" "^1.4.5"
+
+"@remote-ui/core@^2.2.3", "@remote-ui/core@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.npmjs.org/@remote-ui/core/-/core-2.2.4.tgz"
+  integrity sha512-7ahrsI5GqYvAGcWTcysbKFKbzbhB/mDgIJr9VurF34gor2IqRCrmrPYemLQuOCQhWqPb3AOEUxWFYNLiB5i6kA==
+  dependencies:
+    "@remote-ui/rpc" "^1.4.5"
+    "@remote-ui/types" "^1.1.3"
+
+"@remote-ui/react@^5.0.2":
+  version "5.0.4"
+  resolved "https://registry.npmjs.org/@remote-ui/react/-/react-5.0.4.tgz"
+  integrity sha512-zrewan3KqKHW8HOCgnpHduG4Ldqyh9ysouGIv8VeE0PlC03eCqi2MFzA+nKIJ1p58LIAbPQ1asp+RwT6ImVImg==
+  dependencies:
+    "@remote-ui/async-subscription" "^2.1.15"
+    "@remote-ui/core" "^2.2.4"
+    "@remote-ui/rpc" "^1.4.5"
+    "@types/react" ">=17.0.0 <19.0.0"
+    "@types/react-reconciler" ">=0.26.0 <0.30.0"
+
+"@remote-ui/rpc@^1.4.5":
+  version "1.4.5"
+  resolved "https://registry.npmjs.org/@remote-ui/rpc/-/rpc-1.4.5.tgz"
+  integrity sha512-Cr+06niG/vmE4A9YsmaKngRuuVSWKMY42NMwtZfy+gctRWGu6Wj9BWuMJg5CEp+JTkRBPToqT5rqnrg1G/Wvow==
+
+"@remote-ui/types@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.npmjs.org/@remote-ui/types/-/types-1.1.3.tgz"
+  integrity sha512-P1kN1F3p0oMgnLN8Of1Ie9am3sLvJ7nhqHH1pvzkrxqjVwhhyPVZNcwOHyUNZPKp62izhDavdrcnqrdXzVJqGA==
+
 "@segment/ajv-human-errors@^2.1.2":
   version "2.7.0"
   resolved "https://registry.npmjs.org/@segment/ajv-human-errors/-/ajv-human-errors-2.7.0.tgz"
@@ -2230,6 +2266,23 @@
   dependencies:
     component-type "^1.2.1"
     join-component "^1.1.0"
+
+"@shopify/ui-extensions-react@^2024.1.1":
+  version "2024.1.1"
+  resolved "https://registry.npmjs.org/@shopify/ui-extensions-react/-/ui-extensions-react-2024.1.1.tgz"
+  integrity sha512-ipje/59ZKFxQv2vXGuvK5cYa2C0PkFv5XFfos0DIUcU/UsnyfnXUyCQXH4LvEIst8Ni6jV8HndSWrCj72u9jSQ==
+  dependencies:
+    "@remote-ui/async-subscription" "^2.1.12"
+    "@remote-ui/react" "^5.0.2"
+    "@types/react" ">=18.0.0"
+
+"@shopify/ui-extensions@2024.1.1":
+  version "2024.1.1"
+  resolved "https://registry.npmjs.org/@shopify/ui-extensions/-/ui-extensions-2024.1.1.tgz"
+  integrity sha512-KeFMLb0hHINuLyC91Pyh4b49aF+YeztBprjlXjTfx/QdTnExr0kWDQJM/m2ch5BdHXF51uDRZ6R+F8B7T/cuLQ==
+  dependencies:
+    "@remote-ui/async-subscription" "^2.1.12"
+    "@remote-ui/core" "^2.2.3"
 
 "@sideway/address@^4.1.3":
   version "4.1.4"
@@ -2449,7 +2502,14 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react@*", "@types/react@~18.2.14":
+"@types/react-reconciler@>=0.26.0 <0.30.0":
+  version "0.28.8"
+  resolved "https://registry.npmjs.org/@types/react-reconciler/-/react-reconciler-0.28.8.tgz"
+  integrity sha512-SN9c4kxXZonFhbX4hJrZy37yw9e7EIxcpHCxQv5JUS18wDE5ovkQKlqQEkufdJCCMfuI9BnjUJvhYeJ9x5Ra7g==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react@*", "@types/react@>=17.0.0 <19.0.0", "@types/react@>=18.0.0", "@types/react@~18.2.14":
   version "18.2.48"
   resolved "https://registry.npmjs.org/@types/react/-/react-18.2.48.tgz"
   integrity sha512-qboRCl6Ie70DQQG9hhNREz81jqC1cs9EVNcjQ1AU+jH6NFfSAhVVbrrY/+nSF+Bsk4AOwm9Qa61InvMCyV+H3w==
@@ -8199,7 +8259,7 @@ react-shallow-renderer@^16.15.0:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
 
-react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", react@^18.0.0, react@^18.2.0, react@>=17.0.0, react@18.2.0:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", react@^18.0.0, react@^18.2.0, react@>=17.0.0, "react@>=17.0.0 <19.0.0", react@>=18.0.0, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

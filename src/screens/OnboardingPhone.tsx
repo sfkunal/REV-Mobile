@@ -4,15 +4,12 @@ import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext';
 import { LoginStackParamList } from '../types/navigation';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BackArrowIcon, DownArrowIcon, EyeIcon, LockIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
+import { BackArrow, BackArrowIcon, DownArrowIcon, EyeIcon, LockIcon, RightArrowIcon, WhiteLogo } from '../components/shared/Icons';
 import { theme } from '../constants/theme';
 import { config } from '../../config';
 import { CountryPicker } from "react-native-country-codes-picker";
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-// import {
-//     reactExtension,
-//     PhoneField,
-// } from '@shopify/ui-extensions-react/checkout';
+
 
 
 
@@ -47,6 +44,8 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
 
 
 
+
+
     const handleNext = () => {
         // TODO do I need a check for length here? 
         // any additional way to validate a phone number
@@ -59,6 +58,9 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
         }
         setErrorMessage(null)
         setLoading(true)
+
+        // make sure that we are grabbing the phone number in the correct format
+        // const phoneNumber = phoneToE164(phoneNumber)
         navigation.navigate('OnboardingName', { phoneNumber });
         // navigation.navigate('OnboardingEmail', { firstName, lastName, phoneNumber });
         setLoading(false)
@@ -67,17 +69,45 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
     useEffect(() => {
         navigation.setOptions({
             headerLeft: () => (
-                <BackArrowIcon
-                    color={'#4B2D83'}
-                    size={20}
-                    onPress={() => navigation.goBack()}
-                />
+                <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -20 }}>
+                    <BackArrow
+                        color={'#4B2D83'}
+                        size={20}
+                    />
+                </TouchableOpacity>
+
             ),
             headerTitle: () => (
                 <WhiteLogo />
             )
         });
     }, [])
+
+
+    // formats the phone number to be in the format of (XXX)XXX-XXXX
+    const handlePhoneNumberChange = (value) => {
+        const cleanedNumber = value.replace(/\D/g, '')
+        // clean the phone number
+        // replace all non-numbers with nothing. Now we have a string of just numbers
+        let formattedNumber = '';
+
+        // if length (0,3] => (XXX)
+        if (cleanedNumber.length > 0) {
+            formattedNumber = `(${cleanedNumber.slice(0, 3)}`
+        }
+        if (cleanedNumber.length >= 4) {
+            formattedNumber += `) ${cleanedNumber.slice(3, 6)}`;
+        }
+        if (cleanedNumber.length >= 7) {
+            formattedNumber += `-${cleanedNumber.slice(6, 10)}`;
+        }
+        console.log(phoneToE164(cleanedNumber))
+        setPhoneNumber(formattedNumber)
+    }
+
+    const phoneToE164 = (number) => {
+        return `+1${number}`
+    }
 
     return (
 
@@ -98,13 +128,10 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                     keyboardShouldPersistTaps='always'
                 >
 
-
-
                     {/* <View style={{
                     display: 'flex', height: '100%', padding: 0, backgroundColor: 'green'
                     // backgroundColor: 'yellow' 
                 }}> */}
-
 
                     <View style={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', height: 150,
@@ -140,6 +167,8 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                             }} >
                                 {/* country container */}
 
+
+
                                 <View >
                                     <Text style={styles.inputSubTitle}>
                                         Country
@@ -159,9 +188,10 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                                         placeholderTextColor={theme.colors.disabledText}
                                         style={phoneNumber ? (styles.input) : (styles.inputEmpty)}
                                         autoComplete='tel'
-                                        onChangeText={setPhoneNumber}
+                                        onChangeText={handlePhoneNumberChange}
                                         value={phoneNumber}
                                         keyboardType="phone-pad"
+                                        placeholder='(555) 555-5555'
                                     />
                                 </View>
                             </View>
