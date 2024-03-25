@@ -13,7 +13,9 @@ import { useCartContext } from '../context/CartContext'
 import { FontAwesome } from '@expo/vector-icons'
 import { useWishlistContext } from '../context/WishlistContext'
 import { useNavigationContext } from '../context/NavigationContext'
-import { CartIcon, DownArrowIcon, UpArrowIcon } from '../components/shared/Icons'
+import { BackArrow, CartIcon, DownArrowIcon, UpArrowIcon } from '../components/shared/Icons'
+import logo from '../../assets/logo.png'
+
 
 const screenWidth = Dimensions.get('screen').width
 const windowHeight = Dimensions.get('window').height
@@ -31,6 +33,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
   const [itemQuantity, setItemQuantity] = useState(1)
 
 
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -43,7 +46,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
             {cartItemCount > 0 && (
               <View style={{
                 position: 'absolute',
-                right: 18,
+                right: 25,
                 bottom: -7,
                 backgroundColor: '#4a307e',
                 borderRadius: 10,
@@ -65,8 +68,19 @@ const ProductScreen = ({ route, navigation }: Props) => {
             )}
           </TouchableOpacity>
         </>
+      ),
+      headerTitle: () => (
+        <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
+      ),
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <BackArrow color={'#4B2D83'}
+            size={20}
+          />
+        </TouchableOpacity>
       )
     })
+
   }, [wishlist, cartItemCount])
 
   useEffect(() => {
@@ -107,6 +121,10 @@ const ProductScreen = ({ route, navigation }: Props) => {
   const snapPoints3 = useMemo(() => [170], [])
   const sheetRef2 = useRef<BottomSheet>(null)
   const sheetRef3 = useRef<BottomSheet>(null)
+  const mainSheetRef = useRef<BottomSheet>(null);
+
+
+
   const showBuyBottomSheet = useCallback(() => {
     sheetRef2.current?.snapToIndex(0)
   }, [])
@@ -166,7 +184,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
       throw response.errors[0].message
     }
 
-    setProductRecommendations(response.data.productRecommendations.slice(0, 4) as Product[])
+    setProductRecommendations(response.data.productRecommendations.slice(0, 6) as Product[])
   }
 
   const addToCart = async () => {
@@ -232,6 +250,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
     setIsLoading(false)
   }
 
+
   return (
     <View style={{ flex: 1, marginBottom: hasHomeIndicator ? 14 : 0 }}>
       <FlatList
@@ -242,6 +261,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
       />
 
       <BottomSheet
+        ref={mainSheetRef}
         snapPoints={snapPoints}
         style={{ backgroundColor: theme.colors.background }}
         handleIndicatorStyle={{ backgroundColor: theme.colors.text, borderRadius: 0, height: 2 }}
@@ -308,7 +328,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
                           <TouchableOpacity style={{ marginBottom: -12, marginRight: 2 }}
                             onPress={() => {
                               // cant go to triple digits
-                              if (itemQuantity <= 100) {
+                              if (itemQuantity < 99) {
                                 setItemQuantity(itemQuantity + 1)
                               }
                             }}
@@ -343,8 +363,8 @@ const ProductScreen = ({ route, navigation }: Props) => {
             {data.description.length != 0 && <Text style={styles.subTitle}>{data.description}</Text>}
             {/* <Text style={styles.subTitle}>VENDOR: {data.vendor.toUpperCase()}</Text> */}
 
-            <TouchableOpacity style={{ marginLeft: 0, marginTop: 20, }} onPress={() => sheetRef3.current?.expand()}>
-              <Text style={{ color: '#4B2D83', fontWeight: '500', fontSize: 20 }}>Discover More</Text>
+            <TouchableOpacity style={{ marginLeft: 0, marginTop: 20, }} onPress={() => { mainSheetRef.current?.snapToIndex(1); }}>
+              <Text style={{ color: '#4B2D83', fontWeight: '600', fontSize: 20 }}>Discover More</Text>
             </TouchableOpacity>
           </View>
 
@@ -459,14 +479,14 @@ const styles = StyleSheet.create({
   title: {
     color: 'black',
     fontWeight: '500',
-    letterSpacing: 0.2,
+    // letterSpacing: 0.2,
     fontSize: 20,
 
   },
   subTitle: {
     color: 'black',
     fontWeight: '500',
-    letterSpacing: 1.5,
+    // letterSpacing: 1.5,
     fontSize: 15,
     marginTop: 16,
   },
@@ -477,7 +497,7 @@ const styles = StyleSheet.create({
   },
   optionValue: {
     color: theme.colors.text,
-    letterSpacing: 1.5,
+    // letterSpacing: 1.5,
     marginLeft: 6,
     marginTop: 8,
     marginBottom: 5.5,
@@ -487,14 +507,14 @@ const styles = StyleSheet.create({
   price: {
     color: '#4B2D83',
     fontWeight: 'bold',
-    letterSpacing: 1,
+    // letterSpacing: 1,
     fontSize: 17,
     marginTop: 4
   },
   smallPrice: {
     color: '#4B2D83',
     fontWeight: 'bold',
-    letterSpacing: 1,
+    // letterSpacing: 1,
     fontSize: 15,
     marginTop: 4
   },
@@ -530,7 +550,7 @@ const styles = StyleSheet.create({
   addCartText: {
     color: '#FFFFFF',
     fontSize: 18,
-    letterSpacing: 1,
+    // letterSpacing: 1,
     fontWeight: '500',
   },
 
@@ -549,7 +569,7 @@ const styles = StyleSheet.create({
   addCartDisabledText: {
     color: theme.colors.text,
     fontSize: 12,
-    letterSpacing: 1,
+    // letterSpacing: 1,
     fontWeight: '500'
   }
 })
