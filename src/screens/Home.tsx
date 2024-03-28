@@ -48,9 +48,20 @@ const Home = ({ navigation }: Props) => {
   const [selectedAddress, setSelectedAddress] = useState<Address>({});
   const [catsLoading, setCatsLoading] = useState<Boolean>(false);
   const [sectionData, setSectionData] = useState<any[]>([]);
+  const [isStoreClosed, setIsStoreClosed] = useState<Boolean>(false)
 
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
+
+  // this checks if the store is open or closed. Goes on the initial render
+  useEffect(() => {
+    const fetchStoreStatus = async () => {
+      const status = await checkStoreStatus();
+      setIsStoreClosed(status)
+    }
+
+    fetchStoreStatus();
+  })
 
   useEffect(() => {
     if (Platform.OS === "ios") {
@@ -67,6 +78,28 @@ const Home = ({ navigation }: Props) => {
       });
     }
   }, [userToken, rootNavigation]);
+
+  const checkStoreStatus = async () => {
+    try {
+      const query = `query {
+        shop {
+          passwordEnabled
+        }
+      }`
+
+      const response: any = await storefrontApiClient(query)
+
+      if (response.errors && response.errors.length !== 0) {
+        throw response.errors[0].message
+      }
+
+      const isStoreClosed = response.data.shop.passwordEnabled
+      return isStoreClosed
+    } catch (e) {
+      console.log(e)
+      return false
+    }
+  }
 
   const fetchUserOrders = async () => {
     setIsLoading(true)
@@ -91,7 +124,7 @@ const Home = ({ navigation }: Props) => {
           throw response.errors[0].message
         }
 
-        const userOrders = response.data.customer.orders.nodes.length
+        const userOrders = response.data.customer.orders?.nodes.length
         // console.log('userOrders thooooo');
         // console.log(response.data.customer.orders.nodes)
         // // console.log(userOrders);
@@ -244,75 +277,75 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
-  // const fetchCollection = async (collectionID: string) => {
-  //   setIsLoading(true)
-  //   setErrorMessage('')
+  const fetchCollection = async (collectionID: string) => {
+    setIsLoading(true)
+    setErrorMessage('')
 
-  //   try {
-  //     const query = `query {
-  //       collection(id: "${collectionID}") {
-  //         id
-  //         title
-  //         products(first: 100) {
-  //           nodes {
-  //             id
-  //             title
-  //             description
-  //             vendor
-  //             availableForSale
-  //             compareAtPriceRange {
-  //               minVariantPrice {
-  //                 amount
-  //                 currencyCode
-  //               }
-  //             }
-  //             priceRange {
-  //               minVariantPrice {
-  //                 amount
-  //                 currencyCode
-  //               }
-  //             }
-  //             images(first: 10) {
-  //               nodes {
-  //                 url
-  //                 width
-  //                 height
-  //               }
-  //             }
-  //             options {
-  //               id
-  //               name
-  //               values
-  //             }
-  //             variants(first: 200) {
-  //               nodes {
-  //                 availableForSale
-  //                 selectedOptions {
-  //                   value
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }`
+    try {
+      const query = `query {
+        collection(id: "${collectionID}") {
+          id
+          title
+          products(first: 100) {
+            nodes {
+              id
+              title
+              description
+              vendor
+              availableForSale
+              compareAtPriceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              priceRange {
+                minVariantPrice {
+                  amount
+                  currencyCode
+                }
+              }
+              images(first: 10) {
+                nodes {
+                  url
+                  width
+                  height
+                }
+              }
+              options {
+                id
+                name
+                values
+              }
+              variants(first: 200) {
+                nodes {
+                  availableForSale
+                  selectedOptions {
+                    value
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`
 
-  //     const response: any = await storefrontApiClient(query)
+      const response: any = await storefrontApiClient(query)
 
-  //     if (response.errors && response.errors.length != 0) {
-  //       setIsLoading(false)
-  //       throw response.errors[0].message
-  //     }
+      if (response.errors && response.errors.length != 0) {
+        setIsLoading(false)
+        throw response.errors[0].message
+      }
 
-  //     const products = response.data.collection.products.nodes
-  //     setIsLoading(false)
-  //     return products;
-  //     // console.log(products);
+      const products = response.data.collection.products.nodes
+      setIsLoading(false)
+      return products;
+      // console.log(products);
 
-  //   } catch (e) {
-  //     console.log(e)
-  //   }
-  // }
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
   const fetchExploreProducts = async () => {
     setIsLoading(true)
@@ -572,7 +605,7 @@ const Home = ({ navigation }: Props) => {
     const ForYouHorizontalList = function () {
       return (
         <>
-          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, backgroundColor: 'white', }}>
+          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, backgroundColor: 'white', }}>
             <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Your past orders</Text>
           </View>
           {data ? (<FlatList
@@ -587,11 +620,11 @@ const Home = ({ navigation }: Props) => {
             keyboardDismissMode='on-drag'
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}
-            style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
+            style={{ borderWidth: 2, marginLeft: 0, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
             keyExtractor={item => item.id.toString()}
 
           // keyExtractor={(item) => item.id.toString()}
-          />) : (<View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: '110%', marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, backgroundColor: 'white', height: 250, zIndex: -1, marginTop: 10, }}>
+          />) : (<View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: '110%', marginLeft: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, backgroundColor: 'white', height: 250, zIndex: -1, marginTop: 10, }}>
             <Text style={{ width: '60%', marginRight: '10%', textAlign: 'center', fontWeight: '300' }}>
               Products from your previous orders will show up here!
             </Text>
@@ -744,58 +777,64 @@ const Home = ({ navigation }: Props) => {
 
   const GooglePlacesInput = () => {
     return (
-      // in here is apartment/suite missing?
-      <GooglePlacesAutocomplete
-        placeholder='Where To?'
-        fetchDetails={true}
-        minLength={3}
-        onPress={(data, details = null) => {
-          bottomSheetRef.current?.close();
-          if (details) {
-            const addressComponents = details.address_components;
-            const address1 = `${addressComponents.find(c => c.types.includes('street_number'))?.long_name} ${addressComponents.find(c => c.types.includes('route'))?.long_name}`;
-            const address2 = addressComponents.find(c => c.types.includes('subpremise'))?.long_name || ''; // This line is new
-            const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
-            const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
-            const country = addressComponents.find(c => c.types.includes('country'))?.short_name;
-            const zip = addressComponents.find(c => c.types.includes('postal_code'))?.long_name;
-            const addressDict = {
-              address1: address1,
-              address2: address2,
-              city: city,
-              state: state,
-              country: country,
-              zip: zip
-            };
+      // can use radius, srictbounds parameters so that we limit any autocompletes, so effectively people can't put an address outside of a certain radius. If that is something that we want to do. 
+      <>
+        <GooglePlacesAutocomplete
+          placeholder='4748 University Wy NE A, Seattle, WA 98105'
+          fetchDetails={true}
+          minLength={3}
+          onPress={(data, details = null) => {
+            bottomSheetRef.current?.close();
+            if (details) {
+              const addressComponents = details.address_components;
+              const address1 = `${addressComponents.find(c => c.types.includes('street_number'))?.long_name} ${addressComponents.find(c => c.types.includes('route'))?.long_name}`;
+              const address2 = addressComponents.find(c => c.types.includes('subpremise'))?.long_name || ''; // This line is new
+              const city = addressComponents.find(c => c.types.includes('locality'))?.long_name;
+              const state = addressComponents.find(c => c.types.includes('administrative_area_level_1'))?.short_name;
+              const country = addressComponents.find(c => c.types.includes('country'))?.short_name;
+              const zip = addressComponents.find(c => c.types.includes('postal_code'))?.long_name;
+              const addressDict = {
+                address1: address1,
+                address2: address2,
+                city: city,
+                state: state,
+                country: country,
+                zip: zip
+              };
 
-            setSelectedAddress(addressDict);
-          }
-        }}
-        query={{
-          key: 'AIzaSyCK1fS3nkmrrPJKjxunXnVNc3pRCHNWWJ4',
-          language: 'en',
-          location: '47.6062,-122.3321', // Latitude and longitude for Seattle
-          radius: '5000',
-          components: 'country:us',
-        }}
-        styles={{
-          textInput: {
-            height: 38,
-            color: '#FFFFFF',
-            fontSize: 16,
-            backgroundColor: '#4B2D83',
-          },
-          predefinedPlacesDescription: {
-            color: '#1faadb',
-          },
-          textInputPlaceholder: { // This is the style property for the placeholder text
-            color: '#FFFFFF', // Placeholder text color
-            fontSize: 16, // Placeholder text font size
-            // Add any additional styling here
-          },
-        }}
+              setSelectedAddress(addressDict);
+            }
+          }}
+          query={{
+            key: 'AIzaSyCK1fS3nkmrrPJKjxunXnVNc3pRCHNWWJ4',
+            language: 'en',
+            location: '47.6062,-122.3321', // Latitude and longitude for Seattle
+            radius: '5000', // 
+            components: 'country:us',
+            // strictbounds: true, // this would make it so that nothing outside of the range would be available
+          }}
+          styles={{
+            textInput: {
+              height: 38,
+              color: '#000000',
+              fontSize: 16,
+              // backgroundColor: '#4B2D83',
+            },
+            predefinedPlacesDescription: {
+              color: '#1faadb',
+            },
+            textInputPlaceholder: { // This is the style property for the placeholder text
+              color: '#FFFFFF', // Placeholder text color
+              fontSize: 16, // Placeholder text font size
+              // Add any additional styling here
+            },
+          }}
 
-      />
+        />
+        <View style={{ backgroundColor: '#4B2D83', width: '90%', marginLeft: 'auto', marginRight: 'auto', height: 1, borderRadius: 30 }} />
+        <View style={{ position: 'absolute', backgroundColor: '#4B2D83', width: '90%', marginLeft: 'auto', marginRight: 'auto', height: 1, borderRadius: 30 }} />
+
+      </>
     );
   };
 
@@ -805,8 +844,8 @@ const Home = ({ navigation }: Props) => {
         <ActivityIndicator style={{ alignSelf: 'center' }} />
       ) : (
         <>
-          <View>
-            <View style={{ flexDirection: 'column', justifyContent: 'center' }}>
+          <View style={{ width: '100%' }}>
+            <View style={{ flexDirection: 'column', justifyContent: 'center', width: '100%' }}>
 
               <TouchableOpacity style={styles.addressBox} onPress={() => bottomSheetRef.current?.expand()}>
 
@@ -816,7 +855,6 @@ const Home = ({ navigation }: Props) => {
                     <View style={{
                       width: '100%',
                       backgroundColor: '#D9D9D9',
-                      // backgroundColor: 'yellow',
                       borderTopRightRadius: 25, borderBottomRightRadius: 25, paddingTop: 5,
                       display: 'flex',
                       justifyContent: 'space-between',
@@ -884,53 +922,45 @@ const Home = ({ navigation }: Props) => {
                 }
               </TouchableOpacity>
 
-
-              {/* 2nd main menu item */}
-              <View style={{ width: 245, height: 40, flexDirection: 'row', alignSelf: 'center', zIndex: 1, marginTop: 6, marginBottom: 10 }} >
+              {/* 4th attempt at making a toggle for the top */}
+              {/* the issue with this code is that the explore will fade onClick. workaround would be absolute positioning and don't wrap inside the other touchable. I like this for now, though */}
+              <View style={{ width: '100%', alignItems: 'center', marginVertical: 8 }}>
                 {selectedMode === 'explore' ?
                   (<>
-                    <TouchableOpacity onPress={() => setSelectedMode('forYou')} style={{ backgroundColor: 'white', height: 40, width: 162, position: 'absolute', right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1, borderColor: '#4B2D83' }}
-                    //  activeOpacity={1}
-                    >
-                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83', marginLeft: 24 }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
-                    </TouchableOpacity>
-                    {/* <View style={{ backgroundColor: 'pink', height: 100, width: 145, position: 'absolute', right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, }}> */}
-
-                    {/* <TouchableOpacity style={{ height: '100%', width: '100%', backgroundColor: 'white', }}>
-                      <Text>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
-                    </TouchableOpacity> */}
-
-                    {/* </View> */}
-                    <TouchableOpacity onPress={() => setSelectedMode('explore')}
-                      // activeOpacity={1} 
-                      style={{ backgroundColor: '#4B2D83', height: 40, width: 120, position: 'absolute', left: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1, borderColor: '#4B2D83' }}>
-                      <Text style={{ fontSize: 18, fontWeight: '500', color: '#FFFFFF' }} >
-                        Explore
+                    <TouchableOpacity style={{ width: 245, height: 40, borderWidth: 1, borderRadius: 30, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }} onPress={() => setSelectedMode('forYou')}>
+                      <TouchableOpacity activeOpacity={1} style={{ width: 120, height: 40, borderRadius: 30, borderWidth: 1, backgroundColor: '#4B2D83', display: 'flex', justifyContent: 'center', alignItems: 'center', }} onPress={() => setSelectedMode('explore')}>
+                        <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: 'white' }}>
+                          Explore
+                        </Text>
+                      </TouchableOpacity>
+                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83', marginRight: 20 }}>
+                        {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
                       </Text>
                     </TouchableOpacity>
-                  </>) :
+
+                  </>
+                  ) :
                   (<>
-                    {/* </View> */}
-                    <TouchableOpacity onPress={() => setSelectedMode('forYou')} style={{ backgroundColor: '#4B2D83', height: 40, width: 162, position: 'absolute', right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1 }}
-                    //  activeOpacity={1}
-                    >
-                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: selectedMode === 'forYou' ? 'white' : '#4B2D83', marginLeft: 24 }}>{userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSelectedMode('explore')}
-                      // activeOpacity={1} 
-                      style={{ backgroundColor: 'white', height: 40, width: 120, position: 'absolute', left: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: 30, borderWidth: 1 }}>
-                      <Text style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83' }} >
+                    <TouchableOpacity style={{ width: 245, height: 40, borderWidth: 1, borderRadius: 30, display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', }} onPress={() => setSelectedMode('explore')}>
+                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83', marginLeft: 28 }}>
                         Explore
                       </Text>
+                      <TouchableOpacity activeOpacity={1} style={{ width: 136, height: 40, borderRadius: 30, borderWidth: 1, backgroundColor: '#4B2D83', display: 'flex', justifyContent: 'center', alignItems: 'center', }} onPress={() => setSelectedMode('forYou')}>
+                        <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: 'white' }}>
+                          {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
+                        </Text>
+                      </TouchableOpacity>
+
                     </TouchableOpacity>
-                  </>)
-                  // (<Text style={{ color: 'black' }}>Not selected</Text>)}
-                }
+
+                  </>
+                  )}
               </View>
+
 
             </View>
             {selectedMode === 'explore' ?
-              <View style={{ display: 'flex', height: '100%', marginTop: 0, paddingBottom: sbHeight + 320, }}><HomeList navigation={navigation} /></View>
+              <View style={{ display: 'flex', height: '100%', marginTop: 0, paddingBottom: sbHeight + 320 }}><HomeList navigation={navigation} /></View>
 
               : <ForYouList data={(userOrders > 4 ? forYou : exploreProducts)} />}
           </View>
@@ -940,30 +970,35 @@ const Home = ({ navigation }: Props) => {
             ref={bottomSheetRef}
             index={-1} // Start closed
             enablePanDownToClose
-            snapPoints={['95%']} // Set the heights of the bottom sheet
+            snapPoints={['92%']} // Set the heights of the bottom sheet
           >
             <View
               style={{
-                margin: 12,
+                // margin: 12,
                 // backgroundColor: "transparent",
-                backgroundColor: 'yellow',
+                // backgroundColor: 'yellow',
                 zIndex: 10,
                 height: 400,
-                paddingTop: 20
+                display: 'flex',
+                paddingTop: 10,
+                marginHorizontal: 20,
+                // width: '95%',
+                // alignItems: 'center'
+                justifyContent: 'space-between'
               }}
             >
-              <Text style={{ fontSize: 20, marginLeft: 12 }}>Where to?</Text>
+              <Text style={{ fontSize: 20, fontWeight: '400', marginBottom: 8, marginLeft: 2 }}>Where should we deliver to?</Text>
               <GooglePlacesInput />
-              <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 45 }}>
-                <View style={{
-                  width: '85%', borderWidth: 3, padding: 20, borderRadius: 20, borderColor: '#4B2D83',
-                  // marginBottom: 40 
-                }}>
-                  <Text style={styles.textDescription}>{textDescription}</Text>
-                </View>
-                {/* <Image source={theme.dark == true ? logoDark : logo} style={styles.image} /> */}
-              </View>
+
+              {/* this is the placeholder for the map */}
+              {/* <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 320, width: 320, backgroundColor: '#4B2D83', marginTop: 125, marginLeft: 'auto', marginRight: 'auto', zIndex: -1 }}>
+                <Text style={{ fontSize: 20, fontWeight: '600', color: 'white' }}>
+                  Placeholder
+                </Text>
+              </View> */}
             </View>
+
+
           </BottomSheet>
         </>
       )

@@ -20,11 +20,12 @@ const PersonalInformations = ({ navigation }: Props) => {
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [succesMessage, setSuccesMessage] = useState<string | null>(null)
+  const [phoneNumber, setPhoneNumber] = useState(userToken.customer?.phone || '')
 
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={{ fontSize: 20, fontWeight: '700', color: '#4B2D83' }}>Personal Information</Text>
+        <Text style={{ fontSize: 20, fontWeight: '900', color: '#4B2D83' }}>Personal</Text>
       ),
       headerLeft: () => (
         <>
@@ -44,6 +45,31 @@ const PersonalInformations = ({ navigation }: Props) => {
       ),
     })
   }, [])
+
+  // formats the phone number to be in the format of (XXX)XXX-XXXX
+  const handlePhoneNumberChange = (value) => {
+    const cleanedNumber = value.replace(/\D/g, '')
+    // clean the phone number
+    // replace all non-numbers with nothing. Now we have a string of just numbers
+    let formattedNumber = '';
+
+    // if length (0,3] => (XXX)
+    if (cleanedNumber.length > 0) {
+      formattedNumber = `(${cleanedNumber.slice(0, 3)}`
+    }
+    if (cleanedNumber.length >= 4) {
+      formattedNumber += `) ${cleanedNumber.slice(3, 6)}`;
+    }
+    if (cleanedNumber.length >= 7) {
+      formattedNumber += `-${cleanedNumber.slice(6, 10)}`;
+    }
+    console.log(phoneToE164(cleanedNumber))
+    setPhone(formattedNumber)
+  }
+
+  const phoneToE164 = (number) => {
+    return `+1${number}`
+  }
 
 
   const changeInfo = async () => {
@@ -93,12 +119,14 @@ const PersonalInformations = ({ navigation }: Props) => {
         }
       }`
 
-      const variables = phone != "" ? {
+      const phoneNumberE164 = phoneToE164(phone.replace(/\D/g, ''));
+
+      const variables = phoneNumberE164 != "+1" ? {
         customerAccessToken: userToken.accessToken,
         customer: {
           lastName,
           firstName,
-          phone,
+          phone: phoneNumberE164,
           email
         }
       } :
@@ -146,49 +174,79 @@ const PersonalInformations = ({ navigation }: Props) => {
     >
 
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={{ width: '90%' }}>
-          <Text style={styles.subtitle}>First Name</Text>
-          <TextInput
-            placeholder='First Name'
-            placeholderTextColor={theme.colors.disabledText}
-            style={firstName ? (styles.input) : (styles.inputEmpty)}
-            onChangeText={text => setFirstName(text)}
-            autoCapitalize={'words'}
-            value={firstName}
-          />
+        <View style={{ width: '100%', marginTop: 20 }}>
+          <View style={styles.rowContainer}>
+            <Text style={styles.subtitle}>First Name</Text>
+            <TextInput
+              textAlign='right'
+              placeholder='First Name'
+              placeholderTextColor={theme.colors.disabledText}
+              // style={firstName ? (styles.input) : (styles.inputEmpty)}
+              onChangeText={text => setFirstName(text)}
+              autoCapitalize={'words'}
+              value={firstName}
+              maxLength={25}
+            />
+          </View>
 
-          <Text style={styles.subtitle}>Last Name</Text>
-          <TextInput
-            placeholder='Last Name'
-            placeholderTextColor={theme.colors.disabledText}
-            style={lastName ? (styles.input) : (styles.inputEmpty)}
-            onChangeText={text => setLastName(text)}
-            autoCapitalize={'words'}
-            value={lastName}
-          />
 
-          <Text style={styles.subtitle}>Phone</Text>
-          <TextInput
-            placeholder='Phone'
-            textContentType='telephoneNumber'
-            placeholderTextColor={theme.colors.disabledText}
-            style={phone ? (styles.input) : (styles.inputEmpty)}
-            onChangeText={text => setPhone(text)}
-            autoCapitalize={'words'}
-            value={phone}
-          />
+          {/* line separator */}
+          <View style={{ height: 1, borderRadius: 30, width: '100%', backgroundColor: '#E5E5E5', alignSelf: 'center' }} />
 
-          <Text style={styles.subtitle}>Email</Text>
-          <TextInput
-            placeholder='Email'
-            textContentType='emailAddress'
-            placeholderTextColor={theme.colors.disabledText}
-            style={email ? (styles.input) : (styles.inputEmpty)}
-            // style={[styles.input, { marginBottom: 8 }]}
-            onChangeText={text => setEmail(text)}
-            autoCapitalize={'none'}
-            value={email}
-          />
+          <View style={styles.rowContainer}>
+            <Text style={styles.subtitle}>Last Name</Text>
+            <TextInput
+              textAlign='right'
+              placeholder='Last Name'
+              placeholderTextColor={theme.colors.disabledText}
+              // style={lastName ? (styles.input) : (styles.inputEmpty)}
+              onChangeText={text => setLastName(text)}
+              autoCapitalize={'words'}
+              value={lastName}
+              maxLength={25}
+            />
+          </View>
+
+
+          {/* line separator */}
+          <View style={{ height: 1, borderRadius: 30, width: '100%', backgroundColor: '#E5E5E5', alignSelf: 'center' }} />
+
+          <View style={styles.rowContainer}>
+            <Text style={styles.subtitle}>Phone</Text>
+            <TextInput
+              textAlign='right'
+              // placeholder='Phone'
+              textContentType='telephoneNumber'
+              placeholderTextColor={theme.colors.disabledText}
+              // style={phone ? (styles.input) : (styles.inputEmpty)}
+              autoComplete='tel'
+              onChangeText={handlePhoneNumberChange}
+              value={phone}
+              keyboardType="phone-pad"
+              placeholder='(555) 555-5555'
+            />
+          </View>
+
+
+          {/* line separator */}
+          <View style={{ height: 1, borderRadius: 30, width: '100%', backgroundColor: '#E5E5E5', alignSelf: 'center' }} />
+
+          <View style={styles.rowContainer}>
+            <Text style={styles.subtitle}>Email</Text>
+            <TextInput
+              textAlign='right'
+              placeholder='Email'
+              textContentType='emailAddress'
+              placeholderTextColor={theme.colors.disabledText}
+              // style={email ? (styles.input) : (styles.inputEmpty)}
+              // style={[styles.input, { marginBottom: 8 }]}
+              onChangeText={text => setEmail(text)}
+              autoCapitalize={'none'}
+              value={email}
+              maxLength={35}
+            />
+          </View>
+
         </View>
 
         {errorMessage ?
@@ -198,9 +256,14 @@ const PersonalInformations = ({ navigation }: Props) => {
           <View style={{ height: 38 }}><Text style={{ color: theme.colors.background }}></Text></View>
         }
 
-        <View style={{ width: '100%', alignItems: 'center' }}>
+        <View style={{ width: '100%', alignItems: 'center', marginBottom: 20 }}>
           {loading ?
-            <ActivityIndicator /> :
+
+            <View style={{ backgroundColor: '#4B2D83', paddingHorizontal: 100, paddingVertical: 12, maxWidth: '90%', borderRadius: 20, marginTop: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <ActivityIndicator color='white' />
+            </View>
+
+            :
             <>
               {
                 succesMessage ?
@@ -213,9 +276,9 @@ const PersonalInformations = ({ navigation }: Props) => {
                   //   <Text style={styles.buttonText}>Change Personal Information</Text>
                   // </TouchableOpacity>
                   <TouchableOpacity onPress={changeInfo}
-                    style={{ backgroundColor: '#4B2D83', paddingHorizontal: 40, paddingVertical: 8, maxWidth: '90%', borderRadius: 20, marginTop: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }} numberOfLines={1}>
-                      Change Personal Information
+                    style={{ backgroundColor: '#4B2D83', paddingHorizontal: 100, paddingVertical: 12, maxWidth: '90%', borderRadius: 20, marginTop: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={{ color: 'white', fontSize: 14, fontWeight: '800' }} numberOfLines={1}>
+                      Confirm
                     </Text>
                   </TouchableOpacity>
               }
@@ -251,10 +314,12 @@ const styles = StyleSheet.create({
     fontSize: 18
   },
   subtitle: {
-    color: '#4B2D83',
+    // color: '#4B2D83',
+    color: 'black',
     alignSelf: 'flex-start',
     fontSize: 14,
-    marginTop: 20,
+    fontWeight: '500',
+    // marginTop: 20,
     marginLeft: 4
   },
   settingTitle: {
@@ -330,6 +395,13 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     fontWeight: '500'
   },
+  rowContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 30,
+  }
 })
 
 export default PersonalInformations

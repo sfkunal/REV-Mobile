@@ -544,6 +544,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           location: '47.6062,-122.3321', // Latitude and longitude for Seattle
           radius: '5000',
           components: 'country:us',
+          strictbounds: 'true'
         }}
         styles={{
           textInput: {
@@ -618,7 +619,6 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           display: 'flex',
           height: '100%',
           // backgroundColor: '#D9D9D9', // figure out how to get a nice graident or sum
-
         }}>
 
           {/* top section */}
@@ -626,7 +626,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
             {/* review order and price component */}
             <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', paddingLeft: 0, paddingTop: 20, width: '90%' }}>
               <Text style={{ textAlign: 'left', color: '#4B2D83', fontSize: 18, fontWeight: '800' }}>Total</Text>
-              <Text style={{ textAlign: 'right', color: '#4B2D83', fontSize: 18, fontWeight: '800' }}>${totalPrice}</Text>
+              <Text style={{ textAlign: 'right', color: '#4B2D83', fontSize: 18, fontWeight: '800' }}>${totalPrice.toFixed(2)}</Text>
             </View>
 
             {/* address field */}
@@ -794,6 +794,11 @@ const ShippingAddress = ({ route, navigation }: Props) => {
               <Text style={styles.textDescription}>{textDescription}</Text>
             </View>
             <Image source={theme.dark == true ? logoDark : logo} style={styles.image} />
+            <View style={{ alignItems: 'center', justifyContent: 'center', width: 200, height: 200, backgroundColor: '#4B2D83' }}>
+              <Text style={{ fontSize: 20, fontWeight: '600', color: 'white' }}>
+                PLACEHOLDER
+              </Text>
+            </View>
           </View>
         </View>
       </BottomSheet>

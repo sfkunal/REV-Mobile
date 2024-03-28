@@ -6,13 +6,20 @@ import { WishlistContext } from './src/context/WishlistContext'
 import MainNavigator from './src/screens/MainNavigator'
 import NetInfo from '@react-native-community/netinfo'
 import { useEffect, useState } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native'
 import noNetworkCloud from './assets/storm-cloud.png'
 import { colorScheme, hasHomeIndicator, theme } from './src/constants/theme'
 import { StatusBar } from 'expo-status-bar'
+import { storefrontApiClient } from './src/utils/storefrontApiClient'; // Import the storefrontApiClient
+import logo from './assets/logo.png'
+
+
 
 export default function App() {
   const [isConnected, setIsConnected] = useState(true)
+
+  const [isClosed, setIsClosed] = useState<Boolean>(false)
+  const [isLoading, setIsLoading] = useState<Boolean>(true)
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       if (state.isConnected) {
@@ -23,6 +30,94 @@ export default function App() {
     return () => unsubscribe()
   }, [])
 
+  useEffect(() => {
+    const fetchStoreStatus = async () => {
+      try {
+        // const query = `query {
+        //   shop {
+        //     publiclyAvailable
+        //   }
+        // }`;
+
+        // const response: any = await storefrontApiClient(query);
+
+        // if (response.errors && response.errors.length !== 0) {
+        //   throw response.errors[0].message;
+        // }
+
+        // const isStoreClosed = response.data.shop.passwordEnabled;
+        // console.log(response.data)
+        // setIsClosed(isStoreClosed);
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStoreStatus();
+  })
+
+
+  // if we are loading to get the query, this is the loading display
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size={'large'} />
+      </View>)
+  }
+
+  // if we are closed, this is what is displayed
+  if (isClosed) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center', marginTop: 100, marginBottom: 250 }}>
+        {/* logo */}
+        <View style={{ width: 250, height: 50 }}>
+          <Image source={logo} style={{ width: '100%', height: '100%', resizeMode: 'contain', }} />
+        </View>
+
+        {/* text */}
+        <View>
+          <Text style={{ fontSize: 36, fontWeight: '700', marginBottom: 12 }}>
+            We're Closed
+          </Text>
+          <Text style={{ fontSize: 24, fontWeight: '500' }}>
+            See you next time!
+          </Text>
+        </View>
+
+        {/* hours */}
+        <View style={{
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          alignItems: 'flex-start',
+          height: 130,
+          width: '80%',
+          marginBottom: 24,
+          // borderWidth: 1,
+          borderRadius: 8,
+          backgroundColor: '#FFFFFF',
+          shadowColor: 'black', shadowRadius: 1,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.6
+        }}>
+          <View style={{ display: 'flex', marginLeft: 12, marginTop: 10 }}>
+            <Text style={{ fontSize: 18, fontWeight: '800', color: '#4B2D83' }}>
+              Store Hours
+            </Text>
+            <View style={{ marginLeft: 8, marginTop: 16, flex: 1, flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20 }}>
+              <Text style={{ fontSize: 18, fontWeight: '300' }}>Sunday - Thursday: 11AM - 12AM</Text>
+              <View style={{ width: 250, height: 1, borderRadius: 2, backgroundColor: '#3C3C4333' }}></View>
+              <Text style={{ fontSize: 18, fontWeight: '300', }}>Friday - Saturday: 11AM - 1AM</Text>
+            </View>
+
+          </View>
+        </View>
+      </View>
+    )
+  }
+
+  // if we are open, the app will run and compile as 'normal'
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthContext>

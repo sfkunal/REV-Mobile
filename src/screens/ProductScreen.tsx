@@ -31,6 +31,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
   let cartItemCount = getItemsCount();
   const { addQuantityOfItem, substractQuantityOfItem } = useCartContext()
   const [itemQuantity, setItemQuantity] = useState(1)
+  const [showConfirmation, setShowConfirmation] = useState<Boolean>(false)
 
 
 
@@ -231,13 +232,17 @@ const ProductScreen = ({ route, navigation }: Props) => {
 
       addItemToCart(response.data.product.variantBySelectedOptions as CartItem, itemQuantity)
       //console.log(bottomSheetMode)
-      if (bottomSheetMode == 'buy') {
-        navigation.goBack()
-        navigation.push('Cart')
-      } else {
-        sheetRef3.current.snapToIndex(0)
-        sheetRef2.current.close()
-      }
+
+      // idk what this does
+      // if (bottomSheetMode == 'buy') {
+      //   navigation.goBack()
+      //   navigation.push('Cart')
+      // } else {
+      //   sheetRef3.current.snapToIndex(0)
+      //   sheetRef2.current.close()
+      // }
+      setShowConfirmation(true);
+      setTimeout(() => setShowConfirmation(false), 2000)
 
     } catch (e) {
       if (typeof e == 'string') {
@@ -246,7 +251,6 @@ const ProductScreen = ({ route, navigation }: Props) => {
         setErrorMessage('Something went wrong. Try again.')
       }
     }
-
     setIsLoading(false)
   }
 
@@ -288,19 +292,22 @@ const ProductScreen = ({ route, navigation }: Props) => {
                 {data.priceRange.minVariantPrice.amount.toString().split('.')[1] + ' USD'}
               </Text>
             </Text> */}
+
             {data.availableForSale ?
-              <>
-                {isLoading ?
-                  <ActivityIndicator size='small' style={{ alignSelf: 'center', marginTop: 30.5 }} /> :
-                  <>
-                    {noVariants && errorMessage != '' ?
-                      <Text style={{ color: 'red', alignSelf: 'center', marginTop: 24 }}>{errorMessage}</Text> :
-                      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', marginBottom: 0 }}>
+              (isLoading ?
+                <View style={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size='small' style={{ alignSelf: 'center', marginTop: 30.5 }} /></View>
+                :
+                (
+                  showConfirmation /* Replace `false` with showConfirmationMessage once implemented */ ?
+                    <View style={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold' }}>Added Successfully!</Text></View> :
+                    <>
+                      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', marginBottom: 0, }}>
+
                         <View style={styles.buttonsContainer}>
                           {itemQuantity > 0 ? (
                             <TouchableOpacity
                               onPress={() => {
-                                setItemQuantity(1)
+                                setItemQuantity(Math.max(itemQuantity, 1)) // Ensures quantity is at least 1
                                 bottomSheetMode = 'add'
                                 setBottomSheetModeState('add')
                                 if (!noVariants) {
@@ -314,47 +321,31 @@ const ProductScreen = ({ route, navigation }: Props) => {
                               </View>
                             </TouchableOpacity>
                           ) : (
-                            // NOTE: Removed the onPress function so that it can't be pressed if disabled. If this is wrong, just put it back
-                            <TouchableOpacity
-                              disabled={true}
-                            >
+                            <TouchableOpacity disabled={true}>
                               <View style={styles.addCartDisabledContainer}>
                                 <Text style={styles.addCartDisabledText}>Add to Bag</Text>
                               </View>
                             </TouchableOpacity>
                           )}
                         </View>
+
                         <View style={styles.quantitySelector}>
                           <TouchableOpacity style={{ marginBottom: -12, marginRight: 2 }}
-                            onPress={() => {
-                              // cant go to triple digits
-                              if (itemQuantity < 99) {
-                                setItemQuantity(itemQuantity + 1)
-                              }
-                            }}
-                          >
-                            {/* <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 22 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>+</Text> */}
-                            {/* <FontAwesome name="angle-up" size={32} color='#4B2D83' /> */}
+                            onPress={() => setItemQuantity(Math.min(itemQuantity + 1, 99))}>
                             <UpArrowIcon size={32} color='#4B2D83' />
                           </TouchableOpacity>
                           <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 30 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
                           <TouchableOpacity style={{ marginRight: 2, marginTop: -12 }}
-                            onPress={() => {
-                              // cant go to 0
-                              if (itemQuantity > 1) {
-                                setItemQuantity(itemQuantity - 1)
-                              }
-                            }}
-                          >
-                            {/* <FontAwesome name="angle-down" size={32} color='#4B2D83' /> */}
+                            onPress={() => setItemQuantity(Math.max(itemQuantity - 1, 1))}>
                             <DownArrowIcon size={32} color='#4B2D83' />
                           </TouchableOpacity>
                         </View>
+
                       </View>
-                    }
-                  </>
-                }
-              </> :
+                      {errorMessage != '' && <Text style={{ color: 'red', alignSelf: 'center', marginTop: 24 }}>{errorMessage}</Text>}
+                    </>
+                )
+              ) :
               <Text style={[styles.text, { marginTop: 32 }]}>Out of stock.</Text>
             }
 
@@ -455,7 +446,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
           </TouchableOpacity> */}
         </BottomSheetView>
       </BottomSheet>
-    </View>
+    </View >
   )
 }
 
@@ -488,7 +479,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     // letterSpacing: 1.5,
     fontSize: 15,
-    marginTop: 16,
+    marginTop: 4,
   },
   optionTitle: {
     color: theme.colors.text,
