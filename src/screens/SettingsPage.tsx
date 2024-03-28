@@ -84,7 +84,7 @@ const SettingsPage = ({ navigation }: Props) => {
         >
 
             {/* CONTACT US */}
-            <View style={{
+            {/* <View style={{
                 flexDirection: 'column',
                 justifyContent: 'flex-start',
                 alignItems: 'flex-start',
@@ -102,7 +102,7 @@ const SettingsPage = ({ navigation }: Props) => {
                         Contact Us
                     </Text>
                     <View style={{ marginLeft: 8, marginTop: 16, flex: 1, flexDirection: 'column', justifyContent: 'space-between', marginBottom: 20 }}>
-                        {/* MAIL CONTAINER */}
+                        
                         <View style={{ display: 'flex', flexDirection: 'row' }}>
                             <View style={{ justifyContent: 'center', marginRight: 6, marginTop: 2 }}>
                                 <MailIcon color={'black'} size={20} />
@@ -113,14 +113,28 @@ const SettingsPage = ({ navigation }: Props) => {
 
                         <View style={{ width: 250, height: 1, borderRadius: 2, backgroundColor: '#3C3C4333' }}></View>
 
-                        {/* Phone container */}
+                        
                         <View style={{ display: 'flex', flexDirection: 'row' }}>
                             <Image source={phone} style={{ width: 20, height: 20, marginRight: 2 }} />
                             <Text onPress={handlePhonePress} style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>(206)833-6358</Text>
                         </View>
                     </View>
                 </View>
-            </View>
+            </View> */}
+
+
+
+            {/* Personal Information */}
+            {userToken &&
+                <TouchableOpacity style={styles.cardContainer}
+                    onPress={() => navigation.push('PersonalInformations')}>
+                    <Text style={styles.settingTitle}>Personal Information</Text>
+                    {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
+                    <RightArrowIcon size={40} color={'#4B2D83'} />
+                </TouchableOpacity>
+            }
+
+
             {/* ORDER HISTORY */}
             <TouchableOpacity
                 style={styles.cardContainer}
@@ -218,7 +232,29 @@ const SettingsPage = ({ navigation }: Props) => {
                     </TouchableOpacity>
                 </>}
 
-        </View>
+            {/* LIKED ITEMS */}
+            <View
+                style={styles.cardContainer}
+
+            >
+                <View style={{}}>
+                    <Text style={{
+                        color: '#000000',
+                        letterSpacing: 1,
+                        fontSize: 18,
+                        fontWeight: 'bold',
+
+                    }}>Liked Items</Text>
+                    <Text style={{ color: 'gray' }}>Coming Soon!</Text>
+                </View>
+
+                {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
+                {/* <RightArrowIcon size={40} color={'#4B2D83'} /> */}
+            </View>
+
+
+
+        </View >
     )
 }
 
@@ -229,6 +265,8 @@ const styles = StyleSheet.create({
         paddingTop: 16,
         width: '95%',
         alignSelf: 'center',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
         marginTop: 12
     },
     greeting: {
@@ -262,7 +300,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         height: 45,
-        marginBottom: 30
+        marginBottom: 30,
+
     }
 })
 

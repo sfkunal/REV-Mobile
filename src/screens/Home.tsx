@@ -136,6 +136,7 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
+
   const fetchPopularProducts = async () => {
     setIsLoading(true)
     setErrorMessage('')
@@ -611,9 +612,11 @@ const Home = ({ navigation }: Props) => {
           {data ? (<FlatList
             data={forYou.filter(item => item != null)}
             // data={data}
-            renderItem={({ item }) => (<View style={{
+            renderItem={({ item }) =>
+            (<View style={{
               width: 180, padding: 5, marginRight: 25,
-            }}><ProductCard data={item} />
+            }}>
+              <ProductCard data={item} />
             </View>)}
             // <ProductCard data={item} />}
             horizontal={true}
@@ -621,7 +624,7 @@ const Home = ({ navigation }: Props) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}
             style={{ borderWidth: 2, marginLeft: 0, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={item => item.id}
 
           // keyExtractor={(item) => item.id.toString()}
           />) : (<View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: '110%', marginLeft: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, backgroundColor: 'white', height: 250, zIndex: -1, marginTop: 10, }}>
@@ -634,11 +637,11 @@ const Home = ({ navigation }: Props) => {
     }
 
     return (
-      < View style={{ paddingBottom: sbHeight + 320 }}>
+      <View style={{ paddingBottom: sbHeight + 320 }}>
         <FlatList
           ListHeaderComponent={<View style={{ marginTop: 10, width: '110%' }}><ForYouHorizontalList /></View>}
           data={data.filter(item => item != null)}
-          renderItem={({ item }) => <ProductCard data={item} />}
+          renderItem={({ item }) => <ProductCardMemo data={item} />}
           keyExtractor={item => item.id.toString()}// Make sure to have a keyExtractor for unique keys
           ItemSeparatorComponent={ItemSeparator} // Add this line
           keyboardDismissMode='on-drag'
@@ -646,16 +649,13 @@ const Home = ({ navigation }: Props) => {
           numColumns={2}
           contentContainerStyle={{ paddingHorizontal: 14 }}
         />
-      </View >
+      </View>
     )
 
   })
   // <ScrollView style={{ paddingTop: 10, paddingBottom: sbHeight + 300 }}>
 
-
-
-
-
+  const ProductCardMemo = React.memo(ProductCard);
 
   // </ScrollView>
 
@@ -673,9 +673,10 @@ const Home = ({ navigation }: Props) => {
         </TouchableOpacity>
 
         <FlatList
+          ListHeaderComponent={<View style={{ width: 50, height: 50, backgroundColor: 'yellow' }} />}
           data={data.filter(item => item != null)}
           // data={data}
-          renderItem={({ item }) => (<View style={{ height: '90%', marginTop: 25 }}><ProductCard data={item} />
+          renderItem={({ item }) => (<View style={{ height: '90%', marginTop: 25 }}><ProductCardMemo data={item} />
           </View>)}
           // <ProductCard data={item} />}
           horizontal={true}
@@ -683,63 +684,13 @@ const Home = ({ navigation }: Props) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 14 }}
           style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
-          keyExtractor={item => item.id.toString()}
+          keyExtractor={item => item.id}
 
         // keyExtractor={(item) => item.id.toString()}
         />
       </View>
     )
   })
-
-  // const MemoizedHorizontalList = React.memo(HorizontalList);
-
-
-
-  // const FullList = ({ sections }: { sections: any }) => {
-  //   // console.log(sections)
-  //   // console.log(sectionData[0].data[0].id)
-  //   // console.log(sectionData[0].data[0].options[0].id)
-
-  //   const renderItem = useCallback(({ item, index }) => (
-  //     <MemoizedHorizontalList
-  //       title={item.title}
-  //       data={item.data}
-  //       nav={item.nav}
-  //       onLoadMore={() => onLoadMore(index)}
-  //     />
-  //   ), [onLoadMore])
-  //   return (
-  //     // <View>
-
-  //     // </View>
-  //     <View style={{ paddingTop: 10, paddingBottom: sbHeight + 340 }}>
-  //       {sections ?
-  //         (<FlatList
-  //           data={sections}
-  //           renderItem={renderItem}
-  //           keyExtractor={(item, index) => item.title}
-  //           ItemSeparatorComponent={() => (<View style={{ height: 30, marginBottom: 10, width: '100%', }} ></View>)}
-  //           showsVerticalScrollIndicator={false}
-  //           initialNumToRender={4}
-  //         />)
-  //         : (<ActivityIndicator />)
-  //       }
-  //     </View >
-  //   )
-  // }
-
-
-
-  {/* <FlatList
-        data={data.filter(item => item != null)}
-        renderItem={({ item }) => <ProductCard data={item} />}
-        keyExtractor={item => item.id.toString()} // Make sure to have a keyExtractor for unique keys
-        ItemSeparatorComponent={ItemSeparator} // Add this line
-        keyboardDismissMode='on-drag'
-        showsVerticalScrollIndicator={true}
-        numColumns={2}
-        contentContainerStyle={{ paddingHorizontal: 14 }}
-      /> */}
 
   // where we create the data to make the sections (horizontal scrolls)
   const createSectionData = async () => {

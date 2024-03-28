@@ -87,107 +87,187 @@ const ProductCard = memo(({ data }: { data: Product }) => {
     setNumInCart((prev) => (prev > 0 ? prev - 1 : 0)); // never decrement below 0
   };
 
-  const debouncedSync =
-    debounce(async () => {
+  // const debouncedSync =
+  //   debounce(async () => {
+  //     const currentLocalChanges = localChanges;
+  //     if (localChanges === 0) {
+  //       console.log('no changes')
+  //       return;
+  //     }
+  //     // console.log(currentLocalChanges)
+  //     // console.log(localChanges)
+  //     if (localChanges > 0) {
+  //       // addQuantityOfItem(data.id, localChanges)
+  //       try {
+
+
+  //         // if we dont have the cart item, then we should get it
+  //         if (!cartItem) {
+  //           const query = `
+  //           query getProductById($id: ID!) {
+  //             product(id: $id) {
+  //               variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions)
+  //               .replaceAll(`"name"`, `name`)
+  //               .replaceAll(`"value"`, `value`)}) {
+  //                 id
+  //                 title
+  //                 image {
+  //                   url
+  //                   width
+  //                   height
+  //                 }
+  //                 price {
+  //                   amount
+  //                   currencyCode
+  //                 }
+  //                 compareAtPrice {
+  //                   amount
+  //                   currencyCode
+  //                 }
+  //                 product {
+  //                   title
+  //                 }
+  //                 availableForSale
+  //                 quantityAvailable
+  //                 selectedOptions {
+  //                   value
+  //                 }
+  //               }
+  //             }
+  //           }
+  //         `;
+
+  //           const variables = { id: data.id };
+
+  //           const response: any = await storefrontApiClient(query, variables);
+
+  //           if (response.errors && response.errors.length !== 0) {
+  //             throw response.errors[0].message;
+  //           }
+  //           setCartItem(response.data.product.variantBySelectedOptions)
+  //         }
+  //         // from this point on, cartItem is always defined, but we put the if statement because useState doesnt always immediately update
+
+  //         if (cartItem) {
+  //           console.log('there is cart item')
+  //           addItemToCart(cartItem, localChanges);
+  //         } else {
+  //           console.log('there is not cart item')
+  //         }
+
+  //       } catch (e) {
+  //         // display an error message if something goes wrong
+  //         if (typeof e === 'string') {
+  //           setErrorMessage(e);
+  //         } else {
+  //           setErrorMessage('Something went wrong. Try again.');
+  //         }
+  //       } finally {
+  //         setLocalChanges(0) // just kind of a catch all
+  //       }
+
+  //     } else if (localChanges < 0) {
+  //       if (cartItem) {
+  //         substractQuantityOfItem(cartItem.id, -1 * localChanges)
+  //       }
+  //       // if (data?.id) { // just double checking so we dont hit any NaN errors or anything
+  //       //   substractQuantityOfItem(data.id, -1 * localChanges)
+  //       // }
+  //       setLocalChanges(0);
+  //     }
+  //   }
+  //     // }, 500), [selectedItem, addQuantityOfItem, substractQuantityOfItem]
+  //   );
+
+
+  // useEffect(() => {
+  //   if (localChanges !== 0) {
+  //     debouncedSync()
+  //   }
+  //   return () => {
+  //     debouncedSync.cancel()
+  //   }
+  // }, [localChanges, debouncedSync])
+
+  useEffect(() => {
+    const debouncedSync = debounce(async () => {
       const currentLocalChanges = localChanges;
       if (localChanges === 0) {
-        console.log('no changes')
         return;
       }
-      // console.log(currentLocalChanges)
-      // console.log(localChanges)
       if (localChanges > 0) {
-        // addQuantityOfItem(data.id, localChanges)
         try {
-
-
-          // if we dont have the cart item, then we should get it
           if (!cartItem) {
+            // Fetch the cart item if it doesn't exist
             const query = `
-            query getProductById($id: ID!) {
-              product(id: $id) {
-                variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions)
+                      query getProductById($id: ID!) {
+                        product(id: $id) {
+                          variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions)
                 .replaceAll(`"name"`, `name`)
                 .replaceAll(`"value"`, `value`)}) {
-                  id
-                  title
-                  image {
-                    url
-                    width
-                    height
-                  }
-                  price {
-                    amount
-                    currencyCode
-                  }
-                  compareAtPrice {
-                    amount
-                    currencyCode
-                  }
-                  product {
-                    title
-                  }
-                  availableForSale
-                  quantityAvailable
-                  selectedOptions {
-                    value
-                  }
-                }
-              }
-            }
-          `;
-
+                            id
+                            title
+                            image {
+                              url
+                              width
+                              height
+                            }
+                            price {
+                              amount
+                              currencyCode
+                            }
+                            compareAtPrice {
+                              amount
+                              currencyCode
+                            }
+                            product {
+                              title
+                            }
+                            availableForSale
+                            quantityAvailable
+                            selectedOptions {
+                              value
+                            }
+                          }
+                        }
+                      }
+                    `;
             const variables = { id: data.id };
-
             const response: any = await storefrontApiClient(query, variables);
-
             if (response.errors && response.errors.length !== 0) {
               throw response.errors[0].message;
             }
-            setCartItem(response.data.product.variantBySelectedOptions)
+            setCartItem(response.data.product.variantBySelectedOptions);
           }
-          // from this point on, cartItem is always defined, but we put the if statement because useState doesnt always immediately update
-
           if (cartItem) {
-            console.log('there is cart item')
-            addItemToCart(cartItem, localChanges);
-          } else {
-            console.log('there is not cart item')
+            addItemToCart(cartItem, currentLocalChanges);
           }
-
         } catch (e) {
-          // display an error message if something goes wrong
           if (typeof e === 'string') {
             setErrorMessage(e);
           } else {
             setErrorMessage('Something went wrong. Try again.');
           }
         } finally {
-          setLocalChanges(0) // just kind of a catch all
+          setLocalChanges(0);
         }
-
       } else if (localChanges < 0) {
         if (cartItem) {
-          substractQuantityOfItem(cartItem.id, -1 * localChanges)
+          const quantityToSubtract = Math.min(numInCart, -1 * currentLocalChanges);
+          substractQuantityOfItem(cartItem.id, quantityToSubtract);
+          setNumInCart((prev) => Math.max(prev - quantityToSubtract, 0));
+          setShowCheckmark(numInCart - quantityToSubtract > 0);
         }
-        // if (data?.id) { // just double checking so we dont hit any NaN errors or anything
-        //   substractQuantityOfItem(data.id, -1 * localChanges)
-        // }
         setLocalChanges(0);
       }
-    }
-      // }, 500), [selectedItem, addQuantityOfItem, substractQuantityOfItem]
-    );
+    }, 300);
 
+    debouncedSync();
 
-  useEffect(() => {
-    if (localChanges !== 0) {
-      debouncedSync()
-    }
     return () => {
-      debouncedSync.cancel()
-    }
-  }, [localChanges, debouncedSync])
+      debouncedSync.cancel();
+    };
+  }, [localChanges, cartItem, data.id, addItemToCart, substractQuantityOfItem]);
 
 
 
@@ -212,148 +292,6 @@ const ProductCard = memo(({ data }: { data: Product }) => {
   //     debouncedSync.cancel()
   //   }
   // }, [localChanges, debouncedSync])
-
-  const debouncedAddItemToCart = useMemo(
-    () =>
-
-      debounce(async (quantity: number) => {
-        // console.log(quantity) // likely an issue with the useState variables
-        // console.log('new working')
-        try {
-          const query = `
-            query getProductById($id: ID!) {
-              product(id: $id) {
-                variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions)
-              .replaceAll(`"name"`, `name`)
-              .replaceAll(`"value"`, `value`)}) {
-                  id
-                  title
-                  image {
-                    url
-                    width
-                    height
-                  }
-                  price {
-                    amount
-                    currencyCode
-                  }
-                  compareAtPrice {
-                    amount
-                    currencyCode
-                  }
-                  product {
-                    title
-                  }
-                  availableForSale
-                  quantityAvailable
-                  selectedOptions {
-                    value
-                  }
-                }
-              }
-            }
-          `;
-
-          const variables = { id: data.id };
-
-          const response: any = await storefrontApiClient(query, variables);
-
-          if (response.errors && response.errors.length !== 0) {
-            throw response.errors[0].message;
-          }
-
-          addItemToCart(response.data.product.variantBySelectedOptions as CartItem, quantity);
-        } catch (e) {
-          setNumInCart((prevNumInCart) => (prevNumInCart > 0 ? prevNumInCart - quantity : 0));
-          // setShowCheckmark((prevShowCheckmark) => (prevShowCheckmark && numInCart > 0 ? true : false));
-          setErrorMessage(typeof e === 'string' ? e : 'Something went wrong. Try again.');
-          setLocalChanges(0);
-        }
-      }, 300),
-    [addItemToCart, data.id, numInCart, selectedOptions]
-  );
-
-
-
-  const debouncedSubtractItemFromCart = useMemo(
-    () =>
-
-      debounce(async (quantity: number) => {
-        // console.log('working')
-        try {
-          const query = `
-            query getProductById($id: ID!) {
-              product(id: $id) {
-                variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions)
-              .replaceAll(`"name"`, `name`)
-              .replaceAll(`"value"`, `value`)}) {
-                  id
-                  title
-                  image {
-                    url
-                    width
-                    height
-                  }
-                  price {
-                    amount
-                    currencyCode
-                  }
-                  compareAtPrice {
-                    amount
-                    currencyCode
-                  }
-                  product {
-                    title
-                  }
-                  availableForSale
-                  quantityAvailable
-                  selectedOptions {
-                    value
-                  }
-                }
-              }
-            }
-          `;
-
-          const variables = { id: data.id };
-
-          const response: any = await storefrontApiClient(query, variables);
-
-          if (response.errors && response.errors.length !== 0) {
-            throw response.errors[0].message;
-          }
-
-          const id = response.data.product.variantBySelectedOptions.id;
-          substractQuantityOfItem(id, quantity);
-
-          if (numInCart <= 1) {
-            setShowCheckmark(false);
-          }
-        } catch (e) {
-          console.log(e);
-          setNumInCart((prevNumInCart) => prevNumInCart + quantity);
-        }
-      }, 300),
-    [data.id, numInCart, selectedOptions, substractQuantityOfItem]
-  );
-
-  const addToCart = useCallback(() => {
-    // console.log('worki ng')
-    setShowCheckmark(true);
-    setNumInCart((prevNumInCart) => {
-      const newNumInCart = prevNumInCart + 1;
-      debouncedAddItemToCart(1);
-      return newNumInCart;
-    });
-  }, []);
-
-  const subtractFromCart = useCallback(() => {
-    setNumInCart((prevNumInCart) => {
-      const newNumInCart = prevNumInCart > 0 ? prevNumInCart - 1 : 0;
-      debouncedSubtractItemFromCart(1);
-      return newNumInCart;
-    });
-  }, [debouncedSubtractItemFromCart]);
 
   return (
     <View style={styles.container}>

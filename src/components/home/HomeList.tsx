@@ -16,6 +16,25 @@ if (Platform.OS === 'android') {
 
 const MemoizedProductCard = React.memo(ProductCard)
 
+// creates a pair of product cards, so that they are vertically stacked
+const ProductCardPair = ({ item1, item2 }) => (
+    <View style={{ flexDirection: 'column', display: 'flex' }}>
+        {item1 && <MemoizedProductCard data={item1} />}
+        {item2 && <View style={{ height: 20 }} />}
+        {item2 && <MemoizedProductCard data={item2} />}
+    </View>
+)
+
+// pairs our products up so that they fit nicely intp the productcardPairs
+// handles the odd case by pushing null on the 2nd element if not present
+const pairProducts = (products) => {
+    const paired = [];
+    for (let i = 0; i < products.length; i += 2) {
+        paired.push([products[i], products[i + 1] ? products[i + 1] : null])
+    }
+    return paired;
+}
+
 const HomeList = ({ navigation }) => {
     const { rootNavigation } = useNavigationContext()
     useEffect(() => {
@@ -139,65 +158,72 @@ const HomeList = ({ navigation }) => {
 
 const FullList = ({ sections, onLoadMore, onCollectionPress, loadingStates, errorStates, extraData }) => {
     // this renders a section (horizontal row)
-    const renderSectionItem = ({ item, index }) => (
-        <View style={{ flex: 1, borderWidth: 2, borderColor: '#4B2D83', marginLeft: 15, borderRadius: 30, width: '105%', paddingRight: 30, marginBottom: 28, }} >
-            <TouchableOpacity
-                style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, paddingHorizontal: 20, position: 'absolute', top: -16, left: 4, zIndex: 11, backgroundColor: 'white' }}
-                onPress={() => onCollectionPress(item.nav)}
-            >
-                <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{item.title}</Text>
-            </TouchableOpacity>
-            {loadingStates[index] ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator color='#4B2D83' />
-                </View>
-            ) : errorStates[index] ? (
-                <View style={styles.errorContainer}>
-                    <Text style={styles.errorText}>{errorStates[index]}</Text>
-                </View>
-            ) : item.data.length > 0 ? (
-                // <FlatList
-                //     data={item.data}
-                //     renderItem={renderProductItem}
-                //     keyExtractor={(product) => product.id.toString()}
-                //     horizontal
-                //     showsHorizontalScrollIndicator={false}
-                //     onEndReached={() => onLoadMore(index)}
-                //     onEndReachedThreshold={0.5}
-                //     contentContainerStyle={{}}
-                // />
-                <FlatList
-                    data={item.data}
-                    renderItem={renderProductItem}
-                    keyExtractor={(product) => product.id.toString()}
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    onEndReached={() => onLoadMore(index)}
-                    onEndReachedThreshold={0.5}
-                    contentContainerStyle={{}}
-                    ListHeaderComponent={<View style={{ height: '100%', width: 10, }}></View>}
-                    ListFooterComponent={
-                        item.hasNextPage ? (
-                            <View style={styles.footerContainer}>
-                                <ActivityIndicator color="#4B2D83" />
-                            </View>
-                        ) : null
-                    }
-                // maintainVisibleContentPosition={{
-                //     minIndexForVisible: 0,
-                //     autoscrollToTopThreshold: 0,
-                // }}
-                />
-            ) : (
-                <View style={styles.emptyContainer}>
-                    <ActivityIndicator color='#4B2D83' />
-                </View>
-            )}
-        </View >
-    );
+    const renderSectionItem = ({ item, index }) => {
+        const pairedData = pairProducts(item.data);
+        return (
+            <View style={{ flex: 1, borderWidth: 2, borderColor: '#4B2D83', marginLeft: 15, borderRadius: 30, width: '105%', paddingRight: 30, marginBottom: 28, }} >
+                <TouchableOpacity
+                    style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, paddingHorizontal: 20, position: 'absolute', top: -16, left: 4, zIndex: 11, backgroundColor: 'white' }}
+                    onPress={() => onCollectionPress(item.nav)}
+                >
+                    <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{item.title}</Text>
+                </TouchableOpacity>
+                {loadingStates[index] ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator color='#4B2D83' />
+                    </View>
+                ) : errorStates[index] ? (
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{errorStates[index]}</Text>
+                    </View>
+                ) : item.data.length > 0 ? (
+                    // <FlatList
+                    //     data={item.data}
+                    //     renderItem={renderProductItem}
+                    //     keyExtractor={(product) => product.id.toString()}
+                    //     horizontal
+                    //     showsHorizontalScrollIndicator={false}
+                    //     onEndReached={() => onLoadMore(index)}
+                    //     onEndReachedThreshold={0.5}
+                    //     contentContainerStyle={{}}
+                    // />
+                    <FlatList
+
+                        data={pairedData}
+                        renderItem={renderProductItem}
+                        keyExtractor={(product, index) => index.toString()}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        onEndReached={() => onLoadMore(index)}
+                        onEndReachedThreshold={0.5}
+                        contentContainerStyle={{}}
+                        ListHeaderComponent={<View style={{ height: '100%', width: 10, }}></View>}
+                        ListFooterComponent={
+                            item.hasNextPage ? (
+                                <View style={styles.footerContainer}>
+                                    <ActivityIndicator color="#4B2D83" />
+                                </View>
+                            ) : null
+                        }
+                    // maintainVisibleContentPosition={{
+                    //     minIndexForVisible: 0,
+                    //     autoscrollToTopThreshold: 0,
+                    // }}
+                    />
+                ) : (
+                    <View style={styles.emptyContainer}>
+                        <ActivityIndicator color='#4B2D83' />
+                    </View>
+                )}
+            </View >
+        )
+    };
 
     const renderProductItem = useCallback(({ item }) => (
-        <View style={{ width: 180, marginRight: 25, }}><ProductCard data={item} /></View>
+        <View style={{ width: 180, marginRight: 25, }}>
+            {/* <MemoizedProductCard data={item} /> */}
+            <ProductCardPair item1={item[0]} item2={item[1]} />
+        </View>
     ), []);
 
     return (

@@ -17,10 +17,10 @@ type Props = NativeStackScreenProps<MenuStackParamList, 'Collection'>
 
 const Collection = ({ route, navigation }: Props) => {
   const { collectionId } = route.params
+  const { getId } = navigation
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [collection, setCollection] = useState<any | null>(null)
-
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
 
@@ -28,6 +28,7 @@ const Collection = ({ route, navigation }: Props) => {
     if (Platform.OS === "ios") {
       StatusBarManager.getHeight((statusBarHeight: any) => {
         setsbHeight(Number(statusBarHeight.height))
+        console.log(statusBarHeight.height)
       })
     }
   }, [])
@@ -122,7 +123,6 @@ const Collection = ({ route, navigation }: Props) => {
         // <Text style={styles.title}>{collection?.title || ''}</Text>
         <Image source={logo} style={{ width: 100, height: 50 }} resizeMode="contain" />
       ),
-
     });
 
     try {
@@ -149,31 +149,33 @@ const Collection = ({ route, navigation }: Props) => {
           showsVerticalScrollIndicator={false}
           numColumns={2}
           contentContainerStyle={styles.container}
-          ListHeaderComponent={() => (
-            <View style={{ marginHorizontal: -14 }}>
-              {/* <View style={[styles.titleContainer]}>
-                <Text style={styles.title}>{collection.title}</Text>
-              </View>
-              { collection.description && <Text style={styles.text}>{collection.description}</Text>}              */}
-              {/* <FlatList 
-                data={collection.products.nodes.slice(0,2) as Product[]}
-                renderItem={({item}) => <ProductCard data={item} /> }
-                keyboardDismissMode='on-drag'
-                showsVerticalScrollIndicator={false}
-                numColumns={2}
-                contentContainerStyle={{marginHorizontal: 14}}
-              /> */}
+          ListHeaderComponent={<View style={{ marginHorizontal: -14 }} />}
+
+        //   () => (
+        //   <View style={{ marginHorizontal: -14 }}>
+        //     {/* <View style={[styles.titleContainer]}>
+        //       <Text style={styles.title}>{collection.title}</Text>
+        //     </View>
+        //     { collection.description && <Text style={styles.text}>{collection.description}</Text>}              */}
+        //     {/* <FlatList 
+        //       data={collection.products.nodes.slice(0,2) as Product[]}
+        //       renderItem={({item}) => <ProductCard data={item} /> }
+        //       keyboardDismissMode='on-drag'
+        //       showsVerticalScrollIndicator={false}
+        //       numColumns={2}
+        //       contentContainerStyle={{marginHorizontal: 14}}
+        //     /> */}
 
 
-              {/* This is what the preview picture is */}
-              {/* {collection && collection.image &&
-                <Image
-                  source={{ uri: collection.image.url }}
-                  style={{ width: screenWidth, height: screenWidth * collection.image.height / collection.image.width, marginBottom: 16 }}
-                />
-              } */}
-            </View>
-          )}
+        //     {/* This is what the preview picture is */}
+        //     {/* {collection && collection.image &&
+        //       <Image
+        //         source={{ uri: collection.image.url }}
+        //         style={{ width: screenWidth, height: screenWidth * collection.image.height / collection.image.width, marginBottom: 16 }}
+        //       />
+        //     } */}
+        //   </View>
+        // )}
         />
       }
     </View>
