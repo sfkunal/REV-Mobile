@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert, Image } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { theme } from '../constants/theme'
 import { ProfileStackParamList } from '../types/navigation'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -12,6 +12,8 @@ import { config } from '../../config'
 import { MailIcon, RightArrowIcon } from '../components/shared/Icons'
 import { useCartContext } from '../context/CartContext'
 import phone from '../../assets/phone.png'
+import { storefrontApiClient } from '../utils/storefrontApiClient'
+import { Order } from '../types/dataTypes'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>
 
@@ -19,6 +21,10 @@ const Profile = ({ navigation }: Props) => {
   const { userToken, signOut } = useAuthContext()
   const { rootNavigation } = useNavigationContext()
   const { getItemsCount, getTotalPrice, cartItems } = useCartContext()
+  const [isLoading, setIsLoading] = useState<Boolean>(false)
+  const [errorMessage, setErrorMessage] = useState<string>('')
+  const [numOrders, setNumOrders] = useState<number>(0);
+
 
   // useEffect(() => {
   //   navigation.setOptions({
@@ -54,6 +60,46 @@ const Profile = ({ navigation }: Props) => {
   //     ]
   //   )
   // }
+
+  const fetchOrderCount = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    if (!userToken) {
+      setIsLoading(false)
+      return
+    }
+
+    const query = `query {
+      customer(customerAccessToken: "${userToken.accessToken}") {
+        orders(first: 1) {
+          totalCount
+        }
+      }
+    }`
+
+    try {
+      const response: any = await storefrontApiClient(query)
+
+      if (response.errors && response.errors.length != 0) {
+        throw response.errors[0].message
+      }
+      console.log(response.data.customer.orders.totalCount)
+      setNumOrders(response.data.customer.orders.totalCount)
+    } catch (e) {
+
+      if (typeof e == 'string') {
+        setErrorMessage(e)
+      } else {
+        setErrorMessage('Something went wrong. Try again.')
+      }
+    }
+    setIsLoading(false)
+  }
+
+  useEffect(() => {
+    fetchOrderCount()
+  }, [])
 
   const handleEmailPress = () => {
 
@@ -95,7 +141,7 @@ const Profile = ({ navigation }: Props) => {
         {/* using 0.8 because 400g (0.4kg) of co2 emitted per mile of driving */}
         {/* TODO UPDATE THIS, should not be based on items count */}
         <Text style={{ marginBottom: 40, fontSize: 13, fontWeight: '300' }}>
-          You saved {getItemsCount() * 0.5} hours shopping and prevented {Math.round((getItemsCount() * 0.8) * 100) / 100} kg of carbon emissions!
+          You saved {numOrders * 0.5} hours shopping and prevented {Math.round((numOrders * 0.8) * 100) / 100} kg of carbon emissions!
         </Text>
 
         {/* REVPASS COMING SOON */}

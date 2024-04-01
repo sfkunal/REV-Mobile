@@ -20,10 +20,6 @@ import debounce from 'lodash/debounce';
 
 
 
-
-
-
-
 const ProductCard = memo(({ data }: { data: Product }) => {
   const { rootNavigation } = useNavigationContext();
   const { addItemToCart, substractQuantityOfItem, addQuantityOfItem } = useCartContext();
@@ -43,6 +39,49 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       }))
       : []
   );
+
+
+  // future code to update the number of items in the cart
+  // basically would just add the localChanges to the num in cart, so that it's reponsive
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerRight: () => (
+  //       <>
+  //         <TouchableOpacity style={{ paddingRight: 10 }} onPress={() => {
+  //           navigation.goBack()
+  //           navigation.push('Cart')
+  //         }}>
+  //           <CartIcon color="#4a307e" size={24} />
+  //           {cartItemCount > 0 && (
+  //             <View style={{
+  //               position: 'absolute',
+  //               right: 25,
+  //               bottom: -7,
+  //               backgroundColor: '#4a307e',
+  //               borderRadius: 10,
+  //               width: 20,
+  //               height: 20,
+  //               justifyContent: 'center',
+  //               alignItems: 'center',
+  //               borderWidth: 1,
+  //               borderColor: 'white'
+  //             }}>
+  //               <Text style={{
+  //                 color: 'white',
+  //                 // fontSize: 10,
+  //                 fontWeight: 'bold'
+  //               }}>
+  //                 {cartItemCount + localChanges}
+  //               </Text>
+  //             </View>
+  //           )}
+  //         </TouchableOpacity>
+  //       </>
+  //     ),
+  //   })
+  // }, [localChanges])
+
+
 
   const selectedItem = useMemo(
     () =>
@@ -86,108 +125,6 @@ const ProductCard = memo(({ data }: { data: Product }) => {
     console.log(localChanges)
     setNumInCart((prev) => (prev > 0 ? prev - 1 : 0)); // never decrement below 0
   };
-
-  // const debouncedSync =
-  //   debounce(async () => {
-  //     const currentLocalChanges = localChanges;
-  //     if (localChanges === 0) {
-  //       console.log('no changes')
-  //       return;
-  //     }
-  //     // console.log(currentLocalChanges)
-  //     // console.log(localChanges)
-  //     if (localChanges > 0) {
-  //       // addQuantityOfItem(data.id, localChanges)
-  //       try {
-
-
-  //         // if we dont have the cart item, then we should get it
-  //         if (!cartItem) {
-  //           const query = `
-  //           query getProductById($id: ID!) {
-  //             product(id: $id) {
-  //               variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions)
-  //               .replaceAll(`"name"`, `name`)
-  //               .replaceAll(`"value"`, `value`)}) {
-  //                 id
-  //                 title
-  //                 image {
-  //                   url
-  //                   width
-  //                   height
-  //                 }
-  //                 price {
-  //                   amount
-  //                   currencyCode
-  //                 }
-  //                 compareAtPrice {
-  //                   amount
-  //                   currencyCode
-  //                 }
-  //                 product {
-  //                   title
-  //                 }
-  //                 availableForSale
-  //                 quantityAvailable
-  //                 selectedOptions {
-  //                   value
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         `;
-
-  //           const variables = { id: data.id };
-
-  //           const response: any = await storefrontApiClient(query, variables);
-
-  //           if (response.errors && response.errors.length !== 0) {
-  //             throw response.errors[0].message;
-  //           }
-  //           setCartItem(response.data.product.variantBySelectedOptions)
-  //         }
-  //         // from this point on, cartItem is always defined, but we put the if statement because useState doesnt always immediately update
-
-  //         if (cartItem) {
-  //           console.log('there is cart item')
-  //           addItemToCart(cartItem, localChanges);
-  //         } else {
-  //           console.log('there is not cart item')
-  //         }
-
-  //       } catch (e) {
-  //         // display an error message if something goes wrong
-  //         if (typeof e === 'string') {
-  //           setErrorMessage(e);
-  //         } else {
-  //           setErrorMessage('Something went wrong. Try again.');
-  //         }
-  //       } finally {
-  //         setLocalChanges(0) // just kind of a catch all
-  //       }
-
-  //     } else if (localChanges < 0) {
-  //       if (cartItem) {
-  //         substractQuantityOfItem(cartItem.id, -1 * localChanges)
-  //       }
-  //       // if (data?.id) { // just double checking so we dont hit any NaN errors or anything
-  //       //   substractQuantityOfItem(data.id, -1 * localChanges)
-  //       // }
-  //       setLocalChanges(0);
-  //     }
-  //   }
-  //     // }, 500), [selectedItem, addQuantityOfItem, substractQuantityOfItem]
-  //   );
-
-
-  // useEffect(() => {
-  //   if (localChanges !== 0) {
-  //     debouncedSync()
-  //   }
-  //   return () => {
-  //     debouncedSync.cancel()
-  //   }
-  // }, [localChanges, debouncedSync])
 
   useEffect(() => {
     const debouncedSync = debounce(async () => {
@@ -269,30 +206,6 @@ const ProductCard = memo(({ data }: { data: Product }) => {
     };
   }, [localChanges, cartItem, data.id, addItemToCart, substractQuantityOfItem]);
 
-
-
-
-  // const debouncedSync = useMemo(() => debounce(async () => {
-  //   if (localChanges > 0) {
-  //     addQuantityOfItem(data.id, localChanges)
-  //   } else if (localChanges < 0) {
-  //     substractQuantityOfItem(data.id, -localChanges)
-  //   }
-  //   setLocalChanges(0); // once we update, we reset to 0
-  // }, 500), []) // 0.5ms buffer, can play with this
-
-
-  // useEffect to trigger the debounced sync when we have local changes
-  // useEffect(() => {
-  //   if (localChanges !== 0) {
-  //     debouncedSync()
-  //     setLocalChanges(0)
-  //   }
-  //   return () => {
-  //     debouncedSync.cancel()
-  //   }
-  // }, [localChanges, debouncedSync])
-
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={handlePressProduct} disabled={!selectedItem?.availableForSale}>
@@ -307,7 +220,9 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                 <Text style={styles.compareAtPrice}>{data.compareAtPriceRange.minVariantPrice.amount}</Text>
               )}
               {selectedItem?.availableForSale ? (
+                // <Text style={styles.price}>${data.priceRange.minVariantPrice.amount}</Text>
                 <Text style={styles.price}>
+
                   ${data.priceRange.minVariantPrice.amount.toString().split('.')[0]}.
                   <Text style={styles.smallPrice}>
                     {data.priceRange.minVariantPrice.amount.toString().split('.')[1]}
@@ -400,7 +315,7 @@ const styles = StyleSheet.create({
     color: '#4B2D83',
   },
   outOfStock: {
-    marginTop: 3,
+    marginTop: 0,
     fontSize: 16.2,
     fontWeight: '500',
     color: '#ccc',

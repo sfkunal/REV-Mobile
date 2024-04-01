@@ -28,3 +28,26 @@ export const storefrontApiClient = async (query: string, variables: any | null =
 
   return p
 }
+
+
+// this is an attempt to fetch the status of the store
+
+// export const fetchStoreStatus = async () => {
+//   fetch(`https://${config.shopifyUrl}.myshopify.com/admin/api/2021-07/shop.json`, {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       'X-Shopify-Access-Token': config.shopifyStorefrontAccessToken,
+//     },
+//   })
+//     .then(response => response.json())
+//     .then(data => {
+//       const storeStatus = data.shop.shop_status;
+//       const isClosed = storeStatus === 'pause';
+//       console.log(`Store is ${isClosed ? 'closed' : 'open'}`);
+//       console.log(data)
+//     })
+//     .catch(error => {
+//       console.error('Error:', error);
+//     });
+// }

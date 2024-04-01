@@ -35,7 +35,7 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Collection'>
 
 const Home = ({ navigation }: Props) => {
   const { userToken } = useAuthContext()
-  const [forYou, setForYou] = useState<any[]>([])
+  const [pastItems, setPastItems] = useState<any[]>([])
   const [popularProducts, setPopularProducts] = useState<any[]>([])
   const [exploreProducts, setExploreProducts] = useState<any[]>([])
   const [allProducts, setAllProducts] = useState<any[]>([])
@@ -49,6 +49,9 @@ const Home = ({ navigation }: Props) => {
   const [catsLoading, setCatsLoading] = useState<Boolean>(false);
   const [sectionData, setSectionData] = useState<any[]>([]);
   const [isStoreClosed, setIsStoreClosed] = useState<Boolean>(false)
+
+  const [suggestionsLoading, setSuggestionsLoading] = useState<Boolean>(false);
+  const [productRecommendations, setProductRecommendations] = useState<any>([]);
 
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
@@ -178,7 +181,7 @@ const Home = ({ navigation }: Props) => {
     }
   }
 
-  const fetchForYou = async () => {
+  const fetchPastItems = async () => {
     setIsLoading(true)
     setErrorMessage('')
 
@@ -270,7 +273,7 @@ const Home = ({ navigation }: Props) => {
           .slice(0, 16)
           .map(([key, value]) => value); // map to get rid of keys
 
-        setForYou(sortedProducts)
+        setPastItems(sortedProducts)
         setIsLoading(false)
       } catch (e) {
         console.log(e)
@@ -346,6 +349,97 @@ const Home = ({ navigation }: Props) => {
     } catch (e) {
       console.log(e)
     }
+  }
+
+
+  const fetchRecommendations = async () => {
+    setSuggestionsLoading(true);
+    if (!pastItems) {
+      setSuggestionsLoading(false);
+      return;
+    }
+
+    try {
+      // these aren't alternated, it is pretty much just 5 of one, then 5 of another. 
+      const topProducts = pastItems.slice(0, 5);
+      const recommendationsPromises = topProducts.map(prod => getProductRecommendations(prod.id));
+      const recommendationResults = await Promise.all(recommendationsPromises);
+
+      // Flatten the results and deduplicate
+      const flattenedRecommendations = recommendationResults.flat();
+      const uniqueRecommendations = deduplicateRecommendations(flattenedRecommendations);
+
+      setProductRecommendations(Array.from(uniqueRecommendations));
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setSuggestionsLoading(false);
+    }
+  };
+
+  // Deduplicate recommendations based on their IDs
+  function deduplicateRecommendations(recommendations) {
+    const unique = new Map();
+
+    recommendations.forEach(rec => {
+      if (!unique.has(rec.id)) {
+        unique.set(rec.id, rec);
+      }
+    });
+
+    return Array.from(unique.values());
+  }
+
+  const getProductRecommendations = async (id) => {
+
+    const query = `query getProductRecommendations {
+      productRecommendations(productId: "${id}") {
+        id
+        title
+        description
+        vendor
+        availableForSale
+        options {
+          id
+          name
+          values
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        compareAtPriceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        variants(first:200) {
+          nodes {
+            availableForSale
+            selectedOptions {
+              value
+            }
+          }
+        }
+        images(first: 10) {
+          nodes {
+            url
+            width
+            height
+          }
+        }
+      }
+    }`
+
+    const response: any = await storefrontApiClient(query)
+
+    if (response.errors && response.errors.length != 0) {
+      throw response.errors[0].message
+    }
+    return response.data.productRecommendations.slice(0, 6) as Product[];
   }
 
   const fetchExploreProducts = async () => {
@@ -572,10 +666,11 @@ const Home = ({ navigation }: Props) => {
   useEffect(() => {
     fetchUserOrders()
     fetchPopularProducts()
-    fetchForYou()
+    fetchPastItems()
     fetchExploreProducts()
     getCustomerAddress()
     createSectionData();
+    fetchRecommendations();
   }, [userToken, userOrders])
 
   // this is what gives the space between the items
@@ -609,8 +704,8 @@ const Home = ({ navigation }: Props) => {
           <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, backgroundColor: 'white', }}>
             <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Your past orders</Text>
           </View>
-          {data ? (<FlatList
-            data={forYou.filter(item => item != null)}
+          {pastItems ? (<FlatList
+            data={pastItems.filter(item => item != null)}
             // data={data}
             renderItem={({ item }) =>
             (<View style={{
@@ -635,7 +730,7 @@ const Home = ({ navigation }: Props) => {
         </>
       )
     }
-
+    console.log(data);
     return (
       <View style={{ paddingBottom: sbHeight + 320 }}>
         <FlatList
@@ -696,8 +791,7 @@ const Home = ({ navigation }: Props) => {
   const createSectionData = async () => {
     // if things are still loading, just return
     // const products = await fetchExploreProducts('gid://shopify/Collection/456011710752');
-    const products = await fetchExploreProducts();
-    // console.log(products)
+
     if (isLoading) {
       return;
     }
@@ -913,7 +1007,7 @@ const Home = ({ navigation }: Props) => {
             {selectedMode === 'explore' ?
               <View style={{ display: 'flex', height: '100%', marginTop: 0, paddingBottom: sbHeight + 320 }}><HomeList navigation={navigation} /></View>
 
-              : <ForYouList data={(userOrders > 4 ? forYou : exploreProducts)} />}
+              : <ForYouList data={(userOrders > 1 && productRecommendations ? productRecommendations : exploreProducts)} />}
           </View>
 
           {/* this is what  */}

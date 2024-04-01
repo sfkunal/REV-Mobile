@@ -10,7 +10,7 @@ import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native'
 import noNetworkCloud from './assets/storm-cloud.png'
 import { colorScheme, hasHomeIndicator, theme } from './src/constants/theme'
 import { StatusBar } from 'expo-status-bar'
-import { storefrontApiClient } from './src/utils/storefrontApiClient'; // Import the storefrontApiClient
+// import { fetchStoreStatus, storefrontApiClient } from './src/utils/storefrontApiClient'; // Import the storefrontApiClient
 import logo from './assets/logo.png'
 
 
@@ -19,7 +19,7 @@ export default function App() {
   const [isConnected, setIsConnected] = useState(true)
 
   const [isClosed, setIsClosed] = useState<Boolean>(false)
-  const [isLoading, setIsLoading] = useState<Boolean>(true)
+  const [isLoading, setIsLoading] = useState<Boolean>(false)
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       if (state.isConnected) {
@@ -30,33 +30,13 @@ export default function App() {
     return () => unsubscribe()
   }, [])
 
-  useEffect(() => {
-    const fetchStoreStatus = async () => {
-      try {
-        // const query = `query {
-        //   shop {
-        //     publiclyAvailable
-        //   }
-        // }`;
+  // useEffect(() => {
+  //   const getisClosed = async () => {
+  //     const isClosed = await fetchStoreStatus()
+  //   }
+  //   getisClosed();
+  // })
 
-        // const response: any = await storefrontApiClient(query);
-
-        // if (response.errors && response.errors.length !== 0) {
-        //   throw response.errors[0].message;
-        // }
-
-        // const isStoreClosed = response.data.shop.passwordEnabled;
-        // console.log(response.data)
-        // setIsClosed(isStoreClosed);
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchStoreStatus();
-  })
 
 
   // if we are loading to get the query, this is the loading display
