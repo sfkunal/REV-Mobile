@@ -368,7 +368,7 @@ const Home = ({ navigation }: Props) => {
       // Flatten the results and deduplicate
       const flattenedRecommendations = recommendationResults.flat();
       const uniqueRecommendations = deduplicateRecommendations(flattenedRecommendations);
-
+      console.log('unique recs', uniqueRecommendations);
       setProductRecommendations(Array.from(uniqueRecommendations));
     } catch (e) {
       console.log(e);
@@ -435,6 +435,7 @@ const Home = ({ navigation }: Props) => {
     }`
 
     const response: any = await storefrontApiClient(query)
+    console.log('length of product recs: ', response.data.productRecommendations.length)
 
     if (response.errors && response.errors.length != 0) {
       throw response.errors[0].message
@@ -670,8 +671,16 @@ const Home = ({ navigation }: Props) => {
     fetchExploreProducts()
     getCustomerAddress()
     createSectionData();
-    fetchRecommendations();
+
+    // fetchRecommendations();
   }, [userToken, userOrders])
+
+  // this will get the user recommendations
+  useEffect(() => {
+    if (pastItems?.length > 0) {
+      fetchRecommendations();
+    }
+  }, [pastItems])
 
   // this is what gives the space between the items
   const ItemSeparator = () => <View style={{ height: 10, width: '100%' }} />;
@@ -730,7 +739,7 @@ const Home = ({ navigation }: Props) => {
         </>
       )
     }
-    console.log(data);
+    // console.log(data);
     return (
       <View style={{ paddingBottom: sbHeight + 320 }}>
         <FlatList
@@ -754,38 +763,38 @@ const Home = ({ navigation }: Props) => {
 
   // </ScrollView>
 
-  const HorizontalList = React.memo(({ title, data, nav }: { title: string, data: any, nav: string }) => {
-    return (
-      <View style={{ flex: 1, marginTop: 10, }}>
-        <TouchableOpacity style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 3, backgroundColor: 'white', paddingHorizontal: 14 }}
-          onPress={() => {
-            navigation.navigate('Collection', { collectionId: nav })
-          }}
+  // const HorizontalList = React.memo(({ title, data, nav }: { title: string, data: any, nav: string }) => {
+  //   return (
+  //     <View style={{ flex: 1, marginTop: 10, }}>
+  //       <TouchableOpacity style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, marginLeft: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 3, backgroundColor: 'white', paddingHorizontal: 14 }}
+  //         onPress={() => {
+  //           navigation.navigate('Collection', { collectionId: nav })
+  //         }}
 
-        >
+  //       >
 
-          <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{title}</Text>
-        </TouchableOpacity>
+  //         <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{title}</Text>
+  //       </TouchableOpacity>
 
-        <FlatList
-          ListHeaderComponent={<View style={{ width: 50, height: 50, backgroundColor: 'yellow' }} />}
-          data={data.filter(item => item != null)}
-          // data={data}
-          renderItem={({ item }) => (<View style={{ height: '90%', marginTop: 25 }}><ProductCardMemo data={item} />
-          </View>)}
-          // <ProductCard data={item} />}
-          horizontal={true}
-          keyboardDismissMode='on-drag'
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 14 }}
-          style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
-          keyExtractor={item => item.id}
+  //       <FlatList
+  //         ListHeaderComponent={<View style={{ width: 50, height: 50, backgroundColor: 'yellow' }} />}
+  //         data={data.filter(item => item != null)}
+  //         // data={data}
+  //         renderItem={({ item }) => (<View style={{ height: '90%', marginTop: 25 }}><ProductCardMemo data={item} />
+  //         </View>)}
+  //         // <ProductCard data={item} />}
+  //         horizontal={true}
+  //         keyboardDismissMode='on-drag'
+  //         showsHorizontalScrollIndicator={false}
+  //         contentContainerStyle={{ paddingHorizontal: 14 }}
+  //         style={{ borderWidth: 2, marginLeft: 10, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
+  //         keyExtractor={item => item.id}
 
-        // keyExtractor={(item) => item.id.toString()}
-        />
-      </View>
-    )
-  })
+  //       // keyExtractor={(item) => item.id.toString()}
+  //       />
+  //     </View>
+  //   )
+  // })
 
   // where we create the data to make the sections (horizontal scrolls)
   const createSectionData = async () => {

@@ -39,51 +39,55 @@ const pairProducts = (products) => {
 const HomeList = ({ navigation }) => {
     const { rootNavigation } = useNavigationContext()
     // const [sectionData, setSectionData] = useState(sections);
+
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [lastLoadedSectionIndex, setLastLoadedSectionIndex] = useState<number>(3)
+    const [isVerticalLoading, setIsVerticalLoading] = useState<boolean>(false);
     // const [endCursors, setEndCursors] = useState(Array(sections.length).fill(null))
     // const [hasNextPages, setHasNextPages] = useState(Array(sections.length).fill(true))
 
     // const [loadingStates, setLoadingStates] = useState(Array(sections.length).fill(false));
     // const [errorStates, setErrorStates] = useState(Array(sections.length).fill(''));
 
-    const [sections, setSectionData] = useState([{ title: 'Popular', data: [], nav: 'gid://shopify/Collection/456011481376', hasNextPage: true, endCursor: null },
-    { title: 'Sweets', data: [], nav: 'gid://shopify/Collection/456011710752', hasNextPage: true, endCursor: null },
-    { title: 'Energy', data: [], nav: 'gid://shopify/Collection/456011776288', hasNextPage: true, endCursor: null },
-    { title: 'Drinks', data: [], nav: 'gid://shopify/Collection/456011514144', hasNextPage: true, endCursor: null },
-    { title: 'Nicotine', data: [], nav: 'gid://shopify/Collection/459750572320', hasNextPage: true, endCursor: null },
-    { title: 'International', data: [], nav: 'gid://shopify/Collection/458202546464', hasNextPage: true, endCursor: null },
-    { title: 'Ready To Eat', data: [], nav: 'gid://shopify/Collection/456011940128', hasNextPage: true, endCursor: null },
-    { title: 'Sweet Treats', data: [], nav: 'gid://shopify/Collection/456011710752', hasNextPage: true, endCursor: null },
-    { title: 'Snacks', data: [], nav: 'gid://shopify/Collection/456011546912', hasNextPage: true, endCursor: null },
-    { title: 'Chips', data: [], nav: 'gid://shopify/Collection/456011612448', hasNextPage: true, endCursor: null },
-    { title: 'Healthy', data: [], nav: 'gid://shopify/Collection/458202448160', hasNextPage: true, endCursor: null },
-    { title: 'Candy', data: [], nav: 'gid://shopify/Collection/456011677984', hasNextPage: true, endCursor: null },
-    { title: 'Ice Cream', data: [], nav: 'gid://shopify/Collection/456011841824', hasNextPage: true, endCursor: null },
-    { title: 'Beer & Wine', data: [], nav: 'gid://shopify/Collection/463924003104', hasNextPage: true, endCursor: null },
-    { title: 'Booze', data: [], nav: 'gid://shopify/Collection/463924134176', hasNextPage: true, endCursor: null },
-    { title: 'Student Essentials', data: [], nav: 'gid://shopify/Collection/456012038432', hasNextPage: true, endCursor: null },
-    { title: 'Personal Care', data: [], nav: 'gid://shopify/Collection/456011972896', hasNextPage: true, endCursor: null },]);
-
-
-
+    const [sections, setSectionData] = useState([
+        // all of the sections have a next page by default, and the endCursor object is null by default
+        { title: 'Popular', data: [], nav: 'gid://shopify/Collection/456011481376', hasNextPage: true, endCursor: null },
+        { title: 'Sweets', data: [], nav: 'gid://shopify/Collection/456011710752', hasNextPage: true, endCursor: null },
+        { title: 'Energy', data: [], nav: 'gid://shopify/Collection/456011776288', hasNextPage: true, endCursor: null },
+        { title: 'Drinks', data: [], nav: 'gid://shopify/Collection/456011514144', hasNextPage: true, endCursor: null },
+        { title: 'Nicotine', data: [], nav: 'gid://shopify/Collection/459750572320', hasNextPage: true, endCursor: null },
+        { title: 'International', data: [], nav: 'gid://shopify/Collection/458202546464', hasNextPage: true, endCursor: null },
+        { title: 'Ready To Eat', data: [], nav: 'gid://shopify/Collection/456011940128', hasNextPage: true, endCursor: null },
+        { title: 'Sweet Treats', data: [], nav: 'gid://shopify/Collection/456011710752', hasNextPage: true, endCursor: null },
+        { title: 'Snacks', data: [], nav: 'gid://shopify/Collection/456011546912', hasNextPage: true, endCursor: null },
+        { title: 'Chips', data: [], nav: 'gid://shopify/Collection/456011612448', hasNextPage: true, endCursor: null },
+        { title: 'Healthy', data: [], nav: 'gid://shopify/Collection/458202448160', hasNextPage: true, endCursor: null },
+        { title: 'Candy', data: [], nav: 'gid://shopify/Collection/456011677984', hasNextPage: true, endCursor: null },
+        { title: 'Ice Cream', data: [], nav: 'gid://shopify/Collection/456011841824', hasNextPage: true, endCursor: null },
+        { title: 'Beer & Wine', data: [], nav: 'gid://shopify/Collection/463924003104', hasNextPage: true, endCursor: null },
+        { title: 'Booze', data: [], nav: 'gid://shopify/Collection/463924134176', hasNextPage: true, endCursor: null },
+        { title: 'Student Essentials', data: [], nav: 'gid://shopify/Collection/456012038432', hasNextPage: true, endCursor: null },
+        { title: 'Personal Care', data: [], nav: 'gid://shopify/Collection/456011972896', hasNextPage: true, endCursor: null },]);
 
 
     useEffect(() => {
-        setIsLoading(true);
         const fetchInitialData = async () => {
+            setIsLoading(true);
             try {
+                // can change 4 to a larger number to render more sections. Cap at 17, though
                 const updatedData = await Promise.all(
-                    sections.map(async (section) => {
+                    sections.slice(0, 4).map(async (section) => {
                         const { products, hasNextPage, endCursor } = await fetchCollection(section.nav, null, 8);
                         return { ...section, data: products, hasNextPage, endCursor };
                     })
                 );
-                setSectionData(updatedData);
+                setSectionData([...updatedData, ...sections.slice(4)]);
+                setLastLoadedSectionIndex(3);
                 // setEndCursors(updatedData.map((section) => section.endCursor));
                 // setHasNextPages(updatedData.map((section) => section.hasNextPage));
             } catch (error) {
-                setErrorMessage('Error loading data');
+                setErrorMessage('Error fetching data');
                 console.log('Error loading data: ', error)
             }
             setIsLoading(false);
@@ -91,70 +95,46 @@ const HomeList = ({ navigation }) => {
         fetchInitialData();
     }, []);
 
+    const handleLoadMore = useCallback(async () => {
+        if (isVerticalLoading || lastLoadedSectionIndex > 16) { // currently have the hard coded length. Since we are only loading like 2 of the sections because of the way that useState works?
+            // console.log(sections.length)
+            // console.log('handle load more returned early')
+            return;
+        } // if loading no need to call
 
-    // handleLoadMore fr tho
-    const handleLoadMore = useCallback(async (sectionIndex) => {
-        const section = sections[sectionIndex];
-        if (!section.hasNextPage || isLoading) { return; }
-
-        setIsLoading(true);
+        setIsVerticalLoading(true);
+        // const sectionsToLoad = 2; 
+        const start = lastLoadedSectionIndex + 1;
+        const end = Math.min(start + 2, sections.length); // edit to load more sections at once
+        const sectionsToLoad = sections.slice(start, end) // could be an edge case where we load too many and go out of bounds
         try {
-            const { products, hasNextPage, endCursor } = await fetchCollection(section.nav, section.endCursor, 8);
-            setSectionData(currentSections => currentSections.map((currSection, index) => {
-                if (index === sectionIndex) {
-                    return { ...currSection, data: [...currSection.data, ...products], hasNextPage, endCursor };
-                }
-                return currSection;
-            }))
+            // console.log('we are in the try block')
+
+            const fetchedSections = await Promise.all(
+                sectionsToLoad.map(async (section) => {
+                    const { products, hasNextPage, endCursor } = await fetchCollection(section.nav, null, 8);
+                    return { ...section, data: [...section.data, ...products], hasNextPage, endCursor };
+                })
+            )
+            // console.log('fetchedSections: ', fetchedSections)
+            setSectionData(currentSections => {
+                const updatedSections = [...currentSections];
+                fetchedSections.forEach((newSection, index) => {
+                    const sectionIndex = start + index; // correct index to add
+                    updatedSections[sectionIndex] = newSection
+                })
+                return updatedSections;
+            })
+
+            setLastLoadedSectionIndex(end - 1);
         } catch (e) {
-            setErrorMessage('Error loading data')
-            console.log('error loading data', e)
-        } finally {
-            setIsLoading(false);
+            setErrorMessage('Error fetching data')
+            console.log(e)
         }
+        setIsVerticalLoading(false);
+    }, [sections, isVerticalLoading, lastLoadedSectionIndex]);
 
-        // const cursor = section.endCursor;
-        // const hasNextPage = section.hasNextPage;
 
-        // if (hasNextPage && !loadingStates[sectionIndex]) {
-        //     setLoadingStates(prevStates => {
-        //         const updatedStates = [...prevStates];
-        //         updatedStates[sectionIndex] = true;
-        //         return updatedStates;
-        //     });
-        //     setErrorStates(prevStates => {
-        //         const updatedStates = [...prevStates];
-        //         updatedStates[sectionIndex] = '';
-        //         return updatedStates;
-        //     });
-
-        //     try {
-        //         const { products, hasNextPage, endCursor } = await fetchCollection(section.nav, cursor, 8);
-        //         setSectionData(prevData => {
-        //             const updatedData = [...prevData];
-        //             updatedData[sectionIndex] = {
-        //                 ...section,
-        //                 data: [...section.data, ...products],
-        //                 hasNextPage,
-        //                 endCursor,
-        //             };
-        //             return updatedData;
-        //         });
-        //     } catch (error) {
-        //         setErrorStates(prevStates => {
-        //             const updatedStates = [...prevStates];
-        //             updatedStates[sectionIndex] = 'Error loading more products';
-        //             return updatedStates;
-        //         });
-        //         console.error('Error loading more products:', error);
-        //     }
-        //     setLoadingStates(prevStates => {
-        //         const updatedStates = [...prevStates];
-        //         updatedStates[sectionIndex] = false;
-        //         return updatedStates;
-        //     });
-        // }
-    }, [sections, isLoading]);
 
     const handleCollectionPress = useCallback((collectionId: string) => {
         navigation.navigate('Collection', { collectionId });
@@ -169,6 +149,9 @@ const HomeList = ({ navigation }) => {
                 sections={sections}
                 onLoadMore={handleLoadMore}
                 onCollectionPress={handleCollectionPress}
+                isVerticalLoading={isVerticalLoading}
+                setSectionData={setSectionData}
+            // ListFooterComponent={isLoading ? <ActivityIndicator /> : null}
             // loadingStates={loadingStates}
             // errorStates={errorStates}
             // extraData={sectionData}
@@ -179,7 +162,45 @@ const HomeList = ({ navigation }) => {
     );
 };
 
-const FullList = ({ sections, onLoadMore, onCollectionPress }) => {
+interface FullListProps {
+    sections: {
+        title: string;
+        data: any[];
+        nav: string;
+        hasNextPage: boolean;
+        endCursor: string | null;
+    }[];
+    onLoadMore: () => void;
+    onCollectionPress: (collectionId: string) => void;
+    isVerticalLoading: boolean;
+    setSectionData: (data: any) => void;
+}
+
+const FullList = ({ sections, onLoadMore, onCollectionPress, isVerticalLoading, setSectionData }: FullListProps) => {
+    const handleLoadMoreHorizontal = useCallback(async (sectionIndex) => {
+        const section = sections[sectionIndex];
+        if (section.hasNextPage) {
+            try {
+                const { products, hasNextPage, endCursor } = await fetchCollection(section.nav, section.endCursor, 8);
+                setSectionData((currentSections) => {
+                    const updatedSections = [...currentSections];
+                    updatedSections[sectionIndex] = {
+                        ...section,
+                        data: [...section.data, ...products],
+                        hasNextPage,
+                        endCursor,
+                    };
+                    return updatedSections;
+                })
+
+            } catch (e) {
+                console.log('Error fetching more data')
+            }
+
+        }
+
+    }, [sections])
+
     // this renders a section (horizontal row)
     const renderSectionItem = ({ item, index }) => {
         const pairedData = pairProducts(item.data);
@@ -218,21 +239,23 @@ const FullList = ({ sections, onLoadMore, onCollectionPress }) => {
                         keyExtractor={(product, index) => index.toString()}
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        onEndReached={() => onLoadMore(index)}
-                        onEndReachedThreshold={0.5}
+                        // onEndReached={onLoadMore}
+                        onEndReached={() => handleLoadMoreHorizontal(index)}
+                        onEndReachedThreshold={0.8}
                         contentContainerStyle={{}}
                         ListHeaderComponent={<View style={{ height: '100%', width: 10, }}></View>}
                         ListFooterComponent={
-                            item.hasNextPage ? (
+                            item.hasNextPage && item.data.length > 0 ? (
                                 <View style={styles.footerContainer}>
                                     <ActivityIndicator color="#4B2D83" />
                                 </View>
                             ) : null
                         }
-                    // maintainVisibleContentPosition={{
-                    //     minIndexForVisible: 0,
-                    //     autoscrollToTopThreshold: 0,
-                    // }}
+
+                        maintainVisibleContentPosition={{
+                            minIndexForVisible: 0,
+                            autoscrollToTopThreshold: 0,
+                        }}
                     />
                 ) : (
                     <View style={styles.emptyContainer}>
@@ -256,30 +279,19 @@ const FullList = ({ sections, onLoadMore, onCollectionPress }) => {
             data={sections}
             renderItem={renderSectionItem}
             keyExtractor={(item) => item.title}
-            initialNumToRender={4}
+            // initialNumToRender={4}
+            onEndReached={() => {
+                // console.log('onEndReached triggered')
+                onLoadMore()
+            }
+            }
+            showsVerticalScrollIndicator={false}
+            // how many screen lengths from the bottom until you fecth new data
+            // for reference, 1 section is about 0.75 screen lengths. 
+            onEndReachedThreshold={30}
         />
     );
 };
-
-// const sections = [
-//     { title: 'Popular', data: [], nav: 'gid://shopify/Collection/456011481376', hasNextPage: true, endCursor: null },
-//     { title: 'Sweets', data: [], nav: 'gid://shopify/Collection/456011710752', hasNextPage: true, endCursor: null },
-//     { title: 'Energy', data: [], nav: 'gid://shopify/Collection/456011776288', hasNextPage: true, endCursor: null },
-//     { title: 'Drinks', data: [], nav: 'gid://shopify/Collection/456011514144', hasNextPage: true, endCursor: null },
-//     { title: 'Nicotine', data: [], nav: 'gid://shopify/Collection/459750572320', hasNextPage: true, endCursor: null },
-//     { title: 'International', data: [], nav: 'gid://shopify/Collection/458202546464', hasNextPage: true, endCursor: null },
-//     { title: 'Ready To Eat', data: [], nav: 'gid://shopify/Collection/456011940128', hasNextPage: true, endCursor: null },
-//     { title: 'Sweet Treats', data: [], nav: 'gid://shopify/Collection/456011710752', hasNextPage: true, endCursor: null },
-//     { title: 'Snacks', data: [], nav: 'gid://shopify/Collection/456011546912', hasNextPage: true, endCursor: null },
-//     { title: 'Chips', data: [], nav: 'gid://shopify/Collection/456011612448', hasNextPage: true, endCursor: null },
-//     { title: 'Healthy', data: [], nav: 'gid://shopify/Collection/458202448160', hasNextPage: true, endCursor: null },
-//     { title: 'Candy', data: [], nav: 'gid://shopify/Collection/456011677984', hasNextPage: true, endCursor: null },
-//     { title: 'Ice Cream', data: [], nav: 'gid://shopify/Collection/456011841824', hasNextPage: true, endCursor: null },
-//     { title: 'Beer & Wine', data: [], nav: 'gid://shopify/Collection/463924003104', hasNextPage: true, endCursor: null },
-//     { title: 'Booze', data: [], nav: 'gid://shopify/Collection/463924134176', hasNextPage: true, endCursor: null },
-//     { title: 'Student Essentials', data: [], nav: 'gid://shopify/Collection/456012038432', hasNextPage: true, endCursor: null },
-//     { title: 'Personal Care', data: [], nav: 'gid://shopify/Collection/456011972896', hasNextPage: true, endCursor: null },
-// ];
 
 const styles = StyleSheet.create({
     container: {
