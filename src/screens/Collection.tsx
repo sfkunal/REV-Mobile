@@ -12,7 +12,6 @@ import splash from '../../assets/splash.png'
 
 const screenWidth = Dimensions.get('screen').width
 
-
 type Props = NativeStackScreenProps<MenuStackParamList, 'Collection'>
 
 const Collection = ({ route, navigation }: Props) => {
@@ -20,6 +19,8 @@ const Collection = ({ route, navigation }: Props) => {
   const { getId } = navigation
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
+  const [pTop, setPTop] = useState<number>(0)
+
   const [collection, setCollection] = useState<any | null>(null)
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
@@ -28,10 +29,22 @@ const Collection = ({ route, navigation }: Props) => {
     if (Platform.OS === "ios") {
       StatusBarManager.getHeight((statusBarHeight: any) => {
         setsbHeight(Number(statusBarHeight.height))
-        console.log(statusBarHeight.height)
+        // console.log(statusBarHeight.height)
       })
     }
   }, [])
+
+  useEffect(() => {
+    console.log('route params', route.params)
+    console.log(String(navigation.getState().routes[0].name) === 'Home')
+    if (String(navigation.getState().routes[0].name) === 'Home') {
+      StatusBarManager.getHeight((statusBarHeight: any) => {
+        setsbHeight(Number(statusBarHeight.height))
+        console.log(statusBarHeight.height)
+        setPTop(sbHeight + 44)
+      })
+    }
+  })
 
   const fetchCollection = async () => {
     setIsLoading(true)
@@ -134,12 +147,11 @@ const Collection = ({ route, navigation }: Props) => {
         setErrorMessage('Something went wrong. Try again.')
       }
     }
-
   }, [route.params.collectionId])
 
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', paddingTop: 10 }}>
+    <View style={{ flex: 1, justifyContent: 'center', paddingTop: 10 + pTop, width: '100%' }}>
       {isLoading ?
         <ActivityIndicator style={{ alignSelf: 'center' }} /> :
         <FlatList
@@ -149,8 +161,7 @@ const Collection = ({ route, navigation }: Props) => {
           showsVerticalScrollIndicator={false}
           numColumns={2}
           contentContainerStyle={styles.container}
-          ListHeaderComponent={<View style={{ marginHorizontal: -14 }} />}
-
+          ListHeaderComponent={<View style={{}} />}
         //   () => (
         //   <View style={{ marginHorizontal: -14 }}>
         //     {/* <View style={[styles.titleContainer]}>
@@ -186,7 +197,9 @@ export default Collection
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 14
+    paddingHorizontal: 14,
+    // paddingTop: 47 + 47,
+    // paddingTop: 0,
   },
   titleContainer: {
     backgroundColor: theme.colors.text,

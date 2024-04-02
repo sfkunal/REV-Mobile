@@ -40,7 +40,6 @@ const Search = ({ navigation }: Props) => {
   const [initialProducts, setInitialProducts] = useState<Product[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [collections, setCollections] = useState<any[]>([]);
-  const { rootNavigation } = useNavigationContext()
 
 
   const fetchInitialProducts = async () => {
