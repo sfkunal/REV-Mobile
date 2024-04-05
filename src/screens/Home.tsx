@@ -250,6 +250,7 @@ const Home = ({ navigation }: Props) => {
         }
 
         const forYouProducts = response.data.customer.orders.nodes
+        console.log(forYouProducts)
 
         let productCounts = {};
 
@@ -270,7 +271,7 @@ const Home = ({ navigation }: Props) => {
         const sortedProducts = Object.entries(productCounts)
           .filter(([, quantity]) => quantity !== undefined)
           .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .slice(0, 16)
+          .slice(0, 16) // so only the first 16
           .map(([key, value]) => value); // map to get rid of keys
 
         setPastItems(sortedProducts)
@@ -435,7 +436,7 @@ const Home = ({ navigation }: Props) => {
     }`
 
     const response: any = await storefrontApiClient(query)
-    console.log('length of product recs: ', response.data.productRecommendations.length)
+    // console.log('length of product recs: ', response.data.productRecommendations.length)
 
     if (response.errors && response.errors.length != 0) {
       throw response.errors[0].message

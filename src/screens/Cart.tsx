@@ -130,14 +130,14 @@ const Cart = ({ navigation }: Props) => {
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           />
-          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 160 }]}>
+          <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 + 24 : 160 + 24 }]}>
 
             {/* // this is the container for the bottom */}
             <View style={{ width: '95%' }}>
               {errorMessage.length != 0 &&
                 <Text style={styles.error}>{errorMessage}</Text>
               }
-              <View style={{ flexDirection: 'column', width: '100%', alignSelf: 'center', paddingTop: 5, marginTop: -20, }}>
+              <View style={{ flexDirection: 'column', width: '100%', alignSelf: 'center', paddingTop: 5, }}>
 
                 {/* subtotal */}
                 <View style={{ flexDirection: 'row', paddingVertical: 4, width: '100%', justifyContent: 'space-between' }}>
@@ -199,6 +199,8 @@ const styles = StyleSheet.create({
     // borderTopWidth: 3,
     alignItems: 'center',
     paddingHorizontal: 10,
+    // paddingBottom: 20
+
   },
   error: {
     alignSelf: 'center',

@@ -124,32 +124,36 @@ export const CartContext = ({ children }: Props) => {
     return totalPrice
   }
 
+  // condition on quantity being greater than 0 to avoid negative edge cases. 
   const addItemToCart = (item: CartItem, quantity: number) => {
-    const index = cartItems.findIndex((arrayItem) => arrayItem.id == item.id);
+    // console.log("ADD ITEM TO CART CALLED")
+    if (quantity > 0) {
+      const index = cartItems.findIndex((arrayItem) => arrayItem.id == item.id);
 
-    if (index == -1) {
-      item.quantity = quantity;
-      setcartItems(cartItems => [item, ...cartItems]);
-    }
-    else {
-      // If the item is already in the cart, increase its quantity by the specified amount
-      setcartItems(cartItems => (
-        cartItems.map((cartItem) => {
-          if (cartItem.id === item.id) {
-            const notTrackingStock = cartItem.quantityAvailable <= 0 && cartItem.availableForSale;
-            var newQuantity: number;
+      if (index == -1) {
+        item.quantity = quantity;
+        setcartItems(cartItems => [item, ...cartItems]);
+      }
+      else {
+        // If the item is already in the cart, increase its quantity by the specified amount
+        setcartItems(cartItems => (
+          cartItems.map((cartItem) => {
+            if (cartItem.id === item.id) {
+              const notTrackingStock = cartItem.quantityAvailable <= 0 && cartItem.availableForSale;
+              var newQuantity: number;
 
-            if (notTrackingStock) {
-              newQuantity = cartItem.quantity + quantity;
-            } else {
-              newQuantity = cartItem.quantityAvailable < cartItem.quantity + quantity ? cartItem.quantityAvailable : cartItem.quantity + quantity;
+              if (notTrackingStock) {
+                newQuantity = cartItem.quantity + quantity;
+              } else {
+                newQuantity = cartItem.quantityAvailable < cartItem.quantity + quantity ? cartItem.quantityAvailable : cartItem.quantity + quantity;
+              }
+
+              return { ...cartItem, quantity: newQuantity };
             }
-
-            return { ...cartItem, quantity: newQuantity };
-          }
-          return cartItem;
-        })
-      ));
+            return cartItem;
+          })
+        ));
+      }
     }
   }
 
@@ -159,23 +163,29 @@ export const CartContext = ({ children }: Props) => {
     ))
   }
 
+
+  // same as above, need a check on quantity to avoid weird edges
   const addQuantityOfItem = (itemId: string, quantity: number) => {
-    setcartItems(cartItems => (
-      cartItems.map((item) => {
-        const notTrackingStock = item.quantityAvailable <= 0 && item.availableForSale
-        var newQuantity: number
+    // have a check for if the item is already in cart? It would be cleaner if it was in here tbh
+    // console.log("ADD QUANTITY OF ITEM", quantity)
+    if (quantity > 0) {
+      setcartItems(cartItems => (
+        cartItems.map((item) => {
+          const notTrackingStock = item.quantityAvailable <= 0 && item.availableForSale
+          var newQuantity: number
 
-        if (notTrackingStock) {
-          newQuantity = item.quantity + quantity
-        } else {
-          newQuantity = item.quantityAvailable <= item.quantity ? item.quantityAvailable : item.quantity + quantity
-        }
+          if (notTrackingStock) {
+            newQuantity = item.quantity + quantity
+          } else {
+            newQuantity = item.quantityAvailable <= item.quantity ? item.quantityAvailable : item.quantity + quantity
+          }
 
-        return (
-          item.id == itemId ? { ...item, quantity: newQuantity } as CartItem : item
-        )
-      })
-    ))
+          return (
+            item.id == itemId ? { ...item, quantity: newQuantity } as CartItem : item
+          )
+        })
+      ))
+    }
   }
 
   const substractQuantityOfItem = (itemId: string, quantity: number) => {
@@ -218,3 +228,5 @@ export const useCartContext = () => {
 
   return cartContext;
 }
+
+// export a function to get the quantity of that item in the cart

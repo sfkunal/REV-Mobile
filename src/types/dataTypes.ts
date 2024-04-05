@@ -59,7 +59,7 @@ export type CartItem = {
   }
   quantityAvailable: number
   availableForSale: boolean
-  selectedOptions: {value: string}[]
+  selectedOptions: { value: string }[]
   quantity?: number
 }
 
@@ -75,7 +75,7 @@ export type ShippingRateType = {
 
 export type AvailableShippingRatesType = {
   ready: boolean
-  shippingRates: ShippingRateType[] 
+  shippingRates: ShippingRateType[]
 }
 
 export type Order = {
@@ -88,4 +88,19 @@ export type Order = {
     amount: number
     currencyCode: string
   }
+  lineItems: {
+    nodes: {
+      title: string;
+      quantity: number;
+      variant: {
+        price: {
+          amount: string;
+          currencyCode: string;
+        };
+        image: {
+          originalSrc: string;
+        };
+      };
+    }[];
+  };
 }

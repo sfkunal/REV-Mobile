@@ -21,7 +21,7 @@ const Orders = ({ navigation }: Props) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.screenTitle}>Order History</Text>
+        <Text style={styles.screenTitle}>My Orders</Text>
       ),
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -16 }}>
@@ -33,6 +33,7 @@ const Orders = ({ navigation }: Props) => {
       ),
     })
   }, [])
+
 
   const fetchOrders = async () => {
     setIsLoading(true)
@@ -56,6 +57,21 @@ const Orders = ({ navigation }: Props) => {
               amount
               currencyCode
             }
+            lineItems(first: 250) {
+              nodes {
+                title
+                quantity
+                variant {
+                  price {
+                    amount
+                    currencyCode
+                  }
+                  image {
+                    originalSrc
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -63,13 +79,23 @@ const Orders = ({ navigation }: Props) => {
 
     try {
       const response: any = await storefrontApiClient(query)
+      // console.log('query was tried with a result of: ', response)
+
 
       if (response.errors && response.errors.length != 0) {
         throw response.errors[0].message
       }
+      // console.log(response.lineItems.nodes.title)
 
-      const reversedOrders = response.data.customer.orders.nodes.reverse() as Order[]
+      // const reversedOrders = response.data.customer.orders.nodes.reverse() as Order[]
+      const reversedOrders = response.data.customer.orders.nodes.reverse()
       setOrders(reversedOrders)
+      // console.log('there was no error thrown, so we made it to ', reversedOrders)
+
+      // console.log(response.data.customer.orders.nodes[0].lineItems.nodes[0].title)
+      // this is how to get to the title
+      // could also do this: 
+
 
     } catch (e) {
 
@@ -84,6 +110,7 @@ const Orders = ({ navigation }: Props) => {
   }
 
   useEffect(() => {
+    // console.log('fetch orders has been called')
     fetchOrders()
   }, [])
 
@@ -99,9 +126,9 @@ const Orders = ({ navigation }: Props) => {
               data={orders}
               renderItem={({ item }) => <OrderCard data={item} />}
               contentContainerStyle={styles.container}
-              ItemSeparatorComponent={() => (
-                <View style={{ borderBottomWidth: 0.5, borderColor: theme.colors.disabledText, marginHorizontal: -20 }}></View>
-              )}
+              // ItemSeparatorComponent={() => (
+              //   <View style={{ borderBottomWidth: 0.5, borderColor: theme.colors.disabledText, marginHorizontal: -20 }}></View>
+              // )}
               showsVerticalScrollIndicator={false}
             /> :
             <ScrollView
@@ -109,9 +136,8 @@ const Orders = ({ navigation }: Props) => {
               scrollEnabled={false}
               keyboardDismissMode='on-drag'
             >
-              <Text style={styles.text}>You haven't placed any order yet.</Text>
+              <Text style={styles.text}>You haven't placed any orders yet!</Text>
             </ScrollView>
-
           }
         </>
       }
@@ -127,9 +153,10 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   screenTitle: {
-    fontWeight: '600',
-    color: theme.colors.text,
-    fontSize: 20
+    fontWeight: '800',
+    // color: theme.colors.text,
+    fontSize: 24,
+    color: '#4B2D83',
   },
   text: {
     color: theme.colors.text,

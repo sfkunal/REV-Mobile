@@ -41,7 +41,6 @@ const Search = ({ navigation }: Props) => {
   const [products, setProducts] = useState<Product[]>([])
   const [collections, setCollections] = useState<any[]>([]);
 
-
   const fetchInitialProducts = async () => {
     setIsLoading(true)
     setErrorMessage('')
@@ -247,13 +246,14 @@ const Search = ({ navigation }: Props) => {
     }
   }, [searchInput]);
 
-
   const renderCollectionItem = ({ item }) => {
     let thumbnail = <></>;
     const w = windowWidth * 0.5 // this should be 0.427, but there is x-margin in the png
     // is this the best way to do it? 
     // can't change the photos in the field so I am storing them locally and then setting it based on the title.
     // in a perfect world, the image field on the shopify would be the correct photo
+
+    // additionally, some weird behavior because some of them are hardcoded
     if (item.title === 'All Products') {
       thumbnail = <Image style={{
         width: w, height: 0.65 * w,
@@ -267,11 +267,12 @@ const Search = ({ navigation }: Props) => {
       }} resizeMode="cover"
         source={Beer} />
     } else if (item.title === 'Booze etc.') {
-      thumbnail = <Image style={{
+      thumbnail = <View style={{ flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}><Image style={{
         width: w, height: 0.65 * w,
         // backgroundColor: 'black' 
       }} resizeMode="cover"
-        source={Booze} />
+        source={Booze} /></View>
+
     } else if (item.title === 'Candy') {
       thumbnail = <Image style={{
         width: w, height: 0.65 * w,
@@ -352,12 +353,19 @@ const Search = ({ navigation }: Props) => {
         source={Sweet} />
     } else if (item.title === 'Nicotine') {
       thumbnail = <Image style={{
-        width: w, height: 0.65 * w,
+        width: 0.9 * w, height: 0.6 * w,
         // backgroundColor: 'black' 
       }} resizeMode="cover"
         source={Nicotine} />
     } else {
       return;
+    }
+    if (item.id === 'placeholder') {
+      return thumbnail = <Image style={{
+        width: w, height: 0.65 * w,
+        // backgroundColor: 'black' 
+      }} resizeMode="cover"
+        source={Nicotine} />
     }
 
     return (
@@ -456,7 +464,7 @@ const Search = ({ navigation }: Props) => {
                     renderItem={renderCollectionItem}
                     keyExtractor={(item) => item.id}
                     numColumns={2}
-                    contentContainerStyle={{ paddingHorizontal: 14, justifyContent: 'center', flexGrow: 1, paddingBottom: 50, }}
+                    contentContainerStyle={{ paddingHorizontal: 14, flexGrow: 1, paddingBottom: 50, }}
                   />
                 </View>
               )}
