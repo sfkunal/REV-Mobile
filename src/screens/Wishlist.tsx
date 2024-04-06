@@ -3,12 +3,13 @@ import { useEffect, useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ProfileStackParamList } from '../types/navigation'
 import { theme } from '../constants/theme'
-import { BackArrowIcon } from '../components/shared/Icons'
+import { BackArrow, BackArrowIcon, RightArrowIcon } from '../components/shared/Icons'
 import { useWishlistContext } from '../context/WishlistContext'
 import { Product } from '../types/dataTypes'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
 import ProductCard from '../components/shared/ProductCard'
 import { FlatList } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Wishlist'>
 
@@ -20,16 +21,18 @@ const Wishlist = ({ navigation }: Props) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={styles.screenTitle}>Wishlist</Text>
+        <Text style={styles.screenTitle}>Liked Items</Text>
       ),
       headerLeft: () => (
         <>
-          { Platform.OS == 'ios' ?
-            <BackArrowIcon
-              color={'#4B2D83'}
-              size={20}
-              onPress={() => navigation.goBack()}
-            /> :
+          {Platform.OS == 'ios' ?
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <BackArrow
+                color={'#4B2D83'}
+                size={20}
+              />
+            </TouchableOpacity>
+            :
             null
           }
         </>
@@ -80,30 +83,30 @@ const Wishlist = ({ navigation }: Props) => {
           }
         }
       }`
-       
+
       const response: any = await storefrontApiClient(query)
-      if (response.errors && response.errors.length != 0 ) {
+      if (response.errors && response.errors.length != 0) {
         reject(response.errors[0].message)
         return
       }
 
       resolve(response.data.product)
     })
-    
+
     return p
   }
 
   const getProducts = async () => {
     setIsLoading(true)
     var updatedWishlishProducts: Product[] = []
-    
+
     for await (const productId of wishlist) {
       try {
         const product = await getProduct(productId) as Product
         updatedWishlishProducts.push(product)
       } catch (e) {
         console.log(e)
-      }  
+      }
     }
 
     setWishlistProducts(updatedWishlishProducts)
@@ -116,22 +119,22 @@ const Wishlist = ({ navigation }: Props) => {
 
   return (
     <>
-      { isLoading ?
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      {isLoading ?
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
           <ActivityIndicator size='small' />
         </View> :
         <>
-          { wishlistProducts.length != 0 ?
-            <FlatList 
+          {wishlistProducts.length != 0 ?
+            <FlatList
               data={wishlistProducts}
-              renderItem={({item}) => <ProductCard data={item} /> }
+              renderItem={({ item }) => <ProductCard data={item} />}
               keyboardDismissMode='on-drag'
               showsVerticalScrollIndicator={false}
               numColumns={2}
               contentContainerStyle={styles.container}
             /> :
-            <ScrollView 
-              contentContainerStyle={{flex:1, justifyContent: 'center', alignItems: 'center'}}
+            <ScrollView
+              contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
               scrollEnabled={false}
               keyboardDismissMode='on-drag'
             >
@@ -149,13 +152,12 @@ export default Wishlist
 const styles = StyleSheet.create({
   container: {
     paddingTop: 16,
-    paddingLeft:14,
+    paddingLeft: 14,
   },
   screenTitle: {
-    fontWeight: '600', 
-    letterSpacing: 1, 
-    color: theme.colors.text, 
-    fontSize: 16
+    fontWeight: '700',
+    color: '#4B2D83',
+    fontSize: 25
   },
   text: {
     color: theme.colors.text,

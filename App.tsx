@@ -12,6 +12,8 @@ import { colorScheme, hasHomeIndicator, theme } from './src/constants/theme'
 import { StatusBar } from 'expo-status-bar'
 // import { fetchStoreStatus, storefrontApiClient } from './src/utils/storefrontApiClient'; // Import the storefrontApiClient
 import logo from './assets/logo.png'
+import { config } from './config'
+import { storefrontApiClient } from './src/utils/storefrontApiClient'
 
 
 
@@ -30,12 +32,32 @@ export default function App() {
     return () => unsubscribe()
   }, [])
 
-  // useEffect(() => {
-  //   const getisClosed = async () => {
-  //     const isClosed = await fetchStoreStatus()
+  // const checkIfStoreIsPasswordProtected = async () => {
+  //   const query = `
+  //   {
+  //     shop {
+  //       name
+  //       passwordEnabled
+  //     }
+  //   }`;
+
+  //   try {
+  //     const data: any = await storefrontApiClient(query);
+  //     console.log('THIS IS MY SUPER COOL NEW DATA', data);
+  //     if (data.shop.passwordEnabled) {
+  //       console.log('password protected')
+  //     } else {
+  //       console.log('not password protected')
+  //     }
+  //   } catch (e) {
+  //     console.log(e)
+
   //   }
-  //   getisClosed();
-  // })
+  // }
+
+  // useEffect(() => {
+  //   checkIfStoreIsPasswordProtected();
+  // }, [])
 
 
 

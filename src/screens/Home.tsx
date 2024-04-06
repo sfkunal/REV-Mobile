@@ -56,16 +56,6 @@ const Home = ({ navigation }: Props) => {
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
 
-  // this checks if the store is open or closed. Goes on the initial render
-  useEffect(() => {
-    const fetchStoreStatus = async () => {
-      const status = await checkStoreStatus();
-      setIsStoreClosed(status)
-    }
-
-    fetchStoreStatus();
-  })
-
   useEffect(() => {
     if (Platform.OS === "ios") {
       StatusBarManager.getHeight((statusBarHeight: any) => {
@@ -82,27 +72,6 @@ const Home = ({ navigation }: Props) => {
     }
   }, [userToken, rootNavigation]);
 
-  const checkStoreStatus = async () => {
-    try {
-      const query = `query {
-        shop {
-          passwordEnabled
-        }
-      }`
-
-      const response: any = await storefrontApiClient(query)
-
-      if (response.errors && response.errors.length !== 0) {
-        throw response.errors[0].message
-      }
-
-      const isStoreClosed = response.data.shop.passwordEnabled
-      return isStoreClosed
-    } catch (e) {
-      console.log(e)
-      return false
-    }
-  }
 
   const fetchUserOrders = async () => {
     setIsLoading(true)
@@ -369,7 +338,7 @@ const Home = ({ navigation }: Props) => {
       // Flatten the results and deduplicate
       const flattenedRecommendations = recommendationResults.flat();
       const uniqueRecommendations = deduplicateRecommendations(flattenedRecommendations);
-      console.log('unique recs', uniqueRecommendations);
+      // console.log('unique recs', uniqueRecommendations);
       setProductRecommendations(Array.from(uniqueRecommendations));
     } catch (e) {
       console.log(e);
@@ -711,15 +680,22 @@ const Home = ({ navigation }: Props) => {
     const ForYouHorizontalList = function () {
       return (
         <>
-          <View style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, width: 220, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, position: 'absolute', top: -8, left: 4, zIndex: 11, backgroundColor: 'white', }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Your past orders</Text>
+          <View style={{ borderRadius: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, paddingHorizontal: 20, position: 'absolute', top: -20, left: 4, zIndex: 11, backgroundColor: 'white' }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>Back for seconds?</Text>
           </View>
+
+          {/* view all if needed. There is a weird cutoff tho */}
+          {/* <View
+            style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', top: -12, position: 'absolute', right: 40, zIndex: 1, backgroundColor: 'white', width: 100, height: 23, }}
+          >
+            <Text style={{ fontSize: 12, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>View all</Text>
+          </View> */}
           {pastItems ? (<FlatList
             data={pastItems.filter(item => item != null)}
             // data={data}
             renderItem={({ item }) =>
             (<View style={{
-              width: 180, padding: 5, marginRight: 25,
+              width: 180, padding: 5, marginRight: 25, paddingVertical: 15,
             }}>
               <ProductCard data={item} />
             </View>)}
@@ -728,7 +704,7 @@ const Home = ({ navigation }: Props) => {
             keyboardDismissMode='on-drag'
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 10 }}
-            style={{ borderWidth: 2, marginLeft: 0, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: 2 }}
+            style={{ borderWidth: 2, marginLeft: 0, borderColor: '#4B2D83', borderTopLeftRadius: 36, borderBottomLeftRadius: 36, marginRight: -5, zIndex: -1 }}
             keyExtractor={item => item.id}
 
           // keyExtractor={(item) => item.id.toString()}
@@ -1017,7 +993,7 @@ const Home = ({ navigation }: Props) => {
             {selectedMode === 'explore' ?
               <View style={{ display: 'flex', height: '100%', marginTop: 0, paddingBottom: sbHeight + 320 }}><HomeList navigation={navigation} /></View>
 
-              : <ForYouList data={(userOrders > 1 && productRecommendations ? productRecommendations : exploreProducts)} />}
+              : <View style={{ paddingTop: 10 }}><ForYouList data={(userOrders > 1 && productRecommendations ? productRecommendations : exploreProducts)} /></View>}
           </View>
 
           {/* this is what  */}

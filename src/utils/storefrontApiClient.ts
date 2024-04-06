@@ -25,7 +25,6 @@ export const storefrontApiClient = async (query: string, variables: any | null =
       reject(error)
     }
   })
-
   return p
 }
 

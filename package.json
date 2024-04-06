@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
+    "@fortawesome/free-solid-svg-icons": "^6.5.2",
     "@gorhom/bottom-sheet": "^4",
     "@react-native-async-storage/async-storage": "1.18.2",
     "@react-native-community/netinfo": "9.3.10",

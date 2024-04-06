@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions, Image, FlatList, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, Platform } from 'react-native'
+import { StyleSheet, Dimensions, Image, FlatList, View, Text, TouchableOpacity, ActivityIndicator, ScrollView, Platform, Touchable } from 'react-native'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { StackParamList } from '../types/navigation'
@@ -15,6 +15,7 @@ import { useWishlistContext } from '../context/WishlistContext'
 import { useNavigationContext } from '../context/NavigationContext'
 import { BackArrow, CartIcon, DownArrowIcon, UpArrowIcon } from '../components/shared/Icons'
 import logo from '../../assets/logo.png'
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 const screenWidth = Dimensions.get('screen').width
@@ -23,17 +24,24 @@ const windowHeight = Dimensions.get('window').height
 type Props = NativeStackScreenProps<StackParamList, 'ProductScreen'>
 
 const ProductScreen = ({ route, navigation }: Props) => {
-  const { wishlist, addItemToWishlist, removeItemFromWishlist } = useWishlistContext()
+  const { wishlist, addItemToWishlist, removeItemFromWishlist, isInWishList } = useWishlistContext()
   const { data } = route.params
   const { addItemToCart } = useCartContext()
   const { rootNavigation } = useNavigationContext();
-  const { getItemsCount, cartItems } = useCartContext();
+  const { getItemsCount, cartItems, getProductQuantityInCart } = useCartContext();
   let cartItemCount = getItemsCount();
   const { addQuantityOfItem, substractQuantityOfItem } = useCartContext()
-  const [itemQuantity, setItemQuantity] = useState(1)
+  // initialize the quantity of items in the cart to be just that, using our cartContext hook. Triggered on every re-render
+  const [itemQuantity, setItemQuantity] = useState(() => getProductQuantityInCart(route.params.data.title))
   const [showConfirmation, setShowConfirmation] = useState<Boolean>(false)
+  const [cartItem, setCartItem] = useState<CartItem>(undefined)
+
+  const [inWishlist, setInWishlist] = useState<boolean>(isInWishList(data.id))
 
 
+  useEffect(() => {
+    console.log('IS IN WISHLIST', inWishlist)
+  })
 
   useEffect(() => {
     navigation.setOptions({
@@ -84,6 +92,8 @@ const ProductScreen = ({ route, navigation }: Props) => {
 
   }, [wishlist, cartItemCount])
 
+
+
   useEffect(() => {
     try {
       getProductRecommendations()
@@ -93,7 +103,6 @@ const ProductScreen = ({ route, navigation }: Props) => {
       }, 5000)
       console.log(e)
     }
-
   }, [])
 
   const [selectedOptions, setSelectedOptions] = useState<{ name: string; value: string | null }[]>(
@@ -188,50 +197,60 @@ const ProductScreen = ({ route, navigation }: Props) => {
     setProductRecommendations(response.data.productRecommendations.slice(0, 6) as Product[])
   }
 
+
+  const getCartItem = () => {
+
+  }
   const addToCart = async () => {
     setIsLoading(true)
     setErrorMessage('')
     try {
-      const query = `query getProductById($id: ID!) {
-        product(id: $id) {
-          variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
-            id
-            title
-            image {
-              url
-              width
-              height
-            }
-            price {
-              amount
-              currencyCode
-            }
-            compareAtPrice {
-              amount
-              currencyCode
-            }
-            product {
+      if (!cartItem) {
+        const query = `query getProductById($id: ID!) {
+          product(id: $id) {
+            variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
+              id
               title
-            }
-            availableForSale
-            quantityAvailable
-            selectedOptions {
-              value
+              image {
+                url
+                width
+                height
+              }
+              price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
+              product {
+                title
+              }
+              availableForSale
+              quantityAvailable
+              selectedOptions {
+                value
+              }
             }
           }
+        }`
+
+        const variables = { id: data.id }
+
+        const response: any = await storefrontApiClient(query, variables)
+
+        if (response.errors && response.errors.length != 0) {
+          throw response.errors[0].message
         }
-      }`
-
-      const variables = { id: data.id }
-
-      const response: any = await storefrontApiClient(query, variables)
-
-      if (response.errors && response.errors.length != 0) {
-        throw response.errors[0].message
+        setCartItem(response.data.product.variantBySelectedOptions)
+        addItemToCart(response.data.product.variantBySelectedOptions as CartItem, 1)
+      } else {
+        addItemToCart(cartItem, 1)
       }
 
-      addItemToCart(response.data.product.variantBySelectedOptions as CartItem, itemQuantity)
-      //console.log(bottomSheetMode)
+
+      // addItemToCart(response.data.product.variantBySelectedOptions as CartItem, 1)
 
       // idk what this does
       // if (bottomSheetMode == 'buy') {
@@ -241,6 +260,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
       //   sheetRef3.current.snapToIndex(0)
       //   sheetRef2.current.close()
       // }
+      setItemQuantity((prev) => prev + 1)
       setShowConfirmation(true);
       setTimeout(() => setShowConfirmation(false), 2000)
 
@@ -252,6 +272,60 @@ const ProductScreen = ({ route, navigation }: Props) => {
       }
     }
     setIsLoading(false)
+  }
+
+  const subtractFromCart = async (itemID: string) => {
+    setIsLoading(true);
+    setErrorMessage('');
+    try {
+      if (!cartItem) {
+        const query = `query getProductById($id: ID!) {
+          product(id: $id) {
+            variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
+              id
+              title
+              image {
+                url
+                width
+                height
+              }
+              price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
+              product {
+                title
+              }
+              availableForSale
+              quantityAvailable
+              selectedOptions {
+                value
+              }
+            }
+          }
+        }`
+        const variables = { id: data.id }
+        const response: any = await storefrontApiClient(query, variables)
+        if (response.errors && response.errors.length != 0) {
+          throw response.errors[0].message
+        }
+        setCartItem(response.data.product.variantBySelectedOptions)
+        substractQuantityOfItem(response.data.product.variantBySelectedOptions.id, 1)
+      } else {
+        substractQuantityOfItem(cartItem.id, 1)
+      }
+      setItemQuantity((prev) => prev - 1)
+    } catch (e) {
+      if (typeof e == 'string') {
+        setErrorMessage(e)
+      } else {
+        setErrorMessage('Something went wrong. Try again.')
+      }
+    }
   }
 
 
@@ -277,9 +351,37 @@ const ProductScreen = ({ route, navigation }: Props) => {
           contentContainerStyle={{ backgroundColor: theme.colors.background }}
         >
           <View style={{ width: '100%' }}>
-            {/* Title */}
-            <Text numberOfLines={1}
-              ellipsizeMode='tail' style={styles.title}>{data.title}</Text>
+            <View style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-between' }}>
+              {/* Title */}
+
+              <Text
+                numberOfLines={1}
+                ellipsizeMode='tail' style={styles.title}>{data.title}
+              </Text>
+              {/* <FontAwesomeIcon icon="fa-regular fa-heart" /> */}
+
+              {inWishlist ? (<TouchableOpacity style={{ marginRight: 8 }}
+                onPress={() => {
+                  removeItemFromWishlist(data.id)
+                  setInWishlist(!inWishlist)
+                }}>
+                <Icon name="heart" size={25} color="#4B2D83" />
+              </TouchableOpacity>) : (<TouchableOpacity style={{ marginRight: 10 }}
+                onPress={() => {
+                  addItemToWishlist(data.id)
+                  setInWishlist(!inWishlist)
+                }}>
+                <Icon name="heart-o" size={25} color="#4B2D83" />
+              </TouchableOpacity>)}
+
+
+
+
+
+
+
+            </View>
+
 
             {/* Price. is split so that dollar and cents are diff sizes */}
             <Text style={styles.smallPrice}>
@@ -293,12 +395,40 @@ const ProductScreen = ({ route, navigation }: Props) => {
               </Text>
             </Text> */}
 
-            {data.availableForSale ?
+            {/* Add and subtract */}
+            {data.availableForSale ? (
+              <View style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', marginRight: 10 }}>
+                {itemQuantity > 0 ? (<>
+                  <TouchableOpacity onPress={() => subtractFromCart(data.id)}>
+                    {/* <Text>-</Text> */}
+                    {itemQuantity === 1 ? (<Image
+                      source={require('../../assets/TrashCan.png')}
+                      style={styles.trashCanImage}
+                      resizeMode="contain"
+                    />) : (<Icon name="minus" size={20} color="#4B2D83" />)}
+
+
+
+                  </TouchableOpacity>
+                  <Text style={{ color: 'black', fontWeight: '600', fontSize: 20, marginHorizontal: 12 }}>
+                    {itemQuantity}
+                  </Text>
+                </>) : (<></>)}
+
+                <TouchableOpacity onPress={addToCart}>
+                  <Icon name="plus" size={25} color="#4B2D83" />
+                </TouchableOpacity>
+              </View>
+            ) : (<View><Text>Out of stock</Text></View>)}
+
+
+            {/* {data.availableForSale ?
               (isLoading ?
+
                 <View style={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size='small' style={{ alignSelf: 'center', marginTop: 30.5 }} /></View>
                 :
                 (
-                  showConfirmation /* Replace `false` with showConfirmationMessage once implemented */ ?
+                  showConfirmation ?
                     <View style={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold' }}>Added Successfully!</Text></View> :
                     <>
                       <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', marginBottom: 0, }}>
@@ -347,7 +477,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
                 )
               ) :
               <Text style={[styles.text, { marginTop: 32 }]}>Out of stock.</Text>
-            }
+            } */}
 
             {/* description */}
             {data.description.length != 0 && <Text style={{ color: 'black', fontWeight: '500', fontSize: 20 }}>Description</Text>}
@@ -355,7 +485,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
             {/* <Text style={styles.subTitle}>VENDOR: {data.vendor.toUpperCase()}</Text> */}
 
             <TouchableOpacity style={{ marginLeft: 0, marginTop: 20, }} onPress={() => { mainSheetRef.current?.snapToIndex(1); }}>
-              <Text style={{ color: '#4B2D83', fontWeight: '600', fontSize: 20 }}>Discover More</Text>
+              <Text style={{ color: '#4B2D83', fontWeight: '600', fontSize: 20, paddingTop: 120 }}>Discover More</Text>
             </TouchableOpacity>
           </View>
 
@@ -472,6 +602,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     // letterSpacing: 0.2,
     fontSize: 20,
+    width: '85%'
 
   },
   subTitle: {
@@ -562,7 +693,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     // letterSpacing: 1,
     fontWeight: '500'
-  }
+  },
+  trashCanImage: {
+    height: 28,
+    width: 28,
+    marginRight: -5,
+    marginBottom: -2
+  },
 })
 
 export default ProductScreen

@@ -122,17 +122,16 @@ const SettingsPage = ({ navigation }: Props) => {
                 </View>
             </View> */}
 
+            {/* LIKED ITEMS */}
+            <TouchableOpacity
+                style={styles.cardContainer}
+                onPress={() => navigation.push('Wishlist')}>
+                <Text style={styles.settingTitle}>Liked Items</Text>
+                {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
+                <RightArrowIcon size={40} color={'#4B2D83'} />
+            </TouchableOpacity>
 
 
-            {/* Personal Information */}
-            {userToken &&
-                <TouchableOpacity style={styles.cardContainer}
-                    onPress={() => navigation.push('PersonalInformations')}>
-                    <Text style={styles.settingTitle}>Personal Information</Text>
-                    {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
-                    <RightArrowIcon size={40} color={'#4B2D83'} />
-                </TouchableOpacity>
-            }
 
 
             {/* ORDER HISTORY */}
@@ -231,29 +230,6 @@ const SettingsPage = ({ navigation }: Props) => {
                         <RightArrowIcon size={40} color={'#4B2D83'} />
                     </TouchableOpacity>
                 </>}
-
-            {/* LIKED ITEMS */}
-            <View
-                style={styles.cardContainer}
-
-            >
-                <View style={{}}>
-                    <Text style={{
-                        color: '#000000',
-                        letterSpacing: 1,
-                        fontSize: 18,
-                        fontWeight: 'bold',
-
-                    }}>Liked Items</Text>
-                    <Text style={{ color: 'gray' }}>Coming Soon!</Text>
-                </View>
-
-                {/* <Entypo name={`chevron-small-right`} size={40} color={'#4B2D83'} /> */}
-                {/* <RightArrowIcon size={40} color={'#4B2D83'} /> */}
-            </View>
-
-
-
         </View >
     )
 }

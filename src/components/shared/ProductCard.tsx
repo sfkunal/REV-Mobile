@@ -23,13 +23,13 @@ import { CartIcon } from './Icons';
 
 const ProductCard = memo(({ data }: { data: Product }) => {
   const { rootNavigation } = useNavigationContext();
-  const { getItemsCount } = useCartContext();
+  const { getItemsCount, getProductQuantityInCart } = useCartContext();
   const { addItemToCart, substractQuantityOfItem, addQuantityOfItem } = useCartContext();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [showCheckmark, setShowCheckmark] = useState(false);
 
-  const [numInCart, setNumInCart] = useState<number>(0);
+  const [numInCart, setNumInCart] = useState<number>(getProductQuantityInCart(data.title));
   const [cartItem, setCartItem] = useState<CartItem | null>(null); // this is where the actual product item is stored
   const [cartItemId, setCartItemId] = useState<string | null>(null)
   const [localChanges, setLocalChanges] = useState(0); // this is the optimistic change of the item
@@ -42,6 +42,130 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       }))
       : []
   );
+
+  useEffect(() => {
+    console.log("FROM PRODUCT CARD", data)
+    console.log(data.id)
+    console.log(getProductQuantityInCart(data.id))
+  })
+
+
+  const handleAddToCart = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
+    try {
+      // we use cartItem and checking because it is a lot faster, we avoid having to fetch the cartItem every time!
+      if (!cartItem) {
+        const query = `query getProductById($id: ID!) {
+          product(id: $id) {
+            variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
+              id
+              title
+              image {
+                url
+                width
+                height
+              }
+              price {
+                amount
+                currencyCode
+              }
+              compareAtPrice {
+                amount
+                currencyCode
+              }
+              product {
+                title
+              }
+              availableForSale
+              quantityAvailable
+              selectedOptions {
+                value
+              }
+            }
+          }
+        }`
+
+        const variables = { id: data.id }
+
+        const response: any = await storefrontApiClient(query, variables)
+
+        if (response.errors && response.errors.length != 0) {
+          throw response.errors[0].message
+        }
+
+        setCartItem(response.data.product.variantBySelectedOptions)
+        // DO NOT USE cartItem, useState batches updates
+        addItemToCart(response.data.product.variantBySelectedOptions as CartItem, 1)
+      } else {
+        addItemToCart(cartItem, 1)
+      }
+      setNumInCart(prev => prev + 1) // handle the local showing. Doesn't do this automatically because we don't need to re-render (intended)
+    } catch (e) {
+      if (typeof e == 'string') {
+        setErrorMessage(e)
+      } else {
+        setErrorMessage('Something went wrong. Try again.')
+      }
+    }
+    setIsLoading(false)
+  }
+
+  const handleSubtractFromCart = async () => {
+    setIsLoading(true);
+
+    try {
+      if (!cartItem) {
+        console.log('no cart item!')
+        const query = `query getProductById($id: ID!) {
+        product(id: $id) {
+          variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
+            id
+            title
+            image {
+              url
+              width
+              height
+            }
+            price {
+              amount
+              currencyCode
+            }
+            compareAtPrice {
+              amount
+              currencyCode
+            }
+            product {
+              title
+            }
+            availableForSale
+            quantityAvailable
+            selectedOptions {
+              value
+            }
+          }
+        }
+      }`
+        const variables = { id: data.id }
+        const response: any = await storefrontApiClient(query, variables)
+        if (response.errors && response.errors.length != 0) {
+          throw response.errors[0].message
+        }
+        setCartItem(response.data.product.variantBySelectedOptions)
+        substractQuantityOfItem(response.data.product.variantBySelectedOptions.id, 1)
+      } else {
+        substractQuantityOfItem(cartItem.id, 1)
+      }
+      setNumInCart((prev) => prev - 1)
+    } catch (e) {
+      if (typeof e == 'string') {
+        setErrorMessage(e)
+      } else {
+        setErrorMessage('Something went wrong. Try again.')
+      }
+    }
+    setIsLoading(false);
+  }
 
 
   // future code to update the number of items in the cart
@@ -344,7 +468,7 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       </TouchableOpacity>
       <View style={styles.cartContainer} >
 
-        {isLoading ? (
+        {/* {isLoading ? (
           <ActivityIndicator style={styles.activityIndicator} color="#4B2D83" />
         ) : numInCart + localChanges !== 0 ? (
           <View style={styles.checkmarkContainer}>
@@ -366,10 +490,6 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                 <Text style={styles.numInCartText}>{numInCart}</Text>
               </View>
 
-
-              {/* <TouchableOpacity onPress={handleLocalAdd}>
-                <Icon name="plus" size={25} color="#4B2D83" style={styles.plusIcon} />
-              </TouchableOpacity> */}
               <TouchableOpacity onPress={handleLocalAdd} style={{ borderRadius: 40, width: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Icon name="plus" size={25} color="#4B2D83" />
               </TouchableOpacity>
@@ -380,7 +500,32 @@ const ProductCard = memo(({ data }: { data: Product }) => {
           <TouchableOpacity onPress={handleLocalAdd}>
             <Icon name="plus" size={25} color="#4B2D83" style={styles.plusIcon} />
           </TouchableOpacity>
-        ) : null}
+        ) : null} */}
+
+        {/* Add and subtract */}
+        {data.availableForSale ? (
+          <View style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', marginRight: 10, marginBottom: 6 }}>
+            {numInCart > 0 ?
+              (<>
+                <TouchableOpacity onPress={handleSubtractFromCart}>
+                  {/* <Text>-</Text> */}
+                  {numInCart === 1 ? (<Image
+                    source={require('../../../assets/TrashCan.png')}
+                    style={styles.trashCanImage}
+                    resizeMode="contain"
+                  />) :
+                    (<Icon name="minus" size={20} color="#4B2D83" />)}
+                </TouchableOpacity>
+                <Text style={{ color: 'black', fontWeight: '600', fontSize: 20, marginHorizontal: 12 }}>
+                  {numInCart}
+                </Text>
+              </>) : (<></>)}
+
+            <TouchableOpacity onPress={handleAddToCart}>
+              <Icon name="plus" size={25} color="#4B2D83" />
+            </TouchableOpacity>
+          </View>
+        ) : (<></>)}
 
       </View>
     </View>
@@ -490,10 +635,10 @@ const styles = StyleSheet.create({
   },
   trashCanIcon: {},
   trashCanImage: {
-    height: 30,
-    width: 30,
+    height: 28,
+    width: 28,
     marginRight: -5,
-    marginTop: 2,
+    marginBottom: -2
   },
   minusIcon: {
     color: '#4B2D83',

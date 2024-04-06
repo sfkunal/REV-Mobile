@@ -35,8 +35,6 @@ const Collection = ({ route, navigation }: Props) => {
   }, [])
 
   useEffect(() => {
-    console.log('route params', route.params)
-    console.log(String(navigation.getState().routes[0].name) === 'Home')
     if (String(navigation.getState().routes[0].name) === 'Home') {
       StatusBarManager.getHeight((statusBarHeight: any) => {
         setsbHeight(Number(statusBarHeight.height))
@@ -45,6 +43,15 @@ const Collection = ({ route, navigation }: Props) => {
       })
     }
   })
+
+  useEffect(() => {
+    // console.log('title', collection.title)
+    navigation.setOptions({
+      headerTitle: () => (
+        <Text style={{ color: '#4B2D83', fontSize: 30, fontWeight: '700' }}>{collection?.title}</Text>
+      ),
+    })
+  }, [collection])
 
   const fetchCollection = async () => {
     setIsLoading(true)

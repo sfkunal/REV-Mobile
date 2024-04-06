@@ -12,6 +12,7 @@ type CartContextType = {
   removeItemFromCart: (itemId: string) => void
   addQuantityOfItem: (itemId: string, quantity: number) => void
   substractQuantityOfItem: (itemId: string, quantity: number) => void
+  getProductQuantityInCart: (title: string) => number
 }
 
 const Context = createContext<CartContextType | null>(null)
@@ -124,6 +125,22 @@ export const CartContext = ({ children }: Props) => {
     return totalPrice
   }
 
+  // should probably check vs ID here. Something to re-evaluate.
+  // however, the issue is having productID vs variantID not matching (a pain)
+  // so checking against title suffices
+  const getProductQuantityInCart = (title: string) => {
+    let quantity = 0;
+    // console.log('CART ITEMS IN CONTEXT', cartItems.product.title)
+
+    cartItems.forEach(item => {
+      console.log(item.product.title, title)
+      if (item.product.title === title) {
+        quantity += item.quantity
+      }
+    })
+    return quantity
+  }
+
   // condition on quantity being greater than 0 to avoid negative edge cases. 
   const addItemToCart = (item: CartItem, quantity: number) => {
     // console.log("ADD ITEM TO CART CALLED")
@@ -189,8 +206,6 @@ export const CartContext = ({ children }: Props) => {
   }
 
   const substractQuantityOfItem = (itemId: string, quantity: number) => {
-    // console.log(cartItems[0].id)
-    // console.log('bf bites ID: ' + itemId)
     const item = cartItems.find((item) => item.id == itemId)
 
     // console.log(itemId, quantity)
@@ -214,8 +229,10 @@ export const CartContext = ({ children }: Props) => {
     ))
   }
 
+
+
   return (
-    <Context.Provider value={{ resetCart, getItemsCount, getTotalPrice, cartItems, addItemToCart, addQuantityOfItem, removeItemFromCart, substractQuantityOfItem }}>
+    <Context.Provider value={{ resetCart, getItemsCount, getTotalPrice, cartItems, addItemToCart, addQuantityOfItem, removeItemFromCart, substractQuantityOfItem, getProductQuantityInCart }}>
       {children}
     </Context.Provider>
   )

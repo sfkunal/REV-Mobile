@@ -6,7 +6,9 @@ import { fetchCollection } from '../../queries/fetchCollection'
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { HomeStackParamList } from '../../types/navigation';
 import { useNavigationContext } from '../../context/NavigationContext';
-import { BottomSheetSectionList } from '@gorhom/bottom-sheet';
+import { BottomSheetSectionList, TouchableHighlight } from '@gorhom/bottom-sheet';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { DownArrowIcon, RightArrowIcon } from '../shared/Icons';
 // const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
 
 if (Platform.OS === 'android') {
@@ -20,6 +22,7 @@ const MemoizedProductCard = React.memo(ProductCard)
 // creates a pair of product cards, so that they are vertically stacked
 const ProductCardPair = ({ item1, item2 }) => (
     <View style={{ flexDirection: 'column', display: 'flex' }}>
+        {item1 && <View style={{ height: 20 }} />}
         {item1 && <MemoizedProductCard data={item1} />}
         {item2 && <View style={{ height: 20 }} />}
         {item2 && <MemoizedProductCard data={item2} />}
@@ -206,11 +209,22 @@ const FullList = ({ sections, onLoadMore, onCollectionPress, isVerticalLoading, 
         const pairedData = pairProducts(item.data);
         return (
             <View style={{ flex: 1, borderWidth: 2, borderColor: '#4B2D83', marginLeft: 15, borderRadius: 30, width: '105%', paddingRight: 30, marginBottom: 28, }} >
-                <TouchableOpacity
-                    style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, paddingHorizontal: 20, position: 'absolute', top: -16, left: 4, zIndex: 11, backgroundColor: 'white' }}
-                    onPress={() => onCollectionPress(item.nav)}
+                <View
+                    style={{ borderRadius: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 5, paddingHorizontal: 20, position: 'absolute', top: -20, left: 4, zIndex: 11, backgroundColor: 'white' }}
+                // onPress={() => onCollectionPress(item.nav)}
                 >
-                    <Text style={{ fontSize: 22, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{item.title}</Text>
+                    <Text style={{ fontSize: 24, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>{item.title}</Text>
+                </View>
+
+                {/* see more section */}
+                <TouchableOpacity onPress={() => onCollectionPress(item.nav)}
+                    style={{ borderWidth: 2, borderColor: '#4B2D83', borderRadius: 30, display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-evenly', top: -12, position: 'absolute', right: 40, zIndex: 1, backgroundColor: 'white', width: 100, height: 23, }}
+                // onPress={() => onCollectionPress(item.nav)}
+                >
+                    <Text style={{ fontSize: 12, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>View all</Text>
+                    {/* <View style={{ marginTop: -22, marginRight: 0 }}>
+                        <RightArrowIcon size={6} color={'#4B2D83'} />
+                    </View> */}
                 </TouchableOpacity>
                 {/* loadingStates[index] ? (
                 <View style={styles.loadingContainer}>
