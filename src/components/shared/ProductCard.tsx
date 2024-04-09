@@ -1,13 +1,21 @@
-import React, { memo, useMemo, useState, useCallback, useEffect } from 'react';
+import React, { memo, useMemo, useState, useCallback, useEffect, useRef } from 'react';
 import { View, StyleSheet, Image, Dimensions, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { theme } from '../../constants/theme';
 import { useNavigationContext } from '../../context/NavigationContext';
 import { CartItem, Product } from '../../types/dataTypes';
-import Icon from 'react-native-vector-icons/FontAwesome';
+// import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useCartContext } from '../../context/CartContext';
 import { storefrontApiClient } from '../../utils/storefrontApiClient';
 import debounce from 'lodash/debounce';
 import { CartIcon } from './Icons';
+import { Animated } from 'react-native';
+import fonts from '../../../App'
+
+
+
+
+
 
 
 // structure planning:
@@ -43,12 +51,19 @@ const ProductCard = memo(({ data }: { data: Product }) => {
       : []
   );
 
-  useEffect(() => {
-    console.log("FROM PRODUCT CARD", data)
-    console.log(data.id)
-    console.log(getProductQuantityInCart(data.id))
+  // ANIMATIONS HANDLED HERE
+  const rotationAnim = useRef(new Animated.Value(0)).current
+  const rotate = () => {
+    Animated.timing(rotationAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => rotationAnim.setValue(0))
+  }
+  const rotation = rotationAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '-90deg']
   })
-
 
   const handleAddToCart = async () => {
     setIsLoading(true);
@@ -116,7 +131,6 @@ const ProductCard = memo(({ data }: { data: Product }) => {
 
     try {
       if (!cartItem) {
-        console.log('no cart item!')
         const query = `query getProductById($id: ID!) {
         product(id: $id) {
           variantBySelectedOptions(selectedOptions: ${JSON.stringify(selectedOptions).replaceAll(`"name"`, `name`).replaceAll(`"value"`, `value`)}) {
@@ -189,8 +203,8 @@ const ProductCard = memo(({ data }: { data: Product }) => {
                 bottom: -7,
                 backgroundColor: '#4a307e',
                 borderRadius: 10,
-                width: 20,
-                height: 20,
+                width: 30,
+                height: 30,
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderWidth: 1,
@@ -236,35 +250,6 @@ const ProductCard = memo(({ data }: { data: Product }) => {
     debounce(async (quantity) => {
 
 
-      // try {
-      //   console.log('NO CART ITEM')
-      //   console.log('cartItem: ', cartItem)
-      //   if (!cartItem) {
-      //     const newCartItem = await getCartItem(); // if no cart item, wait until we have one. 
-      //     console.log(newCartItem.id)
-      //     setCartItem(newCartItem)
-      //     addItemToCart(newCartItem, quantity)
-      //     console.log('HOPEFULLY CART ITEM:', cartItem)
-      //   }
-      //   console.log('quantity: ' + quantity)
-
-      //   if (quantity > 0) { // 1 or more to add
-      //     if (cartItem) { // sanity check to make sure that we have a cart item
-      //       console.log('cart ITEM ID', cartItem.id)
-      //       addQuantityOfItem(cartItem.id, quantity) // add that many items to the cart
-      //     } else { // 1 or more to subtract
-      //       // subtraction is weird so here is some extra protection against the negatives
-      //       const quantityToSubtract = Math.min(numInCart, Math.abs(quantity))
-      //       substractQuantityOfItem(cartItem.id, Math.abs(quantityToSubtract)) // parameter is positive so we keep it like that.
-      //       setNumInCart((prev) => Math.max(prev - quantityToSubtract, 0));
-      //     }
-      //   }
-      //   else {
-      //     console.log('something weird happening on the first render')
-      //   }
-      //   // once we update the cart, we can set the local changes to 0. But what if they press again in that split second? We can just subtract the quantity that we modified. 
-      //   setLocalChanges(localChanges => localChanges - quantity);
-      // }
 
       try {
         // const quantity = localChanges;
@@ -443,7 +428,16 @@ const ProductCard = memo(({ data }: { data: Product }) => {
         <View>
           <Image source={{ uri: data.images.nodes[0].url }} style={styles.image} />
           <View>
-            <Text style={styles.text} numberOfLines={1} ellipsizeMode="tail">
+            <Text style={{
+              marginTop: 10,
+              paddingRight: 14,
+              fontSize: 14,
+              fontWeight: '500',
+              color: 'black',
+              // letterSpacing: 1,
+              paddingBottom: 8,
+            }}
+              numberOfLines={1} ellipsizeMode="tail">
               {data.title}
             </Text>
             <View style={styles.priceContainer}>
@@ -465,70 +459,54 @@ const ProductCard = memo(({ data }: { data: Product }) => {
             </View>
           </View>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity >
       <View style={styles.cartContainer} >
-
-        {/* {isLoading ? (
-          <ActivityIndicator style={styles.activityIndicator} color="#4B2D83" />
-        ) : numInCart + localChanges !== 0 ? (
-          <View style={styles.checkmarkContainer}>
-            <View style={styles.checkmarkContent}>
-              {numInCart === 1 ? (
-                <TouchableOpacity onPress={handleLocalSubtract} style={styles.trashCanIcon}>
-                  <Image
-                    source={require('../../../assets/TrashCan.png')}
-                    style={styles.trashCanImage}
-                    resizeMode="contain"
-                  />
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity onPress={handleLocalSubtract} style={{ width: 30, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 0, borderRadius: 40, marginRight: -6 }}>
-                  <Text style={styles.minusIcon}>-</Text>
-                </TouchableOpacity>
-              )}
-              <View style={{}}>
-                <Text style={styles.numInCartText}>{numInCart}</Text>
-              </View>
-
-              <TouchableOpacity onPress={handleLocalAdd} style={{ borderRadius: 40, width: 30, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Icon name="plus" size={25} color="#4B2D83" />
-              </TouchableOpacity>
-
-            </View>
-          </View>
-        ) : selectedItem?.availableForSale ? (
-          <TouchableOpacity onPress={handleLocalAdd}>
-            <Icon name="plus" size={25} color="#4B2D83" style={styles.plusIcon} />
-          </TouchableOpacity>
-        ) : null} */}
 
         {/* Add and subtract */}
         {data.availableForSale ? (
-          <View style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', marginRight: 10, marginBottom: 6 }}>
+          <View style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', marginRight: 10, marginBottom: 0 }}>
             {numInCart > 0 ?
               (<>
                 <TouchableOpacity onPress={handleSubtractFromCart}>
                   {/* <Text>-</Text> */}
                   {numInCart === 1 ? (<Image
-                    source={require('../../../assets/TrashCan.png')}
+                    source={require('../../assets/TrashCan.png')}
                     style={styles.trashCanImage}
                     resizeMode="contain"
-                  />) :
-                    (<Icon name="minus" size={20} color="#4B2D83" />)}
+                  />) : (
+                    <View style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: -4 }}>
+                      <Text style={{ color: "#4B2D83", fontSize: 38, fontWeight: '800', marginBottom: -1 }}>-</Text>
+                    </View>
+
+                    // <FontAwesome name="minus" size={30} color="#4B2D83" />
+                    // <FontAwesome name="minus" size={20} color="#4B2D83" />
+                  )}
                 </TouchableOpacity>
-                <Text style={{ color: 'black', fontWeight: '600', fontSize: 20, marginHorizontal: 12 }}>
+                <Text style={{ color: 'black', fontWeight: '600', fontSize: 20, marginHorizontal: 8 }}>
                   {numInCart}
                 </Text>
               </>) : (<></>)}
 
-            <TouchableOpacity onPress={handleAddToCart}>
-              <Icon name="plus" size={25} color="#4B2D83" />
+            <TouchableOpacity onPress={() => {
+              if (numInCart === 0) {
+                rotate();
+              }
+
+              handleAddToCart();
+            }}>
+              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+                <View style={{ alignItems: 'center', display: 'flex', justifyContent: 'center', }}>
+                  <Text style={{ color: "#4B2D83", fontSize: 32, fontWeight: '900', marginBottom: 3 }}>+</Text>
+                </View>
+
+                {/* <FontAwesome name="plus" size={25} color="#4B2D83" /> */}
+              </Animated.View>
+
             </TouchableOpacity>
           </View>
         ) : (<></>)}
-
       </View>
-    </View>
+    </View >
   );
 });
 

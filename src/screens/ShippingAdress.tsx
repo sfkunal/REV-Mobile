@@ -13,10 +13,12 @@ import { AvailableShippingRatesType } from '../types/dataTypes'
 import { useAuthContext } from '../context/AuthContext'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
-import logoDark from '../../assets/logo-dark.png'
-import logo from '../../assets/logo.png'
+import logoDark from '../assets/logo-dark.png'
+import logo from '../assets/logo.png'
 import { ChevronDownIcon, PinIcon, RightArrowIcon } from '../components/shared/Icons'
 import * as WebBrowser from 'expo-web-browser'
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 
 
@@ -614,12 +616,11 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
   return (
     <>
-      <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'position' : 'height'} style={{ flex: 1 }}>
-        <View style={{
-          display: 'flex',
-          height: '100%',
-          // backgroundColor: '#D9D9D9', // figure out how to get a nice graident or sum
-        }}>
+      {/* <KeyboardAvoidingView behavior={Platform.OS == 'ios' ? 'position' : 'height'} style={{ flex: 1 }}> */}
+      <LinearGradient colors={['#FFFFFF', '#D9D9D9', '#FFFFFF']} style={{ flex: 1, marginTop: 8 }}>
+
+        {/* Container */}
+        <View style={{ flex: 1, justifyContent: 'space-between', height: '100%' }}>
 
           {/* top section */}
           <View style={{ display: 'flex', height: 110, marginBottom: 30, alignItems: 'center', }}>
@@ -709,12 +710,13 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           </View>
 
           {/* bottom section */}
-          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}>
-            {/* notes */}
-            <View style={{ backgroundColor: 'white', width: '90%' }}>
+          {/* <View style={{ flex: 1, alignItems: 'center', justifyContent: 'space-between', }}> */}
+          {/* notes */}
+          {/* took out the input field because that info doesnt go anywhere. Not an option on the web checkout */}
+          {/* in a v2 we could put this back in there and do checkout from here? */}
+          {/* <View style={{ width: '90%' }}>
               <Text style={{ color: '#4B2D83', fontSize: 15, fontWeight: '800', marginBottom: 10 }}>Leave a Message</Text>
-              {/* {!orderNotes ? (<Text style={{ color: '#9E9EA1', fontSize: 15, fontWeight: '500', position: 'absolute', bottom: 160, left: 10, zIndex: 10 }}>Apt #, door code, etc.</Text>) : ('')}
-              <Text></Text> */}
+              <Text></Text>
               <TextInput
                 placeholder='Apt #, door code, etc.'
                 placeholderTextColor={'#9d9da1'}
@@ -732,42 +734,43 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                   // textAlign: 'left',
                   // textAlignVertical: 'top',
 
-
-
-
                 }}
                 onChangeText={(text) => setOrderNotes(text)}
                 value={orderNotes}
                 multiline={true}
               />
+            </View> */}
+
+          {/* lower section */}
+          <View style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
+            <View style={{ width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 6 }}>
+              <Text style={{ color: '#aaaaaa', fontSize: 11, textAlign: 'center', lineHeight: 15, letterSpacing: 0.2 }}>
+                By submitting your order, you agree to REV’s Terms of Service and Privacy Policy, including all terms related to the purchase of alcohol and vape products. If your order includes alcohol or vape products, you certify that you are of lawful age to purchase and consume such products and that you will produce a valid ID at delivery. If we are unable to verify your age, you may be charged at NON-REFUNDABLE restocking fee.
+              </Text>
             </View>
-            <View style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', }}>
-              <View style={{ width: '90%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 6 }}>
-                <Text style={{ color: '#aaaaaa', fontSize: 11, textAlign: 'center', lineHeight: 15, letterSpacing: 0.2 }}>
-                  By submitting your order, you agree to REV’s Terms of Service and Privacy Policy, including all terms related to the purchase of alcohol and vape products. If your order includes alcohol or vape products, you certify that you are of lawful age to purchase and consume such products and that you will produce a valid ID at delivery. If we are unable to verify your age, you may be charged at NON-REFUNDABLE restocking fee.
-                </Text>
-              </View>
 
-              <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50, marginBottom: 10 }]}>
+            <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50, marginBottom: 10 }]}>
 
-                {errorMessage.length != 0 &&
-                  <Text style={styles.error}>{errorMessage}</Text>
-                }
-                {isLoading ? (<TouchableOpacity style={styles.checkoutButton} >
-                  <ActivityIndicator size='small' />
-                </TouchableOpacity>)
-                  // TODO CHANGE THIS ONPRESS TO PULL UP WEBURL
-                  : (<TouchableOpacity style={styles.checkoutButton} onPress={sendToCheckout}>
-                    <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Checkout</Text>
-                  </TouchableOpacity>)}
-              </View>
+              {errorMessage.length != 0 &&
+                <Text style={styles.error}>{errorMessage}</Text>
+              }
+              {isLoading ? (<TouchableOpacity style={styles.checkoutButton} >
+                <ActivityIndicator size='small' />
+              </TouchableOpacity>)
+                // TODO CHANGE THIS ONPRESS TO PULL UP WEBURL
+                : (<TouchableOpacity style={styles.checkoutButton} onPress={sendToCheckout}>
+                  <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Checkout</Text>
+                </TouchableOpacity>)}
             </View>
-            {/* checkout button */}
-
-
           </View>
+          {/* checkout button */}
+
+
         </View>
-      </KeyboardAvoidingView >
+
+        {/* </KeyboardAvoidingView > */}
+
+      </LinearGradient >
 
       <BottomSheet
         ref={bottomSheetRef}
@@ -794,14 +797,14 @@ const ShippingAddress = ({ route, navigation }: Props) => {
               <Text style={styles.textDescription}>{textDescription}</Text>
             </View>
             <Image source={theme.dark == true ? logoDark : logo} style={styles.image} />
-            <View style={{ alignItems: 'center', justifyContent: 'center', width: 200, height: 200, backgroundColor: '#4B2D83' }}>
-              <Text style={{ fontSize: 20, fontWeight: '600', color: 'white' }}>
+            <View style={{ alignItems: 'center', justifyContent: 'center', width: 200, height: 200, }}>
+              <Text style={{ fontSize: 20, fontWeight: '600' }} >
                 PLACEHOLDER
               </Text>
             </View>
           </View>
         </View>
-      </BottomSheet>
+      </BottomSheet >
     </>
   )
 }

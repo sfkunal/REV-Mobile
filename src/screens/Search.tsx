@@ -11,25 +11,27 @@ import { useNavigation } from '@react-navigation/native';
 import { useNavigationContext } from '../context/NavigationContext';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SearchIcon } from '../components/shared/Icons';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 // importing all of the thumbnails
-import AllProducts from '../../assets/searchThumbnails/AllProducts.png'
-import Beer from '../../assets/searchThumbnails/Beer.png'
-import Booze from '../../assets/searchThumbnails/Booze.png'
-import Candy from '../../assets/searchThumbnails/Candy.png'
-import Chips from '../../assets/searchThumbnails/Chips.png'
-import Drinks from '../../assets/searchThumbnails/Drinks.png'
-import Energy from '../../assets/searchThumbnails/Energy.png'
-import Healthy from '../../assets/searchThumbnails/Healthy.png'
-import Ice_Cream from '../../assets/searchThumbnails/Ice_Cream.png'
-import International from '../../assets/searchThumbnails/International.png'
-import Personal from '../../assets/searchThumbnails/Personal.png'
-import Popular from '../../assets/searchThumbnails/Popular.png'
-import Ready from '../../assets/searchThumbnails/Ready.png'
-import Snacks from '../../assets/searchThumbnails/Snacks.png'
-import Student from '../../assets/searchThumbnails/Student.png'
-import Sweet from '../../assets/searchThumbnails/Sweet.png'
-import Nicotine from '../../assets/searchThumbnails/Nicotine.png'
+import AllProducts from '../assets/searchThumbnails/AllProducts.png'
+import Beer from '../assets/searchThumbnails/Beer.png'
+import Booze from '../assets/searchThumbnails/Booze.png'
+import Candy from '../assets/searchThumbnails/Candy.png'
+import Chips from '../assets/searchThumbnails/Chips.png'
+import Drinks from '../assets/searchThumbnails/Drinks.png'
+import Energy from '../assets/searchThumbnails/Energy.png'
+import Healthy from '../assets/searchThumbnails/Healthy.png'
+import Ice_Cream from '../assets/searchThumbnails/Ice_Cream.png'
+import International from '../assets/searchThumbnails/International.png'
+import Personal from '../assets/searchThumbnails/Personal.png'
+import Popular from '../assets/searchThumbnails/Popular.png'
+import Ready from '../assets/searchThumbnails/Ready.png'
+import Snacks from '../assets/searchThumbnails/Snacks.png'
+import Student from '../assets/searchThumbnails/Student.png'
+import Sweet from '../assets/searchThumbnails/Sweet.png'
+import Nicotine from '../assets/searchThumbnails/Nicotine.png'
 
 type Props = NativeStackScreenProps<SearchStackParamList, 'Search'>
 
@@ -246,7 +248,7 @@ const Search = ({ navigation }: Props) => {
     }
   }, [searchInput]);
 
-  const renderCollectionItem = ({ item }) => {
+  const renderCollectionItem = ({ item }: { item: any }) => {
     let thumbnail = <></>;
     const w = windowWidth * 0.5 // this should be 0.427, but there is x-margin in the png
     // is this the best way to do it? 
@@ -380,27 +382,6 @@ const Search = ({ navigation }: Props) => {
   }
 
   // old code to render a collection item
-  // const renderCollectionItem = ({ item }) => (
-  //   <>
-  //     <TouchableOpacity>
-
-  //     </TouchableOpacity>
-  //     <LinearGradient
-  //       colors={['#8671ae', '#d9d9d9']} // Replace with your desired gradient colors
-  //       style={styles.collectionContainer}
-  //     >
-  //       <TouchableOpacity
-  //         key={item.id}
-  //         // style={styles.collectionContainer}
-  //         onPress={() => navigation.navigate('Collection', { collectionId: item.id })}
-  //       >
-  //         <Text style={styles.text}>{item.title}</Text>
-
-  //         {/* Optional: Add more details or images here */}
-  //       </TouchableOpacity>
-  //     </LinearGradient>
-  //   </>
-  // );
 
   return (
     <View style={{ marginTop: 10, flex: 1, backgroundColor: '#FFFFFF' }}>
@@ -418,8 +399,10 @@ const Search = ({ navigation }: Props) => {
           autoCapitalize='none'
         />
         {searchInput && searchInput.length !== 0 ? (<TouchableOpacity onPress={() => setSearchInput('')}
-          style={{ width: 25, height: 25, borderRadius: 20, backgroundColor: 'gray', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}>
+          style={{ width: 25, height: 25, borderRadius: 20, backgroundColor: 'gray', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}
+        >
           <Text style={{ color: 'white', fontWeight: '900' }}>X</Text>
+          {/* <Icon name="times-circle" size={25} color='white' /> */}
         </TouchableOpacity>) : (null)}
       </View>
 
@@ -444,15 +427,17 @@ const Search = ({ navigation }: Props) => {
                     contentContainerStyle={styles.container}
                   />
                 ) : (
+                  <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                    <Text style={{}}>No results matching your search</Text>
+                  </View>
                   // TODO I dont think this actually shows up
-                  <ScrollView
-                    contentContainerStyle={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-                    scrollEnabled={false}
-                    keyboardDismissMode="on-drag"
-                  >
+                  // <ScrollView
+                  //   contentContainerStyle={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+                  //   scrollEnabled={false}
+                  //   keyboardDismissMode="on-drag"
+                  // >
 
-                    <Text style={styles.text}>No results matching your search.</Text>
-                  </ScrollView>
+                  // </ScrollView>
                 )
               ) : (
 
@@ -471,8 +456,9 @@ const Search = ({ navigation }: Props) => {
             </>
           )}
         </>
-      )}
-    </View>
+      )
+      }
+    </View >
   );
 }
 

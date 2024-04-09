@@ -2,8 +2,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native'
 import { theme } from '../constants/theme'
 import { LoginStackParamList } from '../types/navigation'
-import logoDark from '../../assets/logo-dark.png'
-import logo from '../../assets/logo.png'
+import logoDark from '../assets/logo-dark.png'
+import logo from '../assets/logo.png'
 import { config } from '../../config'
 import { useEffect } from 'react'
 import { TouchableOpacity } from 'react-native-gesture-handler'
@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 32,
     justifyContent: 'space-between',
-    backgroundColor: 'orange'
   },
   text: {
     paddingHorizontal: 32,

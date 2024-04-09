@@ -177,7 +177,7 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
                                 />
                                 {/* the touchable to toggle pw sight */}
                                 <TouchableOpacity onPress={toggle}
-                                    style={{ width: 40, height: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', right: 2, bottom: 21, }}>
+                                    style={{ width: 40, height: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', right: 4, bottom: errorMessage ? (23) : (23), }}>
                                     {secureTextEntry ? (<EyeOffIcon size={30} color={'black'} />) : (<EyeIcon size={30} color={'black'} />)}
                                 </TouchableOpacity>
                             </View>
@@ -194,7 +194,7 @@ const OnboardingEmail = ({ navigation, route }: Props) => {
                             {loading ?
                                 <ActivityIndicator /> :
                                 <TouchableOpacity
-                                    style={firstName && lastName ? (styles.nextCircle) : (styles.nextCircleEmpty)}
+                                    style={email && password ? (styles.nextCircle) : (styles.nextCircleEmpty)}
                                     // style={styles.loginContainer}
                                     onPress={handleNext}>
                                     {/* <Text style={styles.loginText}>Next</Text> */}

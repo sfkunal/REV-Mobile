@@ -26,7 +26,7 @@ const Wishlist = ({ navigation }: Props) => {
       headerLeft: () => (
         <>
           {Platform.OS == 'ios' ?
-            <TouchableOpacity onPress={() => navigation.goBack()}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -10 }}>
               <BackArrow
                 color={'#4B2D83'}
                 size={20}
@@ -155,9 +155,10 @@ const styles = StyleSheet.create({
     paddingLeft: 14,
   },
   screenTitle: {
-    fontWeight: '700',
+    fontWeight: '800',
+    // color: theme.colors.text,
+    fontSize: 24,
     color: '#4B2D83',
-    fontSize: 25
   },
   text: {
     color: theme.colors.text,

@@ -1,14 +1,17 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useState, useEffect } from 'react'
-import { View, Text, ActivityIndicator, StyleSheet, FlatList, Image, Dimensions, NativeModules, StatusBar, Platform, TouchableOpacity } from 'react-native'
-import { BackArrow, BackArrowIcon } from '../components/shared/Icons'
+import { View, Text, ActivityIndicator, StyleSheet, FlatList, Image, Dimensions, NativeModules, StatusBar, Platform, TouchableOpacity, ScrollView } from 'react-native'
+import { BackArrow, BackArrowIcon, SearchIcon } from '../components/shared/Icons'
 import ProductCard from '../components/shared/ProductCard'
 import { theme } from '../constants/theme'
 import { Product } from '../types/dataTypes'
 import { MenuStackParamList } from '../types/navigation'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
-import logo from '../../assets/logo.png'
-import splash from '../../assets/splash.png'
+import logo from '../assets/logo.png'
+import splash from '../assets/splash.png'
+import { TextInput } from 'react-native-gesture-handler'
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 const screenWidth = Dimensions.get('screen').width
 
@@ -20,10 +23,31 @@ const Collection = ({ route, navigation }: Props) => {
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [pTop, setPTop] = useState<number>(0)
+  const [searchInput, setSearchInput] = useState('')
 
   const [collection, setCollection] = useState<any | null>(null)
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
+  const [products, setProducts] = useState<Product[]>([])
+
+  const windowWidth = Dimensions.get('window').width
+  const screenWidth = Dimensions.get('screen').width
+
+  useEffect(() => {
+    if (searchInput.length > 0) {
+      try {
+        search();
+      } catch (e) {
+        if (typeof e === 'string') {
+          setErrorMessage(e);
+        } else {
+          setErrorMessage('Something went wrong. Try again.');
+        }
+      }
+    } else {
+      setProducts([]);
+    }
+  }, [searchInput]);
 
   useEffect(() => {
     if (Platform.OS === "ios") {
@@ -48,10 +72,70 @@ const Collection = ({ route, navigation }: Props) => {
     // console.log('title', collection.title)
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={{ color: '#4B2D83', fontSize: 30, fontWeight: '700' }}>{collection?.title}</Text>
+        <Text style={styles.screenTitle}>{collection?.title}</Text>
       ),
     })
   }, [collection])
+
+  const search = async () => {
+    setIsLoading(true)
+    setErrorMessage('')
+
+    const query = `{
+      products(first: 64, query: "title:${searchInput}*") {
+        nodes {
+          id
+          title
+          description
+          vendor
+          availableForSale
+          options {
+            id
+            name
+            values
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          compareAtPriceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+          variants(first:200) {
+            nodes {
+              availableForSale
+              selectedOptions {
+                value
+              }
+            }
+          }
+          images(first: 10) {
+            nodes {
+              url
+              width
+              height
+            }
+          }
+        }
+      }
+    }`
+
+    const response: any = await storefrontApiClient(query)
+
+    if (response.errors && response.errors.length != 0) {
+      setIsLoading(false)
+      throw response.errors[0].message
+    }
+
+    setProducts(response.data.products.nodes as Product[])
+
+    setIsLoading(false)
+  }
 
   const fetchCollection = async () => {
     setIsLoading(true)
@@ -132,7 +216,7 @@ const Collection = ({ route, navigation }: Props) => {
         //   size={20}
         //   onPress={() => navigation.goBack()}
         // />
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: -12 }}>
           <BackArrow color={'#4B2D83'}
             size={20}
           />
@@ -158,44 +242,90 @@ const Collection = ({ route, navigation }: Props) => {
 
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', paddingTop: 10 + pTop, width: '100%' }}>
-      {isLoading ?
-        <ActivityIndicator style={{ alignSelf: 'center' }} /> :
-        <FlatList
-          data={collection.products.nodes as Product[]}
-          renderItem={({ item }) => <ProductCard data={item} />}
-          keyboardDismissMode='on-drag'
-          showsVerticalScrollIndicator={false}
-          numColumns={2}
-          contentContainerStyle={styles.container}
-          ListHeaderComponent={<View style={{}} />}
-        //   () => (
-        //   <View style={{ marginHorizontal: -14 }}>
-        //     {/* <View style={[styles.titleContainer]}>
-        //       <Text style={styles.title}>{collection.title}</Text>
-        //     </View>
-        //     { collection.description && <Text style={styles.text}>{collection.description}</Text>}              */}
-        //     {/* <FlatList 
-        //       data={collection.products.nodes.slice(0,2) as Product[]}
-        //       renderItem={({item}) => <ProductCard data={item} /> }
-        //       keyboardDismissMode='on-drag'
-        //       showsVerticalScrollIndicator={false}
-        //       numColumns={2}
-        //       contentContainerStyle={{marginHorizontal: 14}}
-        //     /> */}
+    <View style={{ flex: 1, paddingTop: 10 + pTop, width: '100%' }}>
 
 
-        //     {/* This is what the preview picture is */}
-        //     {/* {collection && collection.image &&
-        //       <Image
-        //         source={{ uri: collection.image.url }}
-        //         style={{ width: screenWidth, height: screenWidth * collection.image.height / collection.image.width, marginBottom: 16 }}
-        //       />
-        //     } */}
-        //   </View>
-        // )}
+      {/* search bar */}
+      <View style={{ width: '95%', height: 45, backgroundColor: '#D9D9D9', display: 'flex', flexDirection: 'row', alignItems: 'center', borderTopRightRadius: 30, borderBottomRightRadius: 30, marginBottom: 10 }}>
+        <View style={{ marginLeft: 20 }}>
+          <SearchIcon color='black' size={20} />
+        </View>
+
+        <TextInput
+          placeholder='Search'
+          placeholderTextColor={theme.colors.disabledText}
+          style={{ backgroundColor: '#D9D9D9', width: windowWidth - 100, marginLeft: 6, fontSize: 18, fontWeight: '500', padding: 10 }}
+          onChangeText={(text) => setSearchInput(text)}
+          value={searchInput}
+          autoCapitalize='none'
         />
-      }
+        {searchInput && searchInput.length !== 0 ? (<TouchableOpacity onPress={() => setSearchInput('')}
+          style={{ width: 25, height: 25, borderRadius: 20, backgroundColor: 'gray', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 2 }}
+        >
+          <Text style={{ color: 'white', fontWeight: '900' }}>X</Text>
+          {/* <Icon name="times-circle" size={25} color='white' /> */}
+        </TouchableOpacity>) : (null)}
+      </View>
+
+
+      {/* {isLoading ?
+        <View style={{ height: '100%', justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator style={{ alignSelf: 'center' }} /></View>
+        : { searchInput && searchInput.length !== 0 ? <T() : (<FlatList
+        data={collection.products.nodes as Product[]}
+        renderItem={({ item }) => <ProductCard data={item} />}
+        keyboardDismissMode='on-drag'
+        showsVerticalScrollIndicator={false}
+        numColumns={2}
+        contentContainerStyle={styles.container}
+        ListHeaderComponent={<View style={{}} />}
+      />)}
+        
+      } */}
+
+      {isLoading ? (
+        <View style={{ height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size={"small"} />
+        </View>
+      ) : (
+        <>
+          {errorMessage !== "" ? (
+            <Text style={styles.error}>{errorMessage}</Text>
+          ) : (
+            <>
+              {searchInput.length > 0 ? (
+                products.length !== 0 ? (
+                  <FlatList
+                    data={products}
+                    renderItem={({ item }) => <ProductCard data={item} />}
+                    keyboardDismissMode="on-drag"
+                    showsVerticalScrollIndicator={false}
+                    numColumns={2}
+                    contentContainerStyle={styles.container}
+                  />
+                ) : (
+                  // TODO I dont think this actually shows up
+                  <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+                    <Text style={{}}>No results matching your search</Text>
+                  </View>
+                )
+              ) : (
+
+                <View style={{ paddingTop: 10, }}>
+                  {/* <PopularThumbNail color='black' size={24} /> */}
+
+                  <FlatList
+                    data={collection.products.nodes as Product[]}
+                    renderItem={({ item }) => <ProductCard data={item} />}
+                    keyExtractor={(item) => item.id}
+                    numColumns={2}
+                    contentContainerStyle={{ paddingHorizontal: 14, flexGrow: 1, paddingBottom: 50, }}
+                  />
+                </View>
+              )}
+            </>
+          )}
+        </>
+      )}
     </View>
   )
 }
@@ -233,5 +363,15 @@ const styles = StyleSheet.create({
     width: screenWidth,
     height: 400,
     marginBottom: 16
+  },
+  error: {
+    color: 'red',
+    alignSelf: 'center',
+    marginTop: 12
+  },
+  screenTitle: {
+    fontWeight: '800',
+    fontSize: 24,
+    color: '#4B2D83',
   }
 })

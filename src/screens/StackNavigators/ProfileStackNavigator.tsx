@@ -3,7 +3,7 @@ import { theme } from '../../constants/theme'
 import { ProfileStackParamList } from '../../types/navigation'
 import { NavigationContainer } from '@react-navigation/native'
 import { Image, View, Text } from 'react-native'
-import logo from '../../../assets/logo.png'
+import logo from '../../assets/logo.png'
 
 import Profile from '../Profile'
 import PersonalInformations from '../PersonalInformations'

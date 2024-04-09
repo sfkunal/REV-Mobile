@@ -11,7 +11,7 @@ import { CartIcon } from '../../components/shared/Icons';
 import { useNavigationContext } from '../../context/NavigationContext';
 import { View, Text, Image } from 'react-native';
 import { useCartContext } from '../../context/CartContext';
-import logo from '../../../assets/logo.png'
+import logo from '../../assets/logo.png'
 
 
 const SearchStack = createNativeStackNavigator<SearchStackParamList>()

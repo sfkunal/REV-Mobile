@@ -4,8 +4,8 @@ import { theme } from '../constants/theme'
 import { useAuthContext } from '../context/AuthContext'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { LoginStackParamList } from '../types/navigation'
-import logoDark from '../../assets/logo-dark.png'
-import logo from '../../assets/logo.png'
+import logoDark from '../assets/logo-dark.png'
+import logo from '../assets/logo.png'
 import FillButton from '../components/shared/FillButton'
 import { useNavigationContext } from '../context/NavigationContext'
 import { config } from '../../config'
@@ -156,9 +156,9 @@ const Register = ({ navigation }: Props) => {
             </Text>
           </Text>
           <FillButton
-              title='next'
-              onPress={() => { navigation.navigate('OnboardingName'); }}
-            />
+            title='next'
+            onPress={() => { navigation.navigate('OnboardingName'); }}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

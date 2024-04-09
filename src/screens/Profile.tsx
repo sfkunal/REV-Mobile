@@ -11,9 +11,10 @@ import * as WebBrowser from 'expo-web-browser'
 import { config } from '../../config'
 import { MailIcon, RightArrowIcon } from '../components/shared/Icons'
 import { useCartContext } from '../context/CartContext'
-import phone from '../../assets/phone.png'
+import phone from '../assets/phone.png'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
 import { Order } from '../types/dataTypes'
+import fonts from '../../App'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>
 
@@ -24,7 +25,6 @@ const Profile = ({ navigation }: Props) => {
   const [isLoading, setIsLoading] = useState<Boolean>(false)
   const [errorMessage, setErrorMessage] = useState<string>('')
   const [numOrders, setNumOrders] = useState<number>(0);
-
 
   // useEffect(() => {
   //   navigation.setOptions({
@@ -60,6 +60,8 @@ const Profile = ({ navigation }: Props) => {
   //     ]
   //   )
   // }
+
+
 
   const fetchOrderCount = async () => {
     setIsLoading(true)
@@ -102,37 +104,55 @@ const Profile = ({ navigation }: Props) => {
   }, [])
 
   const handleEmailPress = () => {
-
     const emailAddress = 'team@rev.delivery' // could add things like subject and message if you wanted to get spicy
     const mailToLink = `mailto:${emailAddress}`
-    try {
-      Linking.openURL(mailToLink)
-    } catch (e) {
-      Alert.alert('Oops')
-    }
+    Linking.openURL(mailToLink)
+      .catch((err) => {
+        console.error('Failed to open email app:', err);
+        Alert.alert('Oops! We couldn\'t find your email app', 'Please try manually inputting team@rev.delivery');
+      });
+    // try {
+    //   Linking.openURL(mailToLink)
+    // } catch (e) {
+    //   Alert.alert('Oops')
+    // }
 
   }
 
+  // if calling is supported, we will call the number. If not supported, we will text the number
   const handlePhonePress = () => {
-    const phoneNumber = '(206)833-6358'
-    const smsLink = `sms:${phoneNumber}`
+    console.log('phone has been pressed')
+    // local format, not international
+    // const phoneNumber = '(206)833-6358';
+    const phoneNumber = '2068336358' // rev number
+    const callLink = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
+
+    const smsLink = `sms:${phoneNumber.replace(/[^\d+]/g, '')}`
+    Linking.openURL(callLink).catch((e) => console.log(e))
     try {
-      Linking.openURL(smsLink)
+      Linking.canOpenURL(callLink).then((supported) => {
+        if (supported) {
+          Linking.openURL(callLink).catch(error => console.log(error))
+        } else {
+          Linking.openURL(smsLink).catch(error => console.log(error))
+        }
+      })
     } catch (e) {
-      Alert.alert('Oops')
+      Alert.alert('Oops! Please try again later or manually enter the phone number')
     }
+
+
   }
 
   return (
+
     <View style={styles.container}>
       {/* upper */}
       <View>
         {/* Hi, Username */}
-        <Text style={{
-          fontSize: 20,
-          marginVertical: 8,
-          fontWeight: 'bold', color: '#4B2D83'
-        }}>Hi, {userToken?.customer.firstName}</Text>
+        <Text
+          style={{ fontSize: 20, marginVertical: 8, fontWeight: 'bold', color: '#4B2D83', }}
+        >Hi, {userToken?.customer.firstName}</Text>
 
 
 
@@ -184,7 +204,7 @@ const Profile = ({ navigation }: Props) => {
       </View>
 
       {/* Lower */}
-      <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'column' }} >
+      <View style={{ flex: 1, justifyContent: 'flex-end', flexDirection: 'column', marginBottom: 75 }} >
         {/* STORE HOURS */}
         < View style={{
           flexDirection: 'column',
@@ -236,8 +256,11 @@ const Profile = ({ navigation }: Props) => {
                 <View style={{ justifyContent: 'center', marginRight: 6, marginTop: 2 }}>
                   <MailIcon color={'black'} size={20} />
                 </View>
+                <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', }}>
+                  <Text onPress={() => handleEmailPress()} style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline', }}>team@rev.delivery</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '300', }}> for business inquiries</Text>
+                </View>
 
-                <Text onPress={handleEmailPress} style={{ fontSize: 18, fontWeight: '300', textDecorationLine: 'underline' }}>team@rev.delivery</Text>
               </View>
 
               <View style={{ width: 250, height: 1, borderRadius: 2, backgroundColor: '#3C3C4333' }}></View>
@@ -275,7 +298,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 14,
     paddingTop: 8,
-    width: '95%',
+    width: '96%',
     alignSelf: 'center',
     marginTop: 12,
     // backgroundColor: '#f2f2f2',

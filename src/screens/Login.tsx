@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { View, Text, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Image, ActivityIndicator, TextInput, TouchableOpacity, Keyboard } from 'react-native'
 import { useAuthContext } from '../context/AuthContext'
-import logoDark from '../../assets/logo-dark.png'
-import logo from '../../assets/logo.png'
+import logoDark from '../assets/logo-dark.png'
+import logo from '../assets/logo.png'
 import { theme } from '../constants/theme'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { LoginStackParamList } from '../types/navigation'
@@ -52,7 +52,7 @@ const Login = ({ navigation }: Props) => {
       // rootNavigation.navigate('Home')
       // navigation.navigate('Home')
     }
-    console.log(userToken)
+    // console.log(userToken)
   })
 
 
@@ -95,10 +95,10 @@ const Login = ({ navigation }: Props) => {
         }}>
           {/* top container */}
           <View style={{ display: 'flex', alignItems: 'center', height: 150 }}>
-            <Image source={logo} resizeMode='contain' style={{ width: 100, height: 35, marginBottom: 35 }} />
-            <View>
+            {/* <Image source={logo} resizeMode='contain' style={{ width: 100, height: 35, marginBottom: 35 }} /> */}
+            <View style={{ alignItems: 'center' }}>
               <Text style={{ fontSize: 36, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83', marginBottom: 4 }} >
-                Welcome to REV!
+                Welcome to REV
               </Text>
               <Text style={{ fontSize: 14 }}>
                 Log in or create an account to get started
@@ -107,9 +107,13 @@ const Login = ({ navigation }: Props) => {
 
           </View>
 
+
           {/* input field container */}
           <View style={{ width: '90%', display: 'flex', alignItems: 'center' }}>
-            {errorMessage ? (<Text style={{ color: 'red' }} numberOfLines={1}>{errorMessage}</Text>) : (<View></View>)}
+            <View style={{ marginBottom: 20, marginTop: -20 }} >
+              {errorMessage ? (<Text style={{ color: 'red' }} numberOfLines={1}>{errorMessage}</Text>) : (<View></View>)}
+            </View>
+
             <TextInput
               placeholder='Email'
               placeholderTextColor={theme.colors.disabledText}
@@ -134,7 +138,7 @@ const Login = ({ navigation }: Props) => {
               onFocus={() => Platform.OS == 'android' && scrollRef.current.scrollTo({ y: 60, animated: true })}
             />
             <TouchableOpacity onPress={toggle}
-              style={{ width: 40, height: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', right: 2, top: 73, }}>
+              style={{ width: 40, height: 10, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'absolute', right: 2, top: errorMessage ? (90) : (73), }}>
               {secureTextEntry ? (<EyeOffIcon size={30} color={'black'} />) : (<EyeIcon size={30} color={'black'} />)}
             </TouchableOpacity>
             <Text
@@ -146,7 +150,7 @@ const Login = ({ navigation }: Props) => {
           </View>
 
           {/* lower button container */}
-          <View style={{ marginBottom: 40 }}>
+          <View style={{ marginBottom: 40, marginTop: errorMessage ? (-20) : (0) }}>
             {/* log in button */}
             <TouchableOpacity onPress={signInButton} style={{ backgroundColor: '#4B2D83', paddingHorizontal: 40, paddingVertical: 8, maxWidth: '90%', borderRadius: 20, marginTop: 28, display: 'flex', justifyContent: 'center', flexDirection: 'row' }}>
               <Text style={{ color: 'white', fontSize: 14, fontWeight: '700' }} numberOfLines={1}>

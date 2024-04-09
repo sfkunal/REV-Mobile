@@ -13,9 +13,10 @@ import { useCartContext } from '../context/CartContext'
 import { FontAwesome } from '@expo/vector-icons'
 import { useWishlistContext } from '../context/WishlistContext'
 import { useNavigationContext } from '../context/NavigationContext'
-import { BackArrow, CartIcon, DownArrowIcon, UpArrowIcon } from '../components/shared/Icons'
-import logo from '../../assets/logo.png'
-import Icon from 'react-native-vector-icons/FontAwesome';
+import { BackArrow, CartIcon, DownArrowIcon, HeartSolid, UpArrowIcon } from '../components/shared/Icons'
+import logo from '../assets/logo.png'
+// import Icon from 'react-native-vector-icons/FontAwesome';
+import { Animated } from 'react-native';
 
 
 const screenWidth = Dimensions.get('screen').width
@@ -30,7 +31,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
   const { rootNavigation } = useNavigationContext();
   const { getItemsCount, cartItems, getProductQuantityInCart } = useCartContext();
   let cartItemCount = getItemsCount();
-  const { addQuantityOfItem, substractQuantityOfItem } = useCartContext()
+  const { substractQuantityOfItem } = useCartContext()
   // initialize the quantity of items in the cart to be just that, using our cartContext hook. Triggered on every re-render
   const [itemQuantity, setItemQuantity] = useState(() => getProductQuantityInCart(route.params.data.title))
   const [showConfirmation, setShowConfirmation] = useState<Boolean>(false)
@@ -38,10 +39,47 @@ const ProductScreen = ({ route, navigation }: Props) => {
 
   const [inWishlist, setInWishlist] = useState<boolean>(isInWishList(data.id))
 
-
-  useEffect(() => {
-    console.log('IS IN WISHLIST', inWishlist)
+  // ANIMATIONS HANDLED HERE
+  // rotate in
+  const rotationAnimIn = useRef(new Animated.Value(0)).current
+  const rotateIn = () => {
+    Animated.timing(rotationAnimIn, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => rotationAnimIn.setValue(0))
+  }
+  const rotationIn = rotationAnimIn.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '-90deg']
   })
+
+  // rotate out
+  const rotationAnimOut = useRef(new Animated.Value(0)).current
+  const rotateOut = () => {
+    Animated.timing(rotationAnimOut, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => rotationAnimOut.setValue(0))
+  }
+  const rotationOut = rotationAnimOut.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '90deg']
+  })
+
+  // fade in
+  const fadeInOpacity = useRef(new Animated.Value(0)).current;
+  const fadeIn = () => {
+    Animated.timing(fadeInOpacity, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => console.log('FADE CALLED'));
+  }
+
+
+
 
   useEffect(() => {
     navigation.setOptions({
@@ -126,7 +164,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
 
   var bottomSheetMode: 'add' | 'buy' = 'add'
   const [bottomSheetModeState, setBottomSheetModeState] = useState<'add' | 'buy'>('add')
-  const snapPoints = useMemo(() => [350, "80%"], [])
+  const snapPoints = useMemo(() => [350, "88%"], [])
   const snapPoints2 = useMemo(() => [220], [])
   const snapPoints3 = useMemo(() => [170], [])
   const sheetRef2 = useRef<BottomSheet>(null)
@@ -249,17 +287,6 @@ const ProductScreen = ({ route, navigation }: Props) => {
         addItemToCart(cartItem, 1)
       }
 
-
-      // addItemToCart(response.data.product.variantBySelectedOptions as CartItem, 1)
-
-      // idk what this does
-      // if (bottomSheetMode == 'buy') {
-      //   navigation.goBack()
-      //   navigation.push('Cart')
-      // } else {
-      //   sheetRef3.current.snapToIndex(0)
-      //   sheetRef2.current.close()
-      // }
       setItemQuantity((prev) => prev + 1)
       setShowConfirmation(true);
       setTimeout(() => setShowConfirmation(false), 2000)
@@ -360,26 +387,30 @@ const ProductScreen = ({ route, navigation }: Props) => {
               </Text>
               {/* <FontAwesomeIcon icon="fa-regular fa-heart" /> */}
 
-              {inWishlist ? (<TouchableOpacity style={{ marginRight: 8 }}
+              {inWishlist ? (<TouchableOpacity style={{ marginRight: 10 }}
                 onPress={() => {
                   removeItemFromWishlist(data.id)
                   setInWishlist(!inWishlist)
                 }}>
-                <Icon name="heart" size={25} color="#4B2D83" />
+                {/* <FontAwesome name="heart" size={30} color="#4B2D83" /> */}
+                {/* <Text>FULL</Text> */}
+                <Image
+                  source={require('../assets/FullHeart.png')}
+                  style={styles.trashCanImage}
+                  resizeMode="contain"
+                />
               </TouchableOpacity>) : (<TouchableOpacity style={{ marginRight: 10 }}
                 onPress={() => {
                   addItemToWishlist(data.id)
                   setInWishlist(!inWishlist)
                 }}>
-                <Icon name="heart-o" size={25} color="#4B2D83" />
+                {/* <FontAwesome name="heart-o" size={30} color="#4B2D83" /> */}
+                <Image
+                  source={require('../assets/OpenHeart.png')}
+                  style={styles.trashCanImage}
+                  resizeMode="contain"
+                />
               </TouchableOpacity>)}
-
-
-
-
-
-
-
             </View>
 
 
@@ -395,89 +426,60 @@ const ProductScreen = ({ route, navigation }: Props) => {
               </Text>
             </Text> */}
 
-            {/* Add and subtract */}
+            {/* UPDATED BUTTON */}
             {data.availableForSale ? (
-              <View style={{ display: 'flex', flexDirection: 'row', alignSelf: 'flex-end', alignItems: 'center', marginRight: 10 }}>
-                {itemQuantity > 0 ? (<>
-                  <TouchableOpacity onPress={() => subtractFromCart(data.id)}>
-                    {/* <Text>-</Text> */}
-                    {itemQuantity === 1 ? (<Image
-                      source={require('../../assets/TrashCan.png')}
+              <View style={{
+                width: 140, height: 50,
+                borderRadius: 30,
+                borderColor: '#D9D9D9',
+                borderWidth: itemQuantity > 0 ? (1) : (0),
+                shadowOpacity: itemQuantity > 0 ? 0.25 : 0,
+                shadowRadius: itemQuantity > 0 ? 3 : 0,
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                alignSelf: 'flex-end',
+              }}>
+                <View style={{ width: 40, height: 40, marginLeft: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  {itemQuantity > 0 ? itemQuantity > 1 ? (<TouchableOpacity style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                    subtractFromCart(data.id)
+                  }}>
+                    <Text style={{ color: "#4B2D83", fontSize: 40, fontWeight: '900', marginTop: -5 }}>-</Text>
+                  </TouchableOpacity>) : (<TouchableOpacity onPress={() => {
+                    if (itemQuantity === 1) {
+                      subtractFromCart(data.id)
+                    }
+                  }}><Image
+                      source={require('../assets/TrashCan.png')}
                       style={styles.trashCanImage}
                       resizeMode="contain"
-                    />) : (<Icon name="minus" size={20} color="#4B2D83" />)}
+                    /></TouchableOpacity>) : (<></>)}
 
+                </View>
 
+                <View style={{ width: 40, height: 40, justifyContent: 'center', alignItems: 'center', }}>
+                  {itemQuantity > 0 ? (<Text style={{ color: 'black', fontWeight: '600', fontSize: 30, }}>{itemQuantity}</Text>) : (<></>)}
+                </View>
+                <View style={{ width: 40, height: 40, marginRight: 4, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <TouchableOpacity style={{ justifyContent: 'center', alignItems: 'center', }} onPress={() => {
+                    if (itemQuantity === 0) {
+                      // handle animations
+                      rotateIn();
+                      fadeIn();
+                    }
+                    addToCart()
+                  }}>
+                    <Animated.View style={{ marginTop: 0, display: 'flex', alignItems: 'center', transform: [{ rotate: rotationIn }] }}>
+                      <Text style={{ color: "#4B2D83", fontSize: 40, fontWeight: '900', marginTop: -6 }}>+</Text>
+                      {/* <FontAwesome name="plus" size={30} color="#4B2D83" /> */}
+                    </Animated.View>
 
                   </TouchableOpacity>
-                  <Text style={{ color: 'black', fontWeight: '600', fontSize: 20, marginHorizontal: 12 }}>
-                    {itemQuantity}
-                  </Text>
-                </>) : (<></>)}
-
-                <TouchableOpacity onPress={addToCart}>
-                  <Icon name="plus" size={25} color="#4B2D83" />
-                </TouchableOpacity>
+                </View>
               </View>
-            ) : (<View><Text>Out of stock</Text></View>)}
+            ) : (<Text>Out of stock</Text>)}
 
-
-            {/* {data.availableForSale ?
-              (isLoading ?
-
-                <View style={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><ActivityIndicator size='small' style={{ alignSelf: 'center', marginTop: 30.5 }} /></View>
-                :
-                (
-                  showConfirmation ?
-                    <View style={{ height: 110, display: 'flex', justifyContent: 'center', alignItems: 'center' }}><Text style={{ fontSize: 20, fontWeight: 'bold' }}>Added Successfully!</Text></View> :
-                    <>
-                      <View style={{ flexDirection: 'row', width: '100%', justifyContent: 'space-between', marginBottom: 0, }}>
-
-                        <View style={styles.buttonsContainer}>
-                          {itemQuantity > 0 ? (
-                            <TouchableOpacity
-                              onPress={() => {
-                                setItemQuantity(Math.max(itemQuantity, 1)) // Ensures quantity is at least 1
-                                bottomSheetMode = 'add'
-                                setBottomSheetModeState('add')
-                                if (!noVariants) {
-                                  setTimeout(() => showBuyBottomSheet(), 1)
-                                } else {
-                                  addToCart()
-                                }
-                              }}>
-                              <View style={styles.addCartContainer}>
-                                <Text style={styles.addCartText}>Add to Bag</Text>
-                              </View>
-                            </TouchableOpacity>
-                          ) : (
-                            <TouchableOpacity disabled={true}>
-                              <View style={styles.addCartDisabledContainer}>
-                                <Text style={styles.addCartDisabledText}>Add to Bag</Text>
-                              </View>
-                            </TouchableOpacity>
-                          )}
-                        </View>
-
-                        <View style={styles.quantitySelector}>
-                          <TouchableOpacity style={{ marginBottom: -12, marginRight: 2 }}
-                            onPress={() => setItemQuantity(Math.min(itemQuantity + 1, 99))}>
-                            <UpArrowIcon size={32} color='#4B2D83' />
-                          </TouchableOpacity>
-                          <Text style={{ color: '#4B2D83', fontWeight: 'bold', fontSize: Platform.OS == 'ios' ? 30 : 17, paddingHorizontal: 8, paddingVertical: 4 }}>{itemQuantity}</Text>
-                          <TouchableOpacity style={{ marginRight: 2, marginTop: -12 }}
-                            onPress={() => setItemQuantity(Math.max(itemQuantity - 1, 1))}>
-                            <DownArrowIcon size={32} color='#4B2D83' />
-                          </TouchableOpacity>
-                        </View>
-
-                      </View>
-                      {errorMessage != '' && <Text style={{ color: 'red', alignSelf: 'center', marginTop: 24 }}>{errorMessage}</Text>}
-                    </>
-                )
-              ) :
-              <Text style={[styles.text, { marginTop: 32 }]}>Out of stock.</Text>
-            } */}
 
             {/* description */}
             {data.description.length != 0 && <Text style={{ color: 'black', fontWeight: '500', fontSize: 20 }}>Description</Text>}
@@ -485,7 +487,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
             {/* <Text style={styles.subTitle}>VENDOR: {data.vendor.toUpperCase()}</Text> */}
 
             <TouchableOpacity style={{ marginLeft: 0, marginTop: 20, }} onPress={() => { mainSheetRef.current?.snapToIndex(1); }}>
-              <Text style={{ color: '#4B2D83', fontWeight: '600', fontSize: 20, paddingTop: 120 }}>Discover More</Text>
+              <Text style={{ color: '#4B2D83', fontWeight: '600', fontSize: 20, paddingTop: data.description.length > 0 ? (100) : (120) }}>Discover More</Text>
             </TouchableOpacity>
           </View>
 
@@ -695,10 +697,10 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   },
   trashCanImage: {
-    height: 28,
-    width: 28,
-    marginRight: -5,
-    marginBottom: -2
+    height: 35,
+    width: 35,
+    marginRight: 0,
+    marginBottom: 0
   },
 })
 

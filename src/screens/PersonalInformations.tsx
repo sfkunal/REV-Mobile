@@ -25,7 +25,7 @@ const PersonalInformations = ({ navigation }: Props) => {
   useEffect(() => {
     navigation.setOptions({
       headerTitle: () => (
-        <Text style={{ fontSize: 20, fontWeight: '900', color: '#4B2D83' }}>Personal</Text>
+        <Text style={styles.screenTitle}>Personal</Text>
       ),
       headerLeft: () => (
         <>
@@ -373,10 +373,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   screenTitle: {
-    fontWeight: '900',
-    letterSpacing: 1,
+    fontWeight: '800',
+    fontSize: 24,
     color: '#4B2D83',
-    fontSize: 20
   },
   buttonContainer: {
     paddingVertical: 6,

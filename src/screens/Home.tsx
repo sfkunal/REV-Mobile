@@ -1,9 +1,9 @@
-import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, Modal, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, Image, Dimensions, TouchableWithoutFeedback, FlatList, Modal, ActivityIndicator, NativeModules, StatusBar, Platform, TextInput, TouchableOpacity, KeyboardAvoidingView } from 'react-native'
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { hasHomeIndicator, theme } from '../constants/theme'
 import { storefrontApiClient } from '../utils/storefrontApiClient'
-import logoDark from '../../assets/logo-dark.png'
-import logo from '../../assets/logo.png'
+import logoDark from '../assets/logo-dark.png'
+import logo from '../assets/logo.png'
 import SubscribeComponent from '../components/home/SubscribeComponent'
 import { HomeStackParamList } from '../types/navigation'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -158,9 +158,9 @@ const Home = ({ navigation }: Props) => {
       try {
         const query = `query {
           customer(customerAccessToken: "${userToken.accessToken}") {
-            orders(first: 30, reverse: true) {
+            orders(first: 10, reverse: true) {
               nodes {
-                lineItems(first: 30) {
+                lineItems(first: 250) {
                   nodes {
                    quantity
                    variant {
@@ -218,33 +218,55 @@ const Home = ({ navigation }: Props) => {
           throw response.errors[0].message
         }
 
-        const forYouProducts = response.data.customer.orders.nodes
-        console.log(forYouProducts)
+        // this will do for now
+        const recentOrders = response.data.customer.orders.nodes
+        let recentItemsMap = new Map();
 
-        let productCounts = {};
-
-        forYouProducts.forEach((order: { lineItems: { nodes: { variant: { product: { id: any; title: any } }; quantity: any }[] } }) => {
-          order.lineItems.nodes.forEach((lineItem: { variant: { product: { id: any; title: any } }; quantity: any }) => {
+        recentOrders.forEach(order => {
+          order.lineItems.nodes.forEach(lineItem => {
             if (lineItem.variant && lineItem.variant.product) {
-              const productId = lineItem.variant.product.id;
-              const productName = lineItem.variant.product.title;
-              if (productCounts[productId]) {
-                productCounts[productId].quantity += lineItem.quantity;
+              const prodID = lineItem.variant.product.id
+              if (!recentItemsMap.has(prodID)) {
+                recentItemsMap.set(prodID, {
+                  ...lineItem.variant.product,
+                  quantity: lineItem.quantity
+                })
               } else {
-                productCounts[productId] = { quantity: lineItem.quantity, name: productName, ...lineItem.variant.product };
+                const existingItem = recentItemsMap.get(prodID)
+                existingItem.quantity += lineItem.quantity;
               }
             }
-          });
-        });
+          })
+        })
 
-        const sortedProducts = Object.entries(productCounts)
-          .filter(([, quantity]) => quantity !== undefined)
-          .sort((a, b) => Number(b[1]) - Number(a[1]))
-          .slice(0, 16) // so only the first 16
-          .map(([key, value]) => value); // map to get rid of keys
+        const recentItems = Array.from(recentItemsMap.values()); // array from value set
+        setPastItems(recentItems);
+        setIsLoading(false);
 
-        setPastItems(sortedProducts)
-        setIsLoading(false)
+        // let productCounts = {};
+
+        // forYouProducts.forEach((order: { lineItems: { nodes: { variant: { product: { id: any; title: any } }; quantity: any }[] } }) => {
+        //   order.lineItems.nodes.forEach((lineItem: { variant: { product: { id: any; title: any } }; quantity: any }) => {
+        //     if (lineItem.variant && lineItem.variant.product) {
+        //       const productId = lineItem.variant.product.id;
+        //       const productName = lineItem.variant.product.title;
+        //       if (productCounts[productId]) {
+        //         productCounts[productId].quantity += lineItem.quantity;
+        //       } else {
+        //         productCounts[productId] = { quantity: lineItem.quantity, name: productName, ...lineItem.variant.product };
+        //       }
+        //     }
+        //   });
+        // });
+
+        // const sortedProducts = Object.entries(productCounts)
+        //   .filter(([, quantity]) => quantity !== undefined)
+        //   .sort((a, b) => Number(b[1]) - Number(a[1]))
+        //   .slice(0, 16) // so only the first 16
+        //   .map(([key, value]) => value); // map to get rid of keys
+
+        // setPastItems(sortedProducts)
+        // setIsLoading(false)
       } catch (e) {
         console.log(e)
       }
@@ -690,7 +712,7 @@ const Home = ({ navigation }: Props) => {
           >
             <Text style={{ fontSize: 12, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>View all</Text>
           </View> */}
-          {pastItems ? (<FlatList
+          {pastItems && pastItems.length > 0 ? (<FlatList
             data={pastItems.filter(item => item != null)}
             // data={data}
             renderItem={({ item }) =>
@@ -845,11 +867,27 @@ const Home = ({ navigation }: Props) => {
             // strictbounds: true, // this would make it so that nothing outside of the range would be available
           }}
           styles={{
+            container: {
+              diplay: 'flex',
+              width: '100%'
+            },
             textInput: {
               height: 38,
               color: '#000000',
+              backgroundColor: '#F0F0F0',
               fontSize: 16,
+              borderWidth: 1,
+              borderColor: '#4B2D83',
+              borderRadius: 5,
+              // paddingHorizontal: 10,
+              paddingLeft: 4,
+              paddingRight: 6,
+
               // backgroundColor: '#4B2D83',
+            },
+            // the autofill text
+            description: {
+              fontWeight: '400'
             },
             predefinedPlacesDescription: {
               color: '#1faadb',
@@ -859,11 +897,15 @@ const Home = ({ navigation }: Props) => {
               fontSize: 16, // Placeholder text font size
               // Add any additional styling here
             },
-          }}
 
+          }}
+          // renderLeftButton={() => <PinIcon size={24} color='black' />}
+          // listViewDisplayed='auto'
+          // listViewDisplayed={3}
+          numberOfLines={3}
         />
-        <View style={{ backgroundColor: '#4B2D83', width: '90%', marginLeft: 'auto', marginRight: 'auto', height: 1, borderRadius: 30 }} />
-        <View style={{ position: 'absolute', backgroundColor: '#4B2D83', width: '90%', marginLeft: 'auto', marginRight: 'auto', height: 1, borderRadius: 30 }} />
+        {/* <View style={{ backgroundColor: '#4B2D83', width: '90%', marginLeft: 'auto', marginRight: 'auto', height: 1, borderRadius: 30 }} />
+        <View style={{ position: 'absolute', backgroundColor: '#4B2D83', width: '90%', marginLeft: 'auto', marginRight: 'auto', height: 1, borderRadius: 30 }} /> */}
 
       </>
     );
@@ -872,7 +914,10 @@ const Home = ({ navigation }: Props) => {
   return (
     <View style={{ flex: 0 }}>
       {isLoading ? (
-        <ActivityIndicator style={{ alignSelf: 'center' }} />
+        <View style={{ height: '100%', justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator style={{ alignSelf: 'center' }} />
+        </View>
+
       ) : (
         <>
           <View style={{ width: '100%' }}>
@@ -964,8 +1009,9 @@ const Home = ({ navigation }: Props) => {
                           Explore
                         </Text>
                       </TouchableOpacity>
-                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83', marginRight: 20 }}>
-                        {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
+                      <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: '#4B2D83', marginRight: 36 }}>
+                        {/* {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'} */}
+                        For You
                       </Text>
                     </TouchableOpacity>
 
@@ -978,7 +1024,8 @@ const Home = ({ navigation }: Props) => {
                       </Text>
                       <TouchableOpacity activeOpacity={1} style={{ width: 136, height: 40, borderRadius: 30, borderWidth: 1, backgroundColor: '#4B2D83', display: 'flex', justifyContent: 'center', alignItems: 'center', }} onPress={() => setSelectedMode('forYou')}>
                         <Text numberOfLines={1} style={{ fontSize: 18, fontWeight: '500', color: 'white' }}>
-                          {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'}
+                          {/* {userToken ? 'For ' + userToken.customer.firstName : 'FOR YOU'} */}
+                          For You
                         </Text>
                       </TouchableOpacity>
 
@@ -1003,31 +1050,59 @@ const Home = ({ navigation }: Props) => {
             enablePanDownToClose
             snapPoints={['92%']} // Set the heights of the bottom sheet
           >
-            <View
+
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              style={{
+                flex: 1,
+                // height: '90%',
+                justifyContent: 'space-between',
+                paddingHorizontal: 20,
+                paddingTop: 10,
+              }}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#4B2D83' }}>
+                  Where should we deliver to?
+                </Text>
+                <GooglePlacesInput />
+              </View>
+
+              <View style={{ alignItems: 'center', marginBottom: 20 }}>
+                <View style={{ width: '100%', height: 150, marginBottom: 150, backgroundColor: 'black', flexDirection: 'row', justifyContent: 'center' }}>
+                  <View style={{ backgroundColor: 'orange', width: 150, height: 150, }} />
+                </View>
+
+              </View>
+            </KeyboardAvoidingView>
+
+
+
+
+
+            {/* <KeyboardAvoidingView
               style={{
                 // margin: 12,
                 // backgroundColor: "transparent",
                 // backgroundColor: 'yellow',
                 zIndex: 10,
-                height: 400,
+                // height: 400,
                 display: 'flex',
                 paddingTop: 10,
                 marginHorizontal: 20,
                 // width: '95%',
-                // alignItems: 'center'
-                justifyContent: 'space-between'
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: 'yellow',
+                height: '80%',
               }}
             >
               <Text style={{ fontSize: 20, fontWeight: '400', marginBottom: 8, marginLeft: 2 }}>Where should we deliver to?</Text>
               <GooglePlacesInput />
 
-              {/* this is the placeholder for the map */}
-              {/* <View style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 320, width: 320, backgroundColor: '#4B2D83', marginTop: 125, marginLeft: 'auto', marginRight: 'auto', zIndex: -1 }}>
-                <Text style={{ fontSize: 20, fontWeight: '600', color: 'white' }}>
-                  Placeholder
-                </Text>
-              </View> */}
-            </View>
+              <Text>Butt stuff</Text>
+              <View style={{ backgroundColor: 'orange', width: 300, height: 300, }} />
+            </KeyboardAvoidingView> */}
 
 
           </BottomSheet>

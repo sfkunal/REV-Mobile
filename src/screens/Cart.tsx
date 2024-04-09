@@ -27,7 +27,7 @@ const Cart = ({ navigation }: Props) => {
     navigation.setOptions({
       headerTitle: () => (
         // <Text style={styles.screenTitle}>Cart ({getItemsCount()})</Text>
-        <Image source={require('../../assets/BAG.png')} style={{ height: 25, width: 100, marginTop: 8 }} resizeMode='contain' />
+        <Image source={require('../assets/BAG.png')} style={{ height: 25, width: 100, marginTop: 8 }} resizeMode='contain' />
       )
     })
   }, [getItemsCount])
@@ -120,9 +120,9 @@ const Cart = ({ navigation }: Props) => {
   return (
     <>
       {cartItems.length == 0 ?
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <LinearGradient colors={['#FFFFFF', '#D9D9D9', '#FFFFFF']} style={{ flex: 1, marginTop: 8, justifyContent: 'center', alignItems: 'center' }}>
           <Text style={styles.empty}>Bag is empty</Text>
-        </View> :
+        </LinearGradient> :
         <LinearGradient colors={['#FFFFFF', '#D9D9D9', '#FFFFFF']} style={{ flex: 1, marginTop: 8 }}>
           <FlatList
             data={cartItems}

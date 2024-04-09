@@ -8,7 +8,7 @@ import { HomeStackParamList } from '../../types/navigation';
 import { useNavigationContext } from '../../context/NavigationContext';
 import { BottomSheetSectionList, TouchableHighlight } from '@gorhom/bottom-sheet';
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-import { DownArrowIcon, RightArrowIcon } from '../shared/Icons';
+import { DownArrowIcon, RightArrowIcon, ViewAllArrow } from '../shared/Icons';
 // const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
 
 if (Platform.OS === 'android') {
@@ -222,9 +222,8 @@ const FullList = ({ sections, onLoadMore, onCollectionPress, isVerticalLoading, 
                 // onPress={() => onCollectionPress(item.nav)}
                 >
                     <Text style={{ fontSize: 12, fontWeight: '900', fontStyle: 'italic', color: '#4B2D83' }}>View all</Text>
-                    {/* <View style={{ marginTop: -22, marginRight: 0 }}>
-                        <RightArrowIcon size={6} color={'#4B2D83'} />
-                    </View> */}
+                    {/* <ViewAllArrow size={6} color={'#4B2D83'} /> */}
+
                 </TouchableOpacity>
                 {/* loadingStates[index] ? (
                 <View style={styles.loadingContainer}>

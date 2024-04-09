@@ -40,19 +40,19 @@ const DiscountCode = ({ route, navigation }: Props) => {
           }
         }
       }`
-  
+
       const variables = {
         checkoutId,
         discountCode
       }
-      
+
       const response: any = await storefrontApiClient(query, variables)
-  
-      if (response.errors && response.errors.length != 0 ) {
+
+      if (response.errors && response.errors.length != 0) {
         throw response.errors[0].message
       }
-  
-      if (response.data.checkoutDiscountCodeApplyV2.checkoutUserErrors && response.data.checkoutDiscountCodeApplyV2.checkoutUserErrors.length != 0 ) {
+
+      if (response.data.checkoutDiscountCodeApplyV2.checkoutUserErrors && response.data.checkoutDiscountCodeApplyV2.checkoutUserErrors.length != 0) {
         throw response.data.checkoutDiscountCodeApplyV2.checkoutUserErrors[0].message
       }
 
@@ -66,18 +66,18 @@ const DiscountCode = ({ route, navigation }: Props) => {
       }
     }
 
-    setDiscountCode('')  
+    setDiscountCode('')
     setIsLoading(false)
   }
 
   return (
-    <View style={{flex: 1}}>
-      <ScrollView 
+    <View style={{ flex: 1 }}>
+      <ScrollView
         scrollEnabled={false}
         keyboardDismissMode='on-drag'
         contentContainerStyle={styles.container}
       >
-        <TextInput 
+        <TextInput
           placeholder='Discount Code'
           keyboardType='default'
           style={styles.input}
@@ -85,38 +85,38 @@ const DiscountCode = ({ route, navigation }: Props) => {
           autoCapitalize='none'
           value={discountCode}
         />
-        
-        <View style={{height: 32, alignItems: 'center', justifyContent: 'center'}}>
-          { errorMessage.length != 0 &&
+
+        <View style={{ height: 32, alignItems: 'center', justifyContent: 'center' }}>
+          {errorMessage.length != 0 &&
             <Text style={styles.error}>{errorMessage}</Text>
           }
         </View>
 
-        { isLoading ? 
-          <View style={{height: 27}}>
+        {isLoading ?
+          <View style={{ height: 27 }}>
             <ActivityIndicator />
-          </View> : 
-          <FillButton 
+          </View> :
+          <FillButton
             title='APPLY DISCOUNT CODE'
             onPress={applyDiscountCode}
           />
         }
-        
-        <View style={{flexDirection: 'row', height: 56, marginHorizontal: -14, alignItems: 'center', justifyContent: 'flex-start', width: '100%'}}>
-          { discountCodesApplied.map((item, index) => (
+
+        <View style={{ flexDirection: 'row', height: 56, marginHorizontal: -14, alignItems: 'center', justifyContent: 'flex-start', width: '100%' }}>
+          {discountCodesApplied.map((item, index) => (
             <DiscountCodeCard title={item} key={index} />
           ))}
         </View>
       </ScrollView>
-      
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'position' : 'height'}
         keyboardVerticalOffset={64}
       >
-        <View style={[styles.checkoutContainer, {height: 50}]}>
+        <View style={[styles.checkoutContainer, { height: 50 }]}>
           <FillButton
             title='CONTINUE TO SHIPPING ADRESS'
-            onPress={() => navigation.push('ShippingAddress', { checkoutId }) }
+            onPress={() => navigation.push('ShippingAddress', { checkoutId, totalPrice: 1 })}
           />
         </View>
       </KeyboardAvoidingView>
@@ -138,15 +138,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   container: {
-    flex:1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 14
   },
   text: {
     color: theme.colors.text
   },
-  checkoutContainer: { 
+  checkoutContainer: {
     height: 50,
     backgroundColor: theme.colors.background,
     borderColor: theme.colors.infoText,
@@ -162,12 +162,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1.8,
   },
   input: {
-    fontSize:16,
-    borderBottomWidth:0.5,
-    borderColor: theme.colors.text, 
-    padding:8,
+    fontSize: 16,
+    borderBottomWidth: 0.5,
+    borderColor: theme.colors.text,
+    padding: 8,
     width: screenWidth - 28,
-    paddingHorizontal:4,
+    paddingHorizontal: 4,
     color: theme.colors.text
   },
 })

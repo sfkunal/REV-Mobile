@@ -2,7 +2,7 @@ import { NativeStackNavigationProp, createNativeStackNavigator } from '@react-na
 import { theme } from '../../constants/theme'
 import { HomeStackParamList } from '../../types/navigation'
 import { NavigationContainer, useNavigation } from '@react-navigation/native'
-import logo from '../../../assets/logo.png'
+import logo from '../../assets/logo.png'
 
 import Home from '../Home'
 import Collection from '../Collection'

@@ -133,7 +133,6 @@ export const CartContext = ({ children }: Props) => {
     // console.log('CART ITEMS IN CONTEXT', cartItems.product.title)
 
     cartItems.forEach(item => {
-      console.log(item.product.title, title)
       if (item.product.title === title) {
         quantity += item.quantity
       }

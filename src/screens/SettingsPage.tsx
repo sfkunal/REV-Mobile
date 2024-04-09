@@ -9,7 +9,7 @@ import { useNavigationContext } from '../context/NavigationContext'
 import { useAuthContext } from '../context/AuthContext'
 import * as WebBrowser from 'expo-web-browser'
 import { config } from '../../config'
-import phone from '../../assets/phone.png'
+import phone from '../assets/phone.png'
 import { MailIcon, RightArrowIcon } from '../components/shared/Icons'
 
 type Props = NativeStackScreenProps<ProfileStackParamList, 'Profile'>

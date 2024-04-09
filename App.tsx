@@ -7,13 +7,17 @@ import MainNavigator from './src/screens/MainNavigator'
 import NetInfo from '@react-native-community/netinfo'
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Image, StyleSheet, Text, View } from 'react-native'
-import noNetworkCloud from './assets/storm-cloud.png'
+import noNetworkCloud from './src/assets/storm-cloud.png'
 import { colorScheme, hasHomeIndicator, theme } from './src/constants/theme'
 import { StatusBar } from 'expo-status-bar'
 // import { fetchStoreStatus, storefrontApiClient } from './src/utils/storefrontApiClient'; // Import the storefrontApiClient
-import logo from './assets/logo.png'
+import logo from './src/assets/logo.png'
 import { config } from './config'
 import { storefrontApiClient } from './src/utils/storefrontApiClient'
+import * as Font from 'expo-font';
+import { useFonts } from 'expo-font'
+
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 
 
 
@@ -22,6 +26,7 @@ export default function App() {
 
   const [isClosed, setIsClosed] = useState<Boolean>(false)
   const [isLoading, setIsLoading] = useState<Boolean>(false)
+
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       if (state.isConnected) {
@@ -31,6 +36,35 @@ export default function App() {
 
     return () => unsubscribe()
   }, [])
+
+  // let [fontsLoaded] = useFonts({
+  //   'Rubik-Regular': require('./src/assets/fonts/Rubik-Regular.ttf'),
+  //   'Rubik-Bold': require('./src/assets/fonts/Rubik-Bold.ttf'),
+  //   'Inter': require('./src/assets/fonts/Inter-Regular.ttf')
+  // })
+
+  // if (!fontsLoaded) {
+  //   return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //     <ActivityIndicator />
+  //     <Text>
+  //       Fonts are loading
+  //     </Text>
+  //   </View>
+  // }
+
+
+
+  // const loadFonts = async () => {
+  //   await Font.loadAsync({
+  //     'Rubik-Regular': require('./src/assets/fonts/Rubik-Regular.ttf'),
+  //     'Rubik-Bold': require('./src/assets/fonts/Rubik-Bold.ttf'),
+  //   })
+  //   setFontsLoaded(true);
+  // };
+
+  // useEffect(() => {
+  //   loadFonts();
+  // }, [])
 
   // const checkIfStoreIsPasswordProtected = async () => {
   //   const query = `
@@ -61,7 +95,11 @@ export default function App() {
 
 
 
+
+
+
   // if we are loading to get the query, this is the loading display
+  // same with if we are loading the fonts
   if (isLoading) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -69,8 +107,10 @@ export default function App() {
       </View>)
   }
 
+
   // if we are closed, this is what is displayed
-  if (isClosed) {
+  // PUT THE RESULT FROM THE QUERY HERE
+  if (false) {
     return (
       <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center', marginTop: 100, marginBottom: 250 }}>
         {/* logo */}
@@ -145,6 +185,17 @@ export default function App() {
   )
 }
 
+// export const fonts = StyleSheet.create({
+//   rubik: {
+//     fontFamily: 'Rubik-Regular'
+//   },
+//   rubikBold: {
+//     fontFamily: 'Rubik-Bold'
+//   },
+//   inter: {
+//     fontFamily: 'Inter-Regular'
+//   }
+// })
 
 
 const styles = StyleSheet.create({

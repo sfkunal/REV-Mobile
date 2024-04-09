@@ -57,7 +57,7 @@ const CartCard = ({ cartItem }: { cartItem: CartItem }) => {
             {/* <Icon name="times" size={18} color="#4B2D83" style={{ padding: 2 }} /> */}
             {/* where is the trash can??? */}
             {/* <Image source={TrashCan} style={{ height: 30, width: 30, backgroundColor: 'yellow' }} resizeMode='contain' /> */}
-            <Image source={require('../../..//assets/TrashCan.png')} style={{ height: 34, width: 34 }} resizeMode='contain' />
+            <Image source={require('../../assets/TrashCan.png')} style={{ height: 34, width: 34 }} resizeMode='contain' />
 
             {/* <TrashCan /> */}
             {/* <BackArrow color='#D9D9D9' size={30} /> */}
