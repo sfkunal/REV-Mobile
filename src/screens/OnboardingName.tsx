@@ -28,8 +28,8 @@ const OnboardingName = ({ navigation, route }: Props) => {
         // console.log(firstName, lastName)
 
         // navigation.navigate('OnboardingPhone', { firstName, lastName });
-        console.log(`\n`)
-        console.log(phoneNumber)
+        // console.log(`\n`)
+        // console.log(phoneNumber)
         navigation.navigate('OnboardingEmail', { firstName, lastName, phoneNumber });
 
         setLoading(false)

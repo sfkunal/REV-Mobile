@@ -82,7 +82,7 @@ const Payment = ({ route, navigation }: Props) => {
       }
 
     } catch (e) {
-      console.log(e)
+      // console.log(e)
       setError(true)
     }
 

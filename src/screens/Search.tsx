@@ -372,7 +372,7 @@ const Search = ({ navigation }: Props) => {
 
     return (
       <TouchableOpacity style={styles.collectionContainer} onPress={() => {
-        console.log(item)
+        // console.log(item)
         navigation.navigate('Collection', { collectionId: item.id })
       }}>
         {/* <Text style={styles.text}>{item.title}</Text> */}

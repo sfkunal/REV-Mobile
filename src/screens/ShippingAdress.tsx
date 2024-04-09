@@ -182,7 +182,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
       }
 
       const webUrl = response.data.checkoutShippingLineUpdate.checkout.webUrl;
-      console.log(webUrl);
+      // console.log(webUrl);
       // then, we navigate to that webURL (this is the popup)
       await WebBrowser.openBrowserAsync(webUrl)
 
@@ -192,7 +192,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
       // navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle })
 
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       if (typeof e === 'string') {
         setShippingOptionError(e);
       } else {
@@ -251,7 +251,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
 
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       if (typeof e === 'string') {
         setShippingOptionError(e);
       } else {
@@ -357,11 +357,11 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
       const availableShippingRates: AvailableShippingRatesType = response.data.checkoutShippingAddressUpdateV2.checkout.availableShippingRates as AvailableShippingRatesType
       setAvailableShippingRates(availableShippingRates)
-      console.log(availableShippingRates);
+      // console.log(availableShippingRates);
       // navigation.push('ShippingOptions', { checkoutId, availableShippingRates })
 
     } catch (e) {
-      console.log(e)
+      // console.log(e)
       if (typeof e == 'string') {
         setErrorMessage(e)
       } else {
@@ -402,7 +402,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
         setDefaultAddress(fetchedDefaultAddress);
         setIsLoading(false)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
   }
@@ -464,7 +464,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
         setIsLoading(false)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
     setIsLoading(false)
@@ -506,7 +506,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
         }
         setIsLoading(false)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
     setIsLoading(false)

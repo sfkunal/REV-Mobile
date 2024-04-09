@@ -63,7 +63,7 @@ const PersonalInformations = ({ navigation }: Props) => {
     if (cleanedNumber.length >= 7) {
       formattedNumber += `-${cleanedNumber.slice(6, 10)}`;
     }
-    console.log(phoneToE164(cleanedNumber))
+    // console.log(phoneToE164(cleanedNumber))
     setPhone(formattedNumber)
   }
 
@@ -90,7 +90,7 @@ const PersonalInformations = ({ navigation }: Props) => {
     }
 
     if (!email.includes('@') && !email.includes('.')) {
-      console.log(email)
+      // console.log(email)
       setErrorMessage('Enter a valid email.')
       setLoading(false)
       return
@@ -146,7 +146,7 @@ const PersonalInformations = ({ navigation }: Props) => {
       }
 
       if (response.data.customerUpdate.customerUserErrors.length != 0) {
-        console.log(response.data.customerUpdate.customerUserErrors)
+        // console.log(response.data.customerUpdate.customerUserErrors)
         throw response.data.customerUpdate.customerUserErrors[0].message
       }
 

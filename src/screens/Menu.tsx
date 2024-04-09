@@ -9,7 +9,7 @@ import { FontAwesome } from '@expo/vector-icons'
 
 type Props = NativeStackScreenProps<MenuStackParamList, 'Menu'>
 
-const Menu = ({navigation}: Props) => {
+const Menu = ({ navigation }: Props) => {
   const [collections, setCollections] = useState<any[]>([])
 
   useEffect(() => {
@@ -19,8 +19,8 @@ const Menu = ({navigation}: Props) => {
       ),
       headerRight: () => (
         <TouchableOpacity
-          style={{padding: 6}}
-          onPress={() => navigation.push('Wishlist') }
+          style={{ padding: 6 }}
+          onPress={() => navigation.push('Wishlist')}
         >
           <FontAwesome name="heart-o" size={22} color={theme.colors.text} />
         </TouchableOpacity>
@@ -38,10 +38,10 @@ const Menu = ({navigation}: Props) => {
           }
         }
       }`
-      
+
       const response: any = await storefrontApiClient(query)
-      
-      if (response.errors && response.errors.length !=0 ) {
+
+      if (response.errors && response.errors.length != 0) {
         throw response.errors[0].message
       }
 
@@ -50,7 +50,7 @@ const Menu = ({navigation}: Props) => {
       // console.log(collections)
 
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     }
   }
 
@@ -58,11 +58,11 @@ const Menu = ({navigation}: Props) => {
     fetchCollections()
   }, [])
   return (
-    <View style={{flex:1}}>
+    <View style={{ flex: 1 }}>
       <FlatList
         data={collections}
-        renderItem={({item}) => (
-          <TouchableOpacity onPress={() => navigation.push('Collection', { collectionId: item.id }) }>
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => navigation.push('Collection', { collectionId: item.id })}>
             <Text style={styles.text}>{item.title.toUpperCase()}</Text>
           </TouchableOpacity>
         )}
@@ -74,20 +74,20 @@ const Menu = ({navigation}: Props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex:1,
-    justifyContent:'center',
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center'
   },
   text: {
     letterSpacing: 1.5,
     fontWeight: '300',
     color: theme.colors.text,
-    marginTop:8
+    marginTop: 8
   },
   screenTitle: {
-    fontWeight: '600', 
-    letterSpacing: 1, 
-    color: theme.colors.text, 
+    fontWeight: '600',
+    letterSpacing: 1,
+    color: theme.colors.text,
     fontSize: 16
   }
 })

@@ -10,19 +10,19 @@ const screenWidth = Dimensions.get('screen').width
 
 type Props = NativeStackScreenProps<CartStackParamList, 'ShippingOptions'>
 
-const ShippingOptions = ({route, navigation}: Props) => {
+const ShippingOptions = ({ route, navigation }: Props) => {
   const { checkoutId, availableShippingRates } = route.params
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRateHandle, setSelectedRateHandle] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState('')
 
   const updateShippingOption = async () => {
-    setIsLoading(true) 
+    setIsLoading(true)
     setErrorMessage('')
 
-    
+
     try {
-      if ( selectedRateHandle == null ) {
+      if (selectedRateHandle == null) {
         throw 'Please select a shipping option.'
       }
 
@@ -47,48 +47,48 @@ const ShippingOptions = ({route, navigation}: Props) => {
 
       const response: any = await storefrontApiClient(query, variables)
 
-      if (response.errors && response.errors.length != 0 ) {
+      if (response.errors && response.errors.length != 0) {
         throw response.errors[0].message
       }
 
-      if (response.data.checkoutShippingLineUpdate.checkoutUserErrors && response.data.checkoutShippingLineUpdate.checkoutUserErrors.length != 0 ) {
+      if (response.data.checkoutShippingLineUpdate.checkoutUserErrors && response.data.checkoutShippingLineUpdate.checkoutUserErrors.length != 0) {
         throw response.data.checkoutShippingLineUpdate.checkoutUserErrors[0].message
       }
 
       const webUrl = response.data.checkoutShippingLineUpdate.checkout.webUrl
-      
+
       navigation.push('Payment', { webUrl, checkoutId, selectedRateHandle })
 
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     }
-    
+
     setIsLoading(false)
   }
 
-  console.log(availableShippingRates)
+  // console.log(availableShippingRates)
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <View style={styles.container}>
         {
-          availableShippingRates.shippingRates.map(( shippingRate ) => (
-            <TouchableOpacity 
+          availableShippingRates.shippingRates.map((shippingRate) => (
+            <TouchableOpacity
               onPress={() => setSelectedRateHandle(shippingRate.handle)}
               key={shippingRate.handle}
             >
-              <View style={[styles.rateContainer, {borderColor: selectedRateHandle == shippingRate.handle ? theme.colors.text : theme.colors.disabledText}]}>
-                <Text 
+              <View style={[styles.rateContainer, { borderColor: selectedRateHandle == shippingRate.handle ? theme.colors.text : theme.colors.disabledText }]}>
+                <Text
                   style={[
-                    styles.text, 
+                    styles.text,
                     { color: selectedRateHandle == shippingRate.handle ? theme.colors.text : theme.colors.infoText }
                   ]}
                 >
                   {shippingRate.title}
                 </Text>
-                <Text 
+                <Text
                   style={[
-                    styles.text, 
+                    styles.text,
                     { color: selectedRateHandle == shippingRate.handle ? theme.colors.text : theme.colors.infoText }
                   ]}
                 >
@@ -101,20 +101,20 @@ const ShippingOptions = ({route, navigation}: Props) => {
       </View>
 
 
-      <View style={[styles.checkoutContainer, {height: errorMessage.length != 0 ? 68 : 50 }]}>
-        { isLoading ?
-          <View style={{width: 100, alignItems:'center'}}>
-            <ActivityIndicator size='small' /> 
+      <View style={[styles.checkoutContainer, { height: errorMessage.length != 0 ? 68 : 50 }]}>
+        {isLoading ?
+          <View style={{ width: 100, alignItems: 'center' }}>
+            <ActivityIndicator size='small' />
           </View> :
           <View>
-              { errorMessage.length != 0 &&
-                <Text style={styles.error}>{errorMessage}</Text>
-              }
-              <FillButton
-                title='CONTINUE TO PAYMENT'
-                onPress={updateShippingOption}
-              />
-            </View>
+            {errorMessage.length != 0 &&
+              <Text style={styles.error}>{errorMessage}</Text>
+            }
+            <FillButton
+              title='CONTINUE TO PAYMENT'
+              onPress={updateShippingOption}
+            />
+          </View>
         }
       </View>
     </View>
@@ -135,15 +135,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   container: {
-    flex:1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 14
   },
   text: {
     color: theme.colors.text
   },
-  checkoutContainer: { 
+  checkoutContainer: {
     height: 50,
     backgroundColor: theme.colors.background,
     borderColor: theme.colors.infoText,

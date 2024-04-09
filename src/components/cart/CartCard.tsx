@@ -31,7 +31,6 @@ const CartCard = ({ cartItem }: { cartItem: CartItem }) => {
 
             <TouchableOpacity
               onPress={() => {
-                console.log(cartItem.id)
                 substractQuantityOfItem(cartItem.id, 1)
               }}
             >

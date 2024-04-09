@@ -87,7 +87,7 @@ const ResetPassword = ({ navigation }: Props) => {
       }
 
       if (response.data.customerUpdate.customerUserErrors.length != 0) {
-        console.log(response.data.customerUpdate.customerUserErrors)
+        // console.log(response.data.customerUpdate.customerUserErrors)
         throw response.data.customerUpdate.customerUserErrors[0].message
       }
 
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   succesMessage: {
-    marginTop:6,
+    marginTop: 6,
     color: '#4B2D83',
     fontSize: 18,
     fontWeight: 'bold',

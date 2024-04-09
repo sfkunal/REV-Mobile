@@ -101,7 +101,7 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
         if (cleanedNumber.length >= 7) {
             formattedNumber += `-${cleanedNumber.slice(6, 10)}`;
         }
-        console.log(phoneToE164(cleanedNumber))
+        // console.log(phoneToE164(cleanedNumber))
         setPhoneNumber(formattedNumber)
     }
 

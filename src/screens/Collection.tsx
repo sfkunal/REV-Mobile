@@ -62,7 +62,7 @@ const Collection = ({ route, navigation }: Props) => {
     if (String(navigation.getState().routes[0].name) === 'Home') {
       StatusBarManager.getHeight((statusBarHeight: any) => {
         setsbHeight(Number(statusBarHeight.height))
-        console.log(statusBarHeight.height)
+        // console.log(statusBarHeight.height)
         setPTop(sbHeight + 44)
       })
     }

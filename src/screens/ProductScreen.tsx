@@ -75,7 +75,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
       toValue: 1,
       duration: 500,
       useNativeDriver: true,
-    }).start(() => console.log('FADE CALLED'));
+    }).start();
   }
 
 
@@ -139,7 +139,7 @@ const ProductScreen = ({ route, navigation }: Props) => {
       setTimeout(() => {
         getProductRecommendations()
       }, 5000)
-      console.log(e)
+      // console.log(e)
     }
   }, [])
 

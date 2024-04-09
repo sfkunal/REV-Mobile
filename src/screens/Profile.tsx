@@ -86,7 +86,7 @@ const Profile = ({ navigation }: Props) => {
       if (response.errors && response.errors.length != 0) {
         throw response.errors[0].message
       }
-      console.log(response.data.customer.orders.totalCount)
+      // console.log(response.data.customer.orders.totalCount)
       setNumOrders(response.data.customer.orders.totalCount)
     } catch (e) {
 
@@ -121,20 +121,20 @@ const Profile = ({ navigation }: Props) => {
 
   // if calling is supported, we will call the number. If not supported, we will text the number
   const handlePhonePress = () => {
-    console.log('phone has been pressed')
+    // console.log('phone has been pressed')
     // local format, not international
     // const phoneNumber = '(206)833-6358';
     const phoneNumber = '2068336358' // rev number
     const callLink = `tel:${phoneNumber.replace(/[^\d+]/g, '')}`
 
     const smsLink = `sms:${phoneNumber.replace(/[^\d+]/g, '')}`
-    Linking.openURL(callLink).catch((e) => console.log(e))
+    Linking.openURL(callLink).catch()
     try {
       Linking.canOpenURL(callLink).then((supported) => {
         if (supported) {
-          Linking.openURL(callLink).catch(error => console.log(error))
+          Linking.openURL(callLink).catch()
         } else {
-          Linking.openURL(smsLink).catch(error => console.log(error))
+          Linking.openURL(smsLink).catch()
         }
       })
     } catch (e) {

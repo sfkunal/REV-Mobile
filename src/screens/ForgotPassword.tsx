@@ -53,7 +53,7 @@ const ForgotPassword = ({ navigation }: Props) => {
       }
 
       if (response.data.customerRecover.customerUserErrors.length != 0) {
-        console.log(response.data.customerRecover.customerUserErrors)
+        // console.log(response.data.customerRecover.customerUserErrors)
         throw response.data.customerRecover.customerUserErrors[0].message
       }
 

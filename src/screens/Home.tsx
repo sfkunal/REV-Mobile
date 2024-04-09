@@ -339,7 +339,7 @@ const Home = ({ navigation }: Props) => {
       // console.log(products);
 
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     }
   }
 
@@ -363,7 +363,7 @@ const Home = ({ navigation }: Props) => {
       // console.log('unique recs', uniqueRecommendations);
       setProductRecommendations(Array.from(uniqueRecommendations));
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     } finally {
       setSuggestionsLoading(false);
     }

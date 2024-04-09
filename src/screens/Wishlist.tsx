@@ -105,7 +105,7 @@ const Wishlist = ({ navigation }: Props) => {
         const product = await getProduct(productId) as Product
         updatedWishlishProducts.push(product)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
 

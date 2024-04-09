@@ -99,8 +99,8 @@ const Cart = ({ navigation }: Props) => {
         const response2: any = await storefrontApiClient(query2, variables2)
 
         if (response2.errors && response2.errors.length != 0) {
-          console.log('Associate customer failed.')
-          console.log(response2.errors[0].message)
+          // console.log('Associate customer failed.')
+          // console.log(response2.errors[0].message)
         }
       }
 
