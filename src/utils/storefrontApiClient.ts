@@ -29,6 +29,7 @@ export const storefrontApiClient = async (query: string, variables: any | null =
 }
 
 
+
 // this is an attempt to fetch the status of the store
 
 // export const fetchStoreStatus = async () => {

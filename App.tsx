@@ -18,6 +18,7 @@ import * as Font from 'expo-font';
 import { useFonts } from 'expo-font'
 
 import FontAwesome from '@expo/vector-icons/FontAwesome'
+import { adminApiClient } from './src/utils/adminApiClient'
 
 
 
@@ -33,7 +34,6 @@ export default function App() {
         setIsConnected(state.isConnected)
       }
     })
-
     return () => unsubscribe()
   }, [])
 
@@ -66,28 +66,40 @@ export default function App() {
   //   loadFonts();
   // }, [])
 
-  // const checkIfStoreIsPasswordProtected = async () => {
-  //   const query = `
-  //   {
-  //     shop {
-  //       name
-  //       passwordEnabled
-  //     }
-  //   }`;
-
-  //   try {
-  //     const data: any = await storefrontApiClient(query);
-  //     console.log('THIS IS MY SUPER COOL NEW DATA', data);
-  //     if (data.shop.passwordEnabled) {
-  //       console.log('password protected')
-  //     } else {
-  //       console.log('not password protected')
-  //     }
-  //   } catch (e) {
-  //     console.log(e)
-
+  // useEffect(() => {
+  //   const checkIfProtected = async () => {
+  //     await checkIfStoreIsPasswordProtected();
   //   }
-  // }
+  //   checkIfProtected();
+  // }, [])
+
+  const checkIfStoreIsPasswordProtected = async () => {
+    const query = `
+    {
+      onlineStore {
+        passwordProtection {
+          enabled
+        }
+      }
+    }`;
+    try {
+      // dont send to the storefrontAPI, want to send to the admin API. 
+      // need to configure with the adminAPI key
+      const data: any = await adminApiClient(query);
+      // console.log('data', data);
+
+
+      if (data.onlineStore.passwordProtection.enabled) { // if store is closed
+        setIsClosed(true);
+      } else {
+        setIsClosed(false);
+      }
+    } catch (e) {
+      // console.log(e)
+    }
+    // console.log('finally')
+  }
+
 
   // useEffect(() => {
   //   checkIfStoreIsPasswordProtected();
@@ -110,7 +122,7 @@ export default function App() {
 
   // if we are closed, this is what is displayed
   // PUT THE RESULT FROM THE QUERY HERE
-  if (false) {
+  if (isClosed) {
     return (
       <View style={{ flex: 1, justifyContent: 'space-between', alignItems: 'center', marginTop: 100, marginBottom: 250 }}>
         {/* logo */}

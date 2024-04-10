@@ -104,7 +104,7 @@ const Home = ({ navigation }: Props) => {
         setIsLoading(false)
       }
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     }
   }
 
@@ -146,7 +146,7 @@ const Home = ({ navigation }: Props) => {
       // console.log(products)
       setIsLoading(false)
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     }
   }
 
@@ -268,7 +268,7 @@ const Home = ({ navigation }: Props) => {
         // setPastItems(sortedProducts)
         // setIsLoading(false)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
   }
@@ -503,7 +503,7 @@ const Home = ({ navigation }: Props) => {
       return products;
       // console.log(products);
     } catch (e) {
-      console.log(e)
+      // console.log(e)
     }
   }
 
@@ -537,7 +537,7 @@ const Home = ({ navigation }: Props) => {
         setSelectedAddress(fetchedDefaultAddress);
         setIsLoading(false)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
   }
@@ -601,7 +601,7 @@ const Home = ({ navigation }: Props) => {
           setIsLoading(false)
         }
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
       setIsLoading(false)
     }
@@ -643,7 +643,7 @@ const Home = ({ navigation }: Props) => {
         }
         setIsLoading(false)
       } catch (e) {
-        console.log(e)
+        // console.log(e)
       }
     }
     setIsLoading(false)
@@ -1048,8 +1048,9 @@ const Home = ({ navigation }: Props) => {
             ref={bottomSheetRef}
             index={-1} // Start closed
             enablePanDownToClose
-            snapPoints={['92%']} // Set the heights of the bottom sheet
+            snapPoints={['98%']} // Set the heights of the bottom sheet
           >
+
 
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -1062,17 +1063,21 @@ const Home = ({ navigation }: Props) => {
               }}
             >
               <View style={{ flex: 1 }}>
-                <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#4B2D83' }}>
-                  Where should we deliver to?
-                </Text>
-                <GooglePlacesInput />
-              </View>
+                {/* upper container */}
+                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#4B2D83' }}>
+                    Where to?
+                  </Text>
+                  <Image
+                    source={require('../assets/Delivery_Range.png')}
+                    style={{ width: 180, height: 180, marginVertical: 10 }}
+                    resizeMode="contain"
+                  />
 
-              <View style={{ alignItems: 'center', marginBottom: 20 }}>
-                <View style={{ width: '100%', height: 150, marginBottom: 150, backgroundColor: 'black', flexDirection: 'row', justifyContent: 'center' }}>
-                  <View style={{ backgroundColor: 'orange', width: 150, height: 150, }} />
                 </View>
 
+
+                <GooglePlacesInput />
               </View>
             </KeyboardAvoidingView>
 

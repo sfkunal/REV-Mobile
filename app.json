@@ -4,7 +4,7 @@
     "slug": "shopify-react-native-template",
     "version": "1.0.4",
     "orientation": "portrait",
-    "icon": ".src/assets/icon.png",
+    "icon": "./src/assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./src/assets/splash.png",
@@ -28,7 +28,7 @@
       "favicon": "./src/assets/favicon.png"
     },
     "updates": {
-      "url": ""
+      "url": "https://u.expo.dev/d36086a4-c412-4717-904e-3841f6a42d78"
     },
     "plugins": [
       [
@@ -39,6 +39,14 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d36086a4-c412-4717-904e-3841f6a42d78"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    }
   }
 }

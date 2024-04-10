@@ -88,6 +88,8 @@ const Orders = ({ navigation }: Props) => {
       // console.log(response.lineItems.nodes.title)
 
       // const reversedOrders = response.data.customer.orders.nodes.reverse() as Order[]
+      console.log(orders);
+
       const reversedOrders = response.data.customer.orders.nodes.reverse()
       setOrders(reversedOrders)
       // console.log('there was no error thrown, so we made it to ', reversedOrders)
@@ -126,6 +128,7 @@ const Orders = ({ navigation }: Props) => {
               data={orders}
               renderItem={({ item }) => <OrderCard data={item} />}
               contentContainerStyle={styles.container}
+              keyExtractor={(item) => item.id}
               // ItemSeparatorComponent={() => (
               //   <View style={{ borderBottomWidth: 0.5, borderColor: theme.colors.disabledText, marginHorizontal: -20 }}></View>
               // )}

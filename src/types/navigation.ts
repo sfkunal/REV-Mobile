@@ -67,4 +67,5 @@ export type LoginStackParamList = {
   OnboardingPhone: { firstName: string; lastName: string };
   OnboardingName: { phoneNumber: string };
   OnboardingEmail: { firstName: string; lastName: string, phoneNumber: string };
+  ForgottenPhone: undefined
 }

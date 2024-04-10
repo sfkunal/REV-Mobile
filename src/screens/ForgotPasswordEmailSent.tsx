@@ -33,11 +33,13 @@ const ForgotPasswordEmailSent = ({ navigation }: Props) => {
     <View style={styles.container} >
       {/* <Image source={theme.dark == true ? logoDark : logo} style={styles.image} /> */}
       <View style={{ display: 'flex', width: '90%', height: 100, justifyContent: 'space-between', flexDirection: 'column', alignItems: 'center' }}>
-        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>
+        <Text style={{ fontSize: 60, fontWeight: 'bold', marginBottom: 40 }}>
           Email sent!
         </Text>
-        <Text style={styles.text}>Check your email inbox to reset your password. Make sure to check the spam or junk folder too! </Text>
+        <Text style={styles.text}>Check your email inbox to reset your password. Make sure to check the spam or junk folder too </Text>
+
       </View>
+
 
 
       {/* <Text
@@ -49,7 +51,7 @@ const ForgotPasswordEmailSent = ({ navigation }: Props) => {
 
       <TouchableOpacity onPress={() => { navigation.navigate('Login') }}
         style={{ backgroundColor: '#4B2D83', paddingHorizontal: 80, paddingVertical: 12, maxWidth: '100%', borderRadius: 30, marginTop: 28, display: 'flex', justifyContent: 'center', flexDirection: 'row', marginBottom: 75 }}>
-        <Text style={{ color: 'white', fontSize: 20, fontWeight: '500' }} numberOfLines={1}>
+        <Text style={{ color: 'white', fontSize: 20, fontWeight: '600' }} numberOfLines={1}>
           Back to Login
         </Text>
       </TouchableOpacity>
