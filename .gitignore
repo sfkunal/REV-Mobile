@@ -14,6 +14,8 @@ web-build/
 eas.json
 google-services.json
 
+.env
+
 # macOS
 .DS_Store
 
