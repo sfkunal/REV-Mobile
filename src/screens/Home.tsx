@@ -893,15 +893,11 @@ const Home = ({ navigation }: Props) => {
               color: '#1faadb',
             },
             textInputPlaceholder: { // This is the style property for the placeholder text
-              color: '#FFFFFF', // Placeholder text color
-              fontSize: 16, // Placeholder text font size
-              // Add any additional styling here
+              color: '#FFFFFF',
+              fontSize: 16,
             },
-
           }}
-          // renderLeftButton={() => <PinIcon size={24} color='black' />}
-          // listViewDisplayed='auto'
-          // listViewDisplayed={3}
+
           numberOfLines={3}
         />
         {/* <View style={{ backgroundColor: '#4B2D83', width: '90%', marginLeft: 'auto', marginRight: 'auto', height: 1, borderRadius: 30 }} />
@@ -1048,10 +1044,8 @@ const Home = ({ navigation }: Props) => {
             ref={bottomSheetRef}
             index={-1} // Start closed
             enablePanDownToClose
-            snapPoints={['98%']} // Set the heights of the bottom sheet
+            snapPoints={['92%']} // Set the heights of the bottom sheet
           >
-
-
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
               style={{
@@ -1062,22 +1056,24 @@ const Home = ({ navigation }: Props) => {
                 paddingTop: 10,
               }}
             >
-              <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center' }}>
                 {/* upper container */}
-                <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={{
+                  display: 'flex', flexDirection: 'column',
+                  // alignItems: 'flex-start', justifyContent: 'center', 
+                  height: 250, width: '100%'
+                }}>
                   <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#4B2D83' }}>
                     Where to?
                   </Text>
-                  <Image
-                    source={require('../assets/Delivery_Range.png')}
-                    style={{ width: 180, height: 180, marginVertical: 10 }}
-                    resizeMode="contain"
-                  />
-
+                  <GooglePlacesInput />
                 </View>
+                <Image
+                  source={require('../assets/Delivery_Range.png')}
+                  style={{ width: 320, height: 320, marginTop: 0 }}
+                  resizeMode="contain"
+                />
 
-
-                <GooglePlacesInput />
               </View>
             </KeyboardAvoidingView>
 

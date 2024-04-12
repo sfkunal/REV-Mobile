@@ -18,6 +18,7 @@ import logo from '../assets/logo.png'
 import { ChevronDownIcon, PinIcon, RightArrowIcon } from '../components/shared/Icons'
 import * as WebBrowser from 'expo-web-browser'
 import { LinearGradient } from 'expo-linear-gradient';
+import { checkIfPasswordProtected } from '../utils/checkIfPasswordProtected'
 
 
 
@@ -36,6 +37,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
 
   const { StatusBarManager } = NativeModules
   const [sbHeight, setsbHeight] = useState<any>(StatusBar.currentHeight)
+  const [isClosed, setIsClosed] = useState<boolean>(false)
 
   useEffect(() => {
     if (Platform.OS === "ios") {
@@ -50,8 +52,24 @@ const ShippingAddress = ({ route, navigation }: Props) => {
         // <Image source={require('../../assets/CHECKOUT.png')} style={{ height: 25, width: 175, marginTop: 0 }} resizeMode='contain' />
       )
     })
-
   }, [])
+
+  useEffect(() => {
+    const checkStoreStatus = async () => {
+      setIsLoading(true);
+      try {
+        const isPasswordProtected = await checkIfPasswordProtected();
+        setIsClosed(isPasswordProtected);
+      } catch (e) {
+
+      }
+    }
+    const check = async () => {
+      await checkIfPasswordProtected();
+    }
+    check();
+  }, [])
+
 
   const { checkoutId, totalPrice } = route.params
   // console.log(totalPrice)
@@ -515,7 +533,7 @@ const ShippingAddress = ({ route, navigation }: Props) => {
   const GooglePlacesInput = () => {
     return (
       <GooglePlacesAutocomplete
-        placeholder='Where To?'
+        placeholder='4748 University Wy NE A, Seattle, WA 98105'
         fetchDetails={true}
         minLength={3}
         onPress={(data, details = null) => {
@@ -549,16 +567,37 @@ const ShippingAddress = ({ route, navigation }: Props) => {
           strictbounds: 'true'
         }}
         styles={{
+          container: {
+            diplay: 'flex',
+            width: '100%'
+          },
           textInput: {
             height: 38,
-            color: '#FFFFFF',
+            color: '#000000',
+            backgroundColor: '#F0F0F0',
             fontSize: 16,
-            backgroundColor: '#4B2D83',
+            borderWidth: 1,
+            borderColor: '#4B2D83',
+            borderRadius: 5,
+            // paddingHorizontal: 10,
+            paddingLeft: 4,
+            paddingRight: 6,
+
+            // backgroundColor: '#4B2D83',
+          },
+          // the autofill text
+          description: {
+            fontWeight: '400'
           },
           predefinedPlacesDescription: {
             color: '#1faadb',
           },
+          textInputPlaceholder: { // This is the style property for the placeholder text
+            color: '#FFFFFF',
+            fontSize: 16,
+          },
         }}
+        numberOfLines={3}
 
       />
     );
@@ -758,7 +797,8 @@ const ShippingAddress = ({ route, navigation }: Props) => {
                 <ActivityIndicator size='small' />
               </TouchableOpacity>)
                 // TODO CHANGE THIS ONPRESS TO PULL UP WEBURL
-                : (<TouchableOpacity style={styles.checkoutButton} onPress={sendToCheckout}>
+
+                : isClosed ? (<View style={styles.checkoutClosed}> <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Checkout</Text></View>) : (<TouchableOpacity style={styles.checkoutButton} onPress={sendToCheckout}>
                   <Text style={{ fontSize: 18, fontWeight: '600', color: 'white' }}>Checkout</Text>
                 </TouchableOpacity>)}
             </View>
@@ -778,7 +818,36 @@ const ShippingAddress = ({ route, navigation }: Props) => {
         enablePanDownToClose
         snapPoints={['90%']} // Set the heights of the bottom sheet
       >
-        <View
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{
+            flex: 1,
+            // height: '90%',
+            justifyContent: 'space-between',
+            paddingHorizontal: 20,
+            paddingTop: 10,
+          }}
+        >
+          <View style={{ flex: 1, justifyContent: 'flex-start', flexDirection: 'column', alignItems: 'center' }}>
+            {/* upper container */}
+            <View style={{
+              display: 'flex', flexDirection: 'column',
+              // alignItems: 'flex-start', justifyContent: 'center', 
+              height: 250, width: '100%'
+            }}>
+              <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 8, color: '#4B2D83' }}>
+                Where to?
+              </Text>
+              <GooglePlacesInput />
+            </View>
+            <Image
+              source={require('../assets/Delivery_Range.png')}
+              style={{ width: 320, height: 320, marginTop: 0 }}
+              resizeMode="contain"
+            />
+
+          </View>
+          {/* <View
           style={{
             margin: 12,
             backgroundColor: "transparent",
@@ -803,7 +872,8 @@ const ShippingAddress = ({ route, navigation }: Props) => {
               </Text>
             </View>
           </View>
-        </View>
+        </View> */}
+        </KeyboardAvoidingView>
       </BottomSheet >
     </>
   )
@@ -889,6 +959,17 @@ const styles = StyleSheet.create({
     width: '100%',
     alignSelf: 'center',
   },
+  checkoutClosed: {
+    marginTop: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    backgroundColor: 'gray',
+    alignItems: 'center',
+    width: '100%',
+    alignSelf: 'center',
+  },
+
   addressBox: {
     // height: 40,
     borderColor: 'black',

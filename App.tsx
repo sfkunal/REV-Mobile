@@ -18,7 +18,7 @@ import * as Font from 'expo-font';
 import { useFonts } from 'expo-font'
 
 import FontAwesome from '@expo/vector-icons/FontAwesome'
-import { adminApiClient } from './src/utils/adminApiClient'
+import { checkIfPasswordProtected } from './src/utils/checkIfPasswordProtected'
 
 
 
@@ -31,7 +31,7 @@ export default function App() {
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
       if (state.isConnected) {
-        setIsConnected(state.isConnected)
+        setIsConnected(state.isConnected ?? false)
       }
     })
     return () => unsubscribe()
@@ -52,8 +52,6 @@ export default function App() {
   //   </View>
   // }
 
-
-
   // const loadFonts = async () => {
   //   await Font.loadAsync({
   //     'Rubik-Regular': require('./src/assets/fonts/Rubik-Regular.ttf'),
@@ -66,40 +64,21 @@ export default function App() {
   //   loadFonts();
   // }, [])
 
-  // useEffect(() => {
-  //   const checkIfProtected = async () => {
-  //     await checkIfStoreIsPasswordProtected();
-  //   }
-  //   checkIfProtected();
-  // }, [])
+  useEffect(() => {
+    const checkStoreStatus = async () => {
+      setIsLoading(true);
+      try {
+        const isPasswordProtected = await checkIfPasswordProtected();
+        setIsClosed(isPasswordProtected);
+      } catch (e) {
 
-  const checkIfStoreIsPasswordProtected = async () => {
-    const query = `
-    {
-      onlineStore {
-        passwordProtection {
-          enabled
-        }
       }
-    }`;
-    try {
-      // dont send to the storefrontAPI, want to send to the admin API. 
-      // need to configure with the adminAPI key
-      const data: any = await adminApiClient(query);
-      // console.log('data', data);
-
-
-      if (data.onlineStore.passwordProtection.enabled) { // if store is closed
-        setIsClosed(true);
-      } else {
-        setIsClosed(false);
-      }
-    } catch (e) {
-      // console.log(e)
     }
-    // console.log('finally')
-  }
-
+    const check = async () => {
+      await checkIfPasswordProtected();
+    }
+    check();
+  }, [])
 
   // useEffect(() => {
   //   checkIfStoreIsPasswordProtected();

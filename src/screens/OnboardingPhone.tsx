@@ -9,10 +9,7 @@ import { theme } from '../constants/theme';
 import { config } from '../../config';
 import { CountryPicker } from "react-native-country-codes-picker";
 import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
-
-
-
-
+import { sendCode, verifyCode } from '../utils/twilio';
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'OnboardingPhone'>
 
@@ -23,48 +20,9 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
     const [errorMessage, setErrorMessage] = useState<string | null>()
     const scrollRef = useRef<ScrollView>()
 
-    // // country useState variables
-    const [show, setShow] = useState(false);
-    const [countryCode, setCountryCode] = useState('');
-    // const USA = { "callingCode": ["1"], "cca2": "US", "currency": ["USD"], "flag": "flag-us", "name": "United States", "region": "Americas", "subregion": "North America" }
-    // const [countryCode, setCountryCode] = useState('US');
-    // const [country, setCountry] = useState(USA);
-    // const [isPickerVisible, setPickerVisible] = useState<boolean>(false);
-
-
-    // const onSelect = (country) => {
-    //     setCountryCode(country.cca2);
-    //     setCountry(country);
-    // };
-
-    // useEffect(() => {
-    //     console.log(country);
-    //     console.log(isPickerVisible)
-    // }, [country])
-
-
-
-
-
-    const handleNext = () => {
-        // TODO do I need a check for length here? 
-        // any additional way to validate a phone number
-        if (!phoneNumber) {
-            setErrorMessage('Please enter your phone number')
-            return
-        } else if (phoneNumber.length < 9) {
-            setErrorMessage('Please enter a valid phone number')
-            return
-        }
-        setErrorMessage(null)
-        setLoading(true)
-
-        // make sure that we are grabbing the phone number in the correct format
-        // const phoneNumber = phoneToE164(phoneNumber)
-        navigation.navigate('OnboardingName', { phoneNumber });
-        // navigation.navigate('OnboardingEmail', { firstName, lastName, phoneNumber });
-        setLoading(false)
-    };
+    // FOR OTP PURPOSES
+    const [codeSent, setCodeSent] = useState<boolean>(false)
+    const [codeInput, setCodeInput] = useState('')
 
     useEffect(() => {
         navigation.setOptions({
@@ -83,6 +41,78 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
         });
     }, [])
 
+    // this is a temp function with twilio disabled
+    const handleNext = async () => {
+        setLoading(true);
+        if (!phoneNumber) {
+            setErrorMessage('Please enter your phone number')
+            return
+        } else if (phoneNumber.length < 9) {
+            setErrorMessage('Please enter a valid phone number')
+            return
+        } else {
+            setErrorMessage(null)
+            setLoading(false)
+            navigation.navigate('OnboardingName', { phoneNumber });
+        }
+    }
+
+    // this is the function to use once twilio is enabled
+    // const handleNext = async () => {
+    //     if (!phoneNumber) {
+    //         setErrorMessage('Please enter your phone number')
+    //         return
+    //     } else if (phoneNumber.length < 9) {
+    //         setErrorMessage('Please enter a valid phone number')
+    //         return
+    //     } else {
+    //         setErrorMessage(null);
+    //         setLoading(true);
+    //         if (!codeSent) {
+    //             const success = await sendCode(phoneNumber);
+    //             if (success) {
+    //                 setCodeSent(true);
+    //                 setErrorMessage(null);
+    //             } else {
+    //                 setErrorMessage('Failed to send verification code. Please try again.');
+    //             }
+    //         } else {
+    //             const verified = await verifyCode(phoneNumber, codeInput);
+    //             if (verified) {
+    //                 navigation.navigate('OnboardingEmail', { firstName, lastName, phoneNumber });
+    //             } else {
+    //                 setErrorMessage('Invalid verification code. Please try again.');
+    //             }
+    //             // verifyCode(phoneNumber, codeInput); // should verify code return like a yes or no?
+    //         }
+    //         setLoading(false)
+    //     }
+
+    //     // if (!phoneNumber) {
+    //     //     setErrorMessage('Please enter your phone number')
+    //     //     return
+    //     // } else if (phoneNumber.length < 9) {
+    //     //     setErrorMessage('Please enter a valid phone number')
+    //     //     return
+    //     // }
+    //     // setErrorMessage(null)
+    //     // setLoading(true)
+
+    //     // // make sure that we are grabbing the phone number in the correct format
+    //     // // const phoneNumber = phoneToE164(phoneNumber)
+
+    //     // try {
+    //     //     if (codeSent) {
+    //     //         verifyCode(phoneNumber, codeInput);
+    //     //     } else {
+    //     //         sendCode(phoneNumber)
+    //     //     }
+    //     // } catch (e) {
+    //     //     console.log(e)
+    //     // }
+
+    //     // setLoading(false);
+    // };
 
     // formats the phone number to be in the format of (XXX)XXX-XXXX
     const handlePhoneNumberChange = (value) => {
@@ -104,6 +134,8 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
         // console.log(phoneToE164(cleanedNumber))
         setPhoneNumber(formattedNumber)
     }
+
+
 
     const phoneToE164 = (number) => {
         return `+1${number}`
@@ -155,7 +187,7 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
 
                         flex: 1, justifyContent: 'space-between', alignItems: 'center'
                     }}>
-                        <View>
+                        <View style={{ alignItems: 'center' }}>
                             {errorMessage ?
                                 (<View style={{ height: 20, justifyContent: 'flex-end', marginBottom: 20, alignItems: 'center' }}>
                                     <Text style={{ color: 'red' }}>{errorMessage}</Text>
@@ -166,9 +198,6 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                                 // backgroundColor: 'pink' 
                             }} >
                                 {/* country container */}
-
-
-
                                 <View >
                                     <Text style={styles.inputSubTitle}>
                                         Country
@@ -195,11 +224,24 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                                     />
                                 </View>
                             </View>
-
+                            {codeSent ? (
+                                <View>
+                                    <Text style={styles.inputSubTitle}>Verification Code</Text>
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={setCodeInput}
+                                        value={codeInput}
+                                        keyboardType="number-pad"
+                                        placeholder="123456"
+                                        autoComplete='sms-otp'
+                                        onSubmitEditing={handleNext}
+                                        textContentType="oneTimeCode"
+                                        accessibilityLabel="Verification Code"
+                                        accessibilityHint="Enter the code sent to your phone"
+                                    />
+                                </View>
+                            ) : null}
                         </View>
-
-
-
                     </View>
 
 
@@ -235,17 +277,17 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
 
                         </View>
                         {loading ?
-                            <ActivityIndicator /> :
+                            <View style={styles.nextCircleEmpty}><ActivityIndicator /></View>
+                            :
                             <TouchableOpacity
-                                style={phoneNumber.length > 9 ? (styles.nextCircle) : (styles.nextCircleEmpty)}
+                                style={phoneNumber.length > 13 && !codeSent || codeSent && codeInput.length > 5 ? (styles.nextCircle) : (styles.nextCircleEmpty)}
+                                disabled={phoneNumber.length <= 12}
                                 // style={styles.loginContainer}
-                                onPress={handleNext}>
+                                onPress={() => handleNext()}>
                                 {/* <Text style={styles.loginText}>Next</Text> */}
                                 <RightArrowIcon color='#FFFFFF' size={30} />
                                 <View style={{ marginTop: 10 }}></View>
                             </TouchableOpacity>
-
-
                         }
                     </View>
                     {/* </TouchableWithoutFeedback> */}
@@ -253,9 +295,8 @@ const OnboardingPhone = ({ navigation, route }: Props) => {
                 </ScrollView>
             </TouchableWithoutFeedback >
         </KeyboardAvoidingView >
-
-    );
-};
+    )
+}
 
 export default OnboardingPhone;
 
